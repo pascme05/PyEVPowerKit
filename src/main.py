@@ -37,11 +37,16 @@ from src.model.Veh.mechVeh import mechVeh
 from src.model.Veh.mechWhe import mechWhe
 from src.model.Veh.elecVeh import elecVeh
 from src.model.Veh.therVeh import therVeh
-
+from src.model.elecSim import elecSim
+from src.model.mechSim import mechSim
+from src.model.therSim import therSim
+from src.model.Gbx.classGBX import classGBX
+from src.model.Ema.classEMA import classPSM
 
 # ==============================================================================
 # External
 # ==============================================================================
+from tqdm import tqdm
 
 
 #######################################################################################################################
@@ -199,19 +204,32 @@ def main(setup, path):
     print("------------------------------------------")
 
     # ------------------------------------------
+    # Init Components
+    # ------------------------------------------
+    # GBX
+    GBX = classGBX(setup['Par']['GBX']['i'], setup['Par']['GBX']['J_gbx'], setup['Par']['GBX']['c_m'],
+                   setup['Par']['GBX']['c_b'], setup['Par']['GBX']['c_w'], setup['Par']['GBX']['C_th'],
+                   setup['Par']['GBX']['R_th'])
+
+    # EMA
+    EMA = classPSM()
+
+    # INV
+
+    # HVS
+
+    # ------------------------------------------
     # Iteration
     # ------------------------------------------
-    '''
     for iter in tqdm(range(len(data['t'])), desc='Mission Profile'):
         # Mechanical
-        dataTime = mechSim(data, dataTime, iter, setupMdl, setupPar)
+        dataTime = mechSim(data, dataTime, iter, setup)
 
         # Electrical
-        dataTime = elecSim(data, dataTime, iter, setupMdl, setupPar)
+        dataTime = elecSim(data, dataTime, iter, setup)
 
         # Thermal
-        dataTime = therSim(data, dataTime, iter, setupMdl, setupPar)
-    '''
+        dataTime = therSim(data, dataTime, iter, setup)
 
     # ==============================================================================
     # MSG OUT

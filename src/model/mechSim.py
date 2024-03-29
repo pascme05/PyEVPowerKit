@@ -1,9 +1,9 @@
 #######################################################################################################################
 #######################################################################################################################
-# Title:        EVOptiDrive (Optimal Drivetrain Design for Electrical Vehicles)
-# Topic:        Electrical Vehicle (EV) Simulation
+# Title:        Python Electric Vehicle Power Toolkit (PyEVPowerKit)
+# Topic:        EV Modeling
 # File:         mechSim
-# Date:         19.08.2023
+# Date:         18.03.2024
 # Author:       Dr. Pascal A. Schirmer
 # Version:      V.0.1
 # Copyright:    Pascal Schirmer
