@@ -212,7 +212,12 @@ def main(setup, path):
                    setup['Par']['GBX']['R_th'])
 
     # EMA
-    EMA = classPSM()
+    EMA = classPSM(setup['Par']['EMA']['p'], setup['Par']['EMA']['n_max'], setup['Par']['EMA']['n_0'],
+                   setup['Par']['EMA']['T_max'], setup['Par']['EMA']['J_rot'], setup['Par']['EMA']['I_max'],
+                   setup['Par']['EMA']['P_max'], setup['Par']['EMA']['Psi'], setup['Par']['EMA']['L_d'],
+                   setup['Par']['EMA']['L_q'], setup['Par']['EMA']['L_sig'], setup['Par']['EMA']['R_s'],
+                   setup['Par']['EMA']['K_h'], setup['Par']['EMA']['K_f'], setup['Par']['EMA']['c_b'],
+                   setup['Par']['EMA']['c_w'], setup['Par']['EMA']['C_th'], setup['Par']['EMA']['R_th'])
 
     # INV
 
