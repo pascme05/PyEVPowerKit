@@ -37,16 +37,17 @@ from src.model.Veh.mechVeh import mechVeh
 from src.model.Veh.mechWhe import mechWhe
 from src.model.Veh.elecVeh import elecVeh
 from src.model.Veh.therVeh import therVeh
-from src.model.elecSim import elecSim
+from src.model.initComp import initComp
 from src.model.mechSim import mechSim
-from src.model.therSim import therSim
-from src.model.Gbx.classGBX import classGBX
-from src.model.Ema.classEMA import classPSM
+from src.plot.plotting import plotting
+from src.model.elecSim import elecSim
+
 
 # ==============================================================================
 # External
 # ==============================================================================
 from tqdm import tqdm
+import numpy as np
 
 
 #######################################################################################################################
@@ -65,18 +66,6 @@ def main(setup, path):
     print("Date:       18.03.2024")
     print("----------------------------------------------------------------------------------------------------------")
     print("----------------------------------------------------------------------------------------------------------")
-
-    ###################################################################################################################
-    # Init
-    ###################################################################################################################
-    # ==============================================================================
-    # Temporal Variables
-    # ==============================================================================
-    dataTime = {'VEH': {}, 'WHE': {'F': {}, 'R': {}}, 'GBX': {}, 'EMA': {}, 'INV': {}, 'HVS': {}}
-
-    # ==============================================================================
-    # Others
-    # ==============================================================================
 
     ###################################################################################################################
     # Loading
@@ -165,6 +154,53 @@ def main(setup, path):
     print("=======================================================================")
 
     # ==============================================================================
+    # Init
+    # ==============================================================================
+    N = len(data['t'])
+    Tinit = data['T_C'][0]
+    dataTime = {'VEH': {'Vdc': np.zeros(N), 'Tc': np.zeros(N), 'SOC': np.zeros(N)},
+                'WHE': {'F': {}, 'R': {}},
+                'GBX': {'F': {'T': Tinit * np.ones(N), 'M': np.zeros(N), 'n': np.zeros(N), 'Pin': np.zeros(N),
+                              'Pout': np.zeros(N), 'Pv': np.zeros(N), 'Pv_B': np.zeros(N), 'Pv_M': np.zeros(N),
+                              'Pv_W': np.zeros(N), 'eta': np.zeros(N)},
+                        'R': {'T': Tinit * np.ones(N), 'M': np.zeros(N), 'n': np.zeros(N), 'Pin': np.zeros(N),
+                              'Pout': np.zeros(N), 'Pv': np.zeros(N), 'Pv_B': np.zeros(N), 'Pv_M': np.zeros(N),
+                              'Pv_W': np.zeros(N), 'eta': np.zeros(N)},
+                        'T': {'T': Tinit * np.ones(N), 'M': np.zeros(N), 'n': np.zeros(N), 'Pin': np.zeros(N),
+                              'Pout': np.zeros(N), 'Pv': np.zeros(N), 'Pv_B': np.zeros(N), 'Pv_M': np.zeros(N),
+                              'Pv_W': np.zeros(N), 'eta': np.zeros(N)}},
+                'EMA': {'F': {'T': Tinit * np.ones(N), 'M': np.zeros(N), 'n': np.zeros(N), 'Pm': np.zeros(N),
+                              'Pin': np.zeros(N), 'Pout': np.zeros(N), 'Pv': np.zeros(N), 'Pv_m': np.zeros(N),
+                              'Pv_s': np.zeros(N), 'Pv_r': np.zeros(N), 'eta': np.zeros(N), 'PF': np.zeros(N),
+                              'Id': np.zeros(N), 'Iq': np.zeros(N), 'Is': np.zeros(N), 'Vd': np.zeros(N),
+                              'Vq': np.zeros(N), 'Vs': np.zeros(N), 'lam': np.zeros(N)},
+                        'R': {'T': Tinit * np.ones(N), 'M': np.zeros(N), 'n': np.zeros(N), 'Pm': np.zeros(N),
+                              'Pin': np.zeros(N), 'Pout': np.zeros(N), 'Pv': np.zeros(N), 'Pv_m': np.zeros(N),
+                              'Pv_s': np.zeros(N), 'Pv_r': np.zeros(N), 'eta': np.zeros(N), 'PF': np.zeros(N),
+                              'Id': np.zeros(N), 'Iq': np.zeros(N), 'Is': np.zeros(N), 'Vd': np.zeros(N),
+                              'Vq': np.zeros(N), 'Vs': np.zeros(N), 'lam': np.zeros(N)},
+                        'T': {'T': Tinit * np.ones(N), 'M': np.zeros(N), 'n': np.zeros(N), 'Pm': np.zeros(N),
+                              'Pin': np.zeros(N), 'Pout': np.zeros(N), 'Pv': np.zeros(N), 'Pv_m': np.zeros(N),
+                              'Pv_s': np.zeros(N), 'Pv_r': np.zeros(N), 'eta': np.zeros(N), 'PF': np.zeros(N),
+                              'Id': np.zeros(N), 'Iq': np.zeros(N), 'Is': np.zeros(N), 'Vd': np.zeros(N),
+                              'Vq': np.zeros(N), 'Vs': np.zeros(N), 'lam': np.zeros(N)}},
+                'INV': {'F': {'T': Tinit * np.ones(N), 'Pin': np.zeros(N), 'Pout': np.zeros(N), 'Pv': np.zeros(N),
+                              'Pv_sw': np.zeros(N), 'Pv_cap': np.zeros(N), 'Pv_ac': np.zeros(N), 'Pv_dc': np.zeros(N),
+                              'eta': np.zeros(N), 'Idc': np.zeros(N), 'Ic': np.zeros(N), 'Is': np.zeros(N),
+                              'Mi': np.zeros(N)},
+                        'R': {'T': Tinit * np.ones(N), 'Pin': np.zeros(N), 'Pout': np.zeros(N), 'Pv': np.zeros(N),
+                              'Pv_sw': np.zeros(N), 'Pv_cap': np.zeros(N), 'Pv_ac': np.zeros(N), 'Pv_dc': np.zeros(N),
+                              'eta': np.zeros(N), 'Idc': np.zeros(N), 'Ic': np.zeros(N), 'Is': np.zeros(N),
+                              'Mi': np.zeros(N)},
+                        'T': {'T': Tinit * np.ones(N), 'Pin': np.zeros(N), 'Pout': np.zeros(N), 'Pv': np.zeros(N),
+                              'Pv_sw': np.zeros(N), 'Pv_cap': np.zeros(N), 'Pv_ac': np.zeros(N), 'Pv_dc': np.zeros(N),
+                              'eta': np.zeros(N), 'Idc': np.zeros(N), 'Ic': np.zeros(N), 'Is': np.zeros(N),
+                              'Mi': np.zeros(N)}},
+                'HVS': {'T': Tinit * np.ones(N), 'dQ': np.zeros(N), 'SOC': np.zeros(N), 'Vdc': np.zeros(N),
+                        'Pin': np.zeros(N), 'Pout': np.zeros(N), 'Pv': np.zeros(N), 'eta': np.zeros(N)}}
+
+
+    # ==============================================================================
     # Vehicle
     # ==============================================================================
     # ------------------------------------------
@@ -186,12 +222,12 @@ def main(setup, path):
     # ------------------------------------------
     # Electrical
     # ------------------------------------------
-    data = elecVeh(data, setup)
+    dataTime = elecVeh(data, dataTime, setup)
 
     # ------------------------------------------
     # Thermal
     # ------------------------------------------
-    data = therVeh(data, setup)
+    dataTime = therVeh(data, dataTime, setup)
 
     # ==============================================================================
     # Components
@@ -206,35 +242,22 @@ def main(setup, path):
     # ------------------------------------------
     # Init Components
     # ------------------------------------------
-    # GBX
-    GBX = classGBX(setup['Par']['GBX']['i'], setup['Par']['GBX']['J_gbx'], setup['Par']['GBX']['c_m'],
-                   setup['Par']['GBX']['c_b'], setup['Par']['GBX']['c_w'], setup['Par']['GBX']['C_th'],
-                   setup['Par']['GBX']['R_th'])
-
-    # EMA
-    EMA = classPSM(setup['Par']['EMA']['p'], setup['Par']['EMA']['n_max'], setup['Par']['EMA']['n_0'],
-                   setup['Par']['EMA']['T_max'], setup['Par']['EMA']['J_rot'], setup['Par']['EMA']['I_max'],
-                   setup['Par']['EMA']['P_max'], setup['Par']['EMA']['Psi'], setup['Par']['EMA']['L_d'],
-                   setup['Par']['EMA']['L_q'], setup['Par']['EMA']['L_sig'], setup['Par']['EMA']['R_s'],
-                   setup['Par']['EMA']['K_h'], setup['Par']['EMA']['K_f'], setup['Par']['EMA']['c_b'],
-                   setup['Par']['EMA']['c_w'], setup['Par']['EMA']['C_th'], setup['Par']['EMA']['R_th'])
-
-    # INV
-
-    # HVS
+    [GBX, EMA, INV, HVS] = initComp(setup)
 
     # ------------------------------------------
     # Iteration
     # ------------------------------------------
     for iter in tqdm(range(len(data['t'])), desc='Mission Profile'):
         # Mechanical
-        dataTime = mechSim(data, dataTime, iter, setup)
+        dataTime = mechSim(iter, GBX, EMA, dataTime, setup)
 
         # Electrical
-        dataTime = elecSim(data, dataTime, iter, setup)
+        dataTime = elecSim(iter, EMA, INV, HVS, dataTime, setup)
 
+        '''
         # Thermal
         dataTime = therSim(data, dataTime, iter, setup)
+        '''
 
     # ==============================================================================
     # MSG OUT
@@ -309,6 +332,7 @@ def main(setup, path):
     # ------------------------------------------
     # Start
     # ------------------------------------------
+    plotting(data, dataTime, setup)
 
     # ==============================================================================
     # MSG OUT

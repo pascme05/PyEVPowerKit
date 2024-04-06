@@ -35,6 +35,7 @@ Outputs:    1)
 # ==============================================================================
 import numpy as np
 import math as mt
+import sympy as sy
 
 
 #######################################################################################################################
@@ -44,7 +45,8 @@ class classPSM:
     ###################################################################################################################
     # Constructor
     ###################################################################################################################
-    def __init__(self, p, n_max, n_0, T_max, J_rot, I_max, P_max, Psi, L_d, L_q, L_sig, R_s, c_b, c_w, K_h, K_f, C_th, R_th):
+    def __init__(self, p, n_max, n_0, T_max, J_rot, I_max, P_max, Psi, L_d, L_q, L_sig, R_s, K_h, K_f, c_b, c_w, C_th,
+                 R_th):
         self.p = p
         self.n_max = n_max
         self.n_0 = n_0
@@ -67,18 +69,154 @@ class classPSM:
     ###################################################################################################################
     # Mechanics
     ###################################################################################################################
-    def calc_mech(self, M_Gbx, n_Gbx, P_Gbx, eta):
+    def calc_mech(self, M_Gbx, n_Gbx):
+        # ==============================================================================
+        # Pre-Processing
+        # ==============================================================================
+        n_Ema = n_Gbx
+        w_m = 2 * np.pi * n_Ema
+        Pout = M_Gbx * w_m
+
         # ==============================================================================
         # Calculation
         # ==============================================================================
-        M_Ema = M_Gbx / eta
-        n_Ema = n_Gbx
-        P_Ema = P_Gbx
+        # ------------------------------------------
+        # Losses
+        # ------------------------------------------
+        [Pv, _, _, _] = self.calc_loss(n_Ema, 0, 0, 0, 0, 0)
+        Pin = Pout + Pv
+        eta = Pout / Pin
+        eta = np.nan_to_num(eta, nan=1)
+
+        M_Ema = M_Gbx / (eta + 1e-12)
+        P_Ema = 2 * np.pi * n_Ema * M_Ema
 
         # ==============================================================================
         # Return
         # ==============================================================================
-        return [M_Ema, n_Ema, P_Ema]
+        return [M_Ema, n_Ema, P_Ema, Pv, eta]
+
+    ###################################################################################################################
+    # Calc Electrical
+    ###################################################################################################################
+    def calc_MTPA(self, n_Ema, M_Ema, Vdc, T):
+        # ==============================================================================
+        # Init
+        # ==============================================================================
+        id = sy.symbols('id')
+
+        # ==============================================================================
+        # Pre-processing
+        # ==============================================================================
+        Rs = self.R_s * (1 + 0.00393 * (T - 20))
+        v_max = Vdc / np.sqrt(3) - Rs * self.I_max
+        w_m_base = 2 * np.pi * self.n_0
+        w_m = 2 * sy.pi * n_Ema
+        w_e = self.p * w_m
+        R_Fe = 1 / (self.K_f + self.K_h / (self.p * w_e + 1) + 1e-9)
+
+        # ==============================================================================
+        # Base Speed
+        # ==============================================================================
+        if M_Ema == 0:
+            id = 0
+            iq = 0
+            vd = 0
+            vq = 0
+            Is = 0
+            Vs = 0
+
+            return [id, iq, Is, vd, vq, Vs]
+
+        # ==============================================================================
+        # MTPA
+        # ==============================================================================
+        # ------------------------------------------
+        # Currents
+        # ------------------------------------------
+        i_dlist = (sy.solveset(sy.Eq(sy.diff((id ** 2 + ((2 * M_Ema) / (3 * self.p * (
+                self.Psi + (self.L_d - self.L_q) * id))) ** 2), id), 0), id, sy.Interval(-self.I_max, 0)))
+        id = list(i_dlist)[0]
+        iq = (2 * M_Ema) / (3 * self.p * (self.Psi + (self.L_d - self.L_q) * id))
+
+        # ------------------------------------------
+        # Voltage
+        # ------------------------------------------
+        vd = (id * self.R_s - w_e * self.L_q * iq).evalf()
+        vq = (iq * self.R_s + (self.L_d * id + self.Psi) * w_e).evalf()
+
+        # ==============================================================================
+        # Voltage Limit
+        # ==============================================================================
+        if sy.sqrt(vd ** 2 + vq ** 2) > v_max:
+            # ------------------------------------------
+            # Init
+            # ------------------------------------------
+            i_d = sy.symbols('i_d')
+
+            # ------------------------------------------
+            # Positive Torque
+            # ------------------------------------------
+            if M_Ema > 0:
+                #func = sy.lambdify(id, (2 * M_Ema) / (3 * self.p * (self.Psi + (self.L_d - self.L_q) * id)) - sy.sqrt((v_max ** 2 - (w_e * self.Psi + w_e * self.L_d * id) ** 2) / (w_e ** 2 * self.L_q ** 2)))
+                func = sy.lambdify(i_d, (2 * M_Ema) / (3 * self.p * (self.Psi + (
+                        self.L_d - self.L_q) * i_d)) + sy.sqrt((v_max ** 2 - (
+                        w_e * self.Psi + w_e * self.L_d * i_d) ** 2) / (w_e ** 2 * self.L_q ** 2)))
+
+                with np.errstate(invalid='ignore'):
+                    xx = np.linspace(-self.I_max, 0, 10000)
+                with np.errstate(invalid='ignore'):
+                    A = np.diff(np.sign(func(xx)))
+                A[np.isnan(A)] = 0
+                test = xx[np.where(A)[0]]
+                if not test.size > 0:
+                    test = [0]
+                id = test[0]
+                iq = ((2 * M_Ema) / (3 * self.p * (self.Psi + (self.L_d - self.L_q) * list(test)[0])))
+                vd = (id * self.R_s - w_e * self.L_q * iq).evalf()
+                vq = (iq * self.R_s + (self.L_d * id + self.Psi) * w_e).evalf()
+
+            # ------------------------------------------
+            # Negative Torque
+            # ------------------------------------------
+            elif M_Ema < 0:
+                func = sy.lambdify(id, (2 * M_Ema) / (3 * self.p * (self.Psi + (
+                        self.L_d - self.L_q) * id)) + sy.sqrt((v_max ** 2 - (
+                        w_e * self.Psi + w_e * self.L_d * id) ** 2) / (w_e ** 2 * self.L_q ** 2)))
+                with np.errstate(invalid='ignore'):
+                    xx = np.linspace(-self.I_max, 0, 10000)
+                with np.errstate(invalid='ignore'):
+                    A = np.diff(np.sign(func(xx)))
+                A[np.isnan(A)] = 0
+                test = xx[np.where(A)[0]]
+                if not test.size > 0:
+                    test = [0]
+                id = test[0]
+                iq = ((2 * M_Ema) / (3 * self.p * (self.Psi + (self.L_d - self.L_q) * list(test)[0])))
+                vd = (id * self.R_s - w_e * self.L_q * iq).evalf()
+                vq = (iq * self.R_s + (self.L_d * id + self.Psi) * w_e).evalf()
+
+        # ==============================================================================
+        # Post-Processing
+        # ==============================================================================
+        # ------------------------------------------
+        # Convert Values
+        # ------------------------------------------
+        id = np.array([id]).astype(float)
+        iq = np.array([iq]).astype(float)
+        vd = np.array([vd]).astype(float)
+        vq = np.array([vq]).astype(float)
+
+        # ------------------------------------------
+        # Stator Quantities
+        # ------------------------------------------
+        Is = np.sqrt(id ** 2 + iq ** 2)
+        Vs = np.sqrt(vd ** 2 + vq ** 2)
+
+        # ==============================================================================
+        # Return
+        # ==============================================================================
+        return [id, iq, Is, vd, vq, Vs]
 
     ###################################################################################################################
     # Elec Surface Magnets
@@ -97,18 +235,25 @@ class classPSM:
         v_max = Vdc / np.sqrt(3) - Rs * self.I_max
         w_m_base = (1 / self.p) * v_max / (np.sqrt((self.L_q * self.I_max) ** 2 + self.Psi ** 2))
         w_m = 2 * np.pi * n_Ema
-        R_Fe = 1 / (self.K_f + self.K_h / (self.p * w_m + 1) + 1e-9)
+        w_e = 2 * np.pi * n_Ema * self.p
+        R_Fe = 1 / (self.K_f + self.K_h / (self.p * w_e + 1) + 1e-9)
 
         # ==============================================================================
         # Calculation
         # ==============================================================================
+        # ------------------------------------------
+        # Base Speed
+        # ------------------------------------------
         if w_m <= w_m_base:
             id_sat = 0
             iq_mtpa = M_Ema / (3 / 2 * self.p * self.Psi)
             iq_sat = sat(iq_mtpa, self.I_max)
 
+        # ------------------------------------------
+        # Field Weakening
+        # ------------------------------------------
         else:
-            id_fw = (self.p * w_m_base - w_m * self.p) * self.Psi / (w_m * self.p * self.L_d)
+            id_fw = (self.p * w_m_base - w_e) * self.Psi / (w_e * self.L_d)
             iq_fw = M_Ema / (3 / 2 * self.p * self.Psi)
             id_sat = sat(id_fw, self.I_max)
             iq_lim = np.sqrt(self.I_max ** 2 - id_sat ** 2)
@@ -126,8 +271,8 @@ class classPSM:
         # ------------------------------------------
         # Iron Current
         # ------------------------------------------
-        vd0 = - w_m * self.p * self.L_q * iq0
-        vq0 = w_m * self.p * self.L_d * id0 + w_m * self.p * self.Psi
+        vd0 = - w_e * self.L_q * iq0
+        vq0 = w_e * self.L_d * id0 + w_e * self.Psi
         id_fe = vd0 / R_Fe
         iq_fe = vq0 / R_Fe
         id = id0 + id_fe
@@ -140,8 +285,8 @@ class classPSM:
         Is = np.sqrt(id ** 2 + iq ** 2)
 
         # Voltage
-        vd = Rs * id - w_m * self.p * self.L_q * iq + (w_m * self.p) ** 2 / R_Fe * (self.L_q * self.L_d * id + self.L_q * self.Psi)
-        vq = Rs * iq + w_m * self.p * self.L_d * id + (w_m * self.p) ** 2 / R_Fe * (self.L_q * self.L_d * iq) + w_m * self.p * self.Psi
+        vd = Rs * id - w_e * self.L_q * iq + w_e ** 2 / R_Fe * (self.L_q * self.L_d * id + self.L_q * self.Psi)
+        vq = Rs * iq + w_e * self.L_d * id + w_e ** 2 / R_Fe * (self.L_q * self.L_d * iq) + w_e * self.Psi
         Vs = np.sqrt(vd ** 2 + vq ** 2)
 
         # ==============================================================================
@@ -158,9 +303,9 @@ class classPSM:
         # ==============================================================================
         Rs = self.R_s * (1 + 0.00393 * (T - 20))
         v_max = Vdc / np.sqrt(3) - Rs * self.I_max
-        w_m_base = 2 * np.pi * self.n_0
         w_m = 2 * np.pi * n_Ema
-        R_Fe = 1 / (self.K_f + self.K_h / (self.p * w_m + 1) + 1e-9)
+        w_e = 2 * np.pi * n_Ema * self.p
+        R_Fe = 1 / (self.K_f + self.K_h / (w_e + 1) + 1e-9)
 
         # ==============================================================================
         # Calculation
@@ -172,17 +317,25 @@ class classPSM:
         i_m = min(i_m_ref, self.I_max)
         id_mtpa = self.Psi / (4 * (self.L_q - self.L_d)) - np.sqrt(self.Psi ** 2 / (16 * (self.L_q - self.L_d) ** 2) + i_m ** 2 / 2)
         iq_mtpa = np.sqrt(i_m ** 2 - id_mtpa ** 2)
-        id_fw = (-self.Psi * self.L_d + np.sqrt((self.Psi * self.L_d) ** 2 - (self.L_d ** 2 - self.L_q ** 2) * (
-                self.Psi ** 2 + self.L_q ** 2 * self.I_max ** 2 - v_max ** 2 / (self.p * w_m) ** 2))) / (self.L_d ** 2 - self.L_q ** 2)
+        iq_mtpa = np.nan_to_num(iq_mtpa, nan=0)
 
         # ------------------------------------------
         # d/q Currents (stationary)
         # ------------------------------------------
+        w_m_base = (1 / self.p) * v_max / (np.sqrt((self.L_q * iq_mtpa) ** 2 + (self.Psi + self.L_d*id_mtpa) ** 2))
+
+        # ------------------------------------------
+        # d/q Currents (stationary)
+        # ------------------------------------------
+        # Base Speed
         if w_m <= w_m_base:
             iq_sat = iq_mtpa
             id_sat = id_mtpa
 
+        # Field Weakening
         else:
+            id_fw = (-self.Psi * self.L_d + np.sqrt((self.Psi * self.L_d) ** 2 - (self.L_d ** 2 - self.L_q ** 2) * (
+                    self.Psi ** 2 + self.L_q ** 2 * self.I_max ** 2 - v_max ** 2 / w_e ** 2))) / (self.L_d ** 2 - self.L_q ** 2)
             id_sat = max(id_fw, -self.I_max)
             iq_fw = np.sqrt(self.I_max ** 2 - id_fw ** 2)
             if iq_fw < i_m:
@@ -202,8 +355,8 @@ class classPSM:
         # ------------------------------------------
         # Iron Current
         # ------------------------------------------
-        vd0 = - w_m * self.p * self.L_q * iq0
-        vq0 = w_m * self.p * self.L_d * id0 + w_m * self.p * self.Psi
+        vd0 = - w_e * self.L_q * iq0
+        vq0 = w_e * self.L_d * id0 + w_e * self.Psi
         id_fe = vd0 / R_Fe
         iq_fe = vq0 / R_Fe
         id = id0 + id_fe
@@ -216,8 +369,8 @@ class classPSM:
         Is = np.sqrt(id ** 2 + iq ** 2)
 
         # Voltage
-        vd = Rs * id - w_m * self.p * self.L_q * iq + (w_m * self.p) ** 2 / R_Fe * (self.L_q * self.L_d * id + self.L_q * self.Psi)
-        vq = Rs * iq + w_m * self.p * self.L_d * id + (w_m * self.p) ** 2 / R_Fe * (self.L_q * self.L_d * iq) + w_m * self.p * self.Psi
+        vd = Rs * id - w_e * self.L_q * iq + w_e ** 2 / R_Fe * (self.L_q * self.L_d * id + self.L_q * self.Psi)
+        vq = Rs * iq + w_e * self.L_d * id + w_e ** 2 / R_Fe * (self.L_q * self.L_d * iq) + w_e * self.Psi
         Vs = np.sqrt(vd ** 2 + vq ** 2)
 
         # ==============================================================================
@@ -228,12 +381,21 @@ class classPSM:
     ###################################################################################################################
     # Electrical
     ###################################################################################################################
-    def calc_elec(self, n_Ema, M_Ema, type, Vdc, fs, T):
+    def calc_elec(self, n_Ema, M_Ema, sel, Vdc, fs, T):
         # ==============================================================================
-        # Pre-processing
+        # Init
         # ==============================================================================
         w_m = 2 * np.pi * n_Ema
         Pout = M_Ema * w_m
+
+        # ==============================================================================
+        # Pre-processing
+        # ==============================================================================
+        if n_Ema != 0:
+            [_, Pv_fric, _, _] = self.calc_loss(n_Ema, 0, 0, 0, fs, T)
+            M_in = M_Ema + Pv_fric / w_m
+        else:
+            M_in = M_Ema
 
         # ==============================================================================
         # Calculation
@@ -241,13 +403,15 @@ class classPSM:
         # ------------------------------------------
         # Currents and Voltages
         # ------------------------------------------
+        # [id, iq, Is, vd, vq, Vs] = self.calc_MTPA(n_Ema, M_in, Vdc, T)
+
         # Interior Magnet
-        if type == 2:
-            [id, iq, Is, vd, vq, Vs] = self.calc_elec_IM(n_Ema, M_Ema, Vdc, T)
+        if sel == 2:
+            [id, iq, Is, vd, vq, Vs] = self.calc_elec_IM(n_Ema, M_in, Vdc, T)
 
         # Surface Magnet
         else:
-            [id, iq, Is, vd, vq, Vs] = self.calc_elec_SM(n_Ema, M_Ema, Vdc, T)
+            [id, iq, Is, vd, vq, Vs] = self.calc_elec_SM(n_Ema, M_in, Vdc, T)
 
         # ------------------------------------------
         # Flux
@@ -271,8 +435,13 @@ class classPSM:
         # ==============================================================================
         Pin = Pout + Pv
         eta = Pout / Pin
-        phi = mt.acos(Pin / (3 / 2 * Vs * Is + 1e-9))
-        PF = np.cos(phi)
+        eta = np.nan_to_num(eta, nan=1)
+        try:
+            phi = mt.acos(Pin / (3 * Vs * Is + 1e-9))
+            PF = np.cos(phi)
+        except:
+            phi = 0
+            PF = 1
 
         # ==============================================================================
         # Return
@@ -286,7 +455,8 @@ class classPSM:
         # ==============================================================================
         # Init
         # ==============================================================================
-        HDF = 0.4
+        Mi = Vs / ((Vdc + 1e-12) / 2)
+        HDF = 3 / 2 * Mi ** 2 - 4 * np.sqrt(3) / np.pi * Mi ** 3 + (27 / 16 - 81 * np.sqrt(3) / (64 * np.pi)) * Mi ** 4
 
         # ==============================================================================
         # Pre-processing
@@ -294,6 +464,7 @@ class classPSM:
         Rs = self.R_s * (1 + 0.00393 * (T - 20))
         w_m = 2 * np.pi * n_Ema
         R_Fe = 1 / (self.K_f + self.K_h / (self.p * w_m + 1) + 1e-9)
+        I_s_thd = Vdc / (24 * self.L_sig * fs) * np.sqrt(HDF)
 
         # ==============================================================================
         # Calculation
@@ -301,8 +472,8 @@ class classPSM:
         # ------------------------------------------
         # Mechanical
         # ------------------------------------------
-        bear_loss = self.c_b * n_Ema
-        wind_loss = self.c_w * n_Ema**2
+        bear_loss = self.c_b * np.abs(n_Ema)
+        wind_loss = self.c_w * n_Ema ** 2
         mech_loss = bear_loss + wind_loss
 
         # ------------------------------------------
@@ -311,7 +482,7 @@ class classPSM:
         # Stator
         stator_ohm_loss = 3 * Rs * Is ** 2
         stator_mag_loss = 3 * (Vs - Rs * Is) ** 2 / R_Fe
-        stator_har_loss = 3 * Rs * (Vdc / (24 * self.L_sig * fs)) ** 2 * HDF
+        stator_har_loss = 3 * Rs * I_s_thd ** 2
         stator_loss = stator_ohm_loss + stator_mag_loss + stator_har_loss
 
         # Rotor (tbd)

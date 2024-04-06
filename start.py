@@ -53,7 +53,7 @@ setup = initSetup()
 # Files
 # ------------------------------------------
 setup['Exp']['name'] = 'test'                                                                                            # Name of the simulation
-setup['Dat']['name'] = 'data_WLTP'                                                                                       # Name of the data file
+setup['Dat']['name'] = 'data_Test'                                                                                       # Name of the data file
 setup['Par']['name'] = 'setup_Template'                                                                                  # Name of the setup file
 
 # ------------------------------------------
@@ -64,10 +64,17 @@ setup['Exp']['Vdc'] = 1                                                         
 setup['Exp']['Cool'] = 1                                                                                                 # 1) constant coolant temperature, 2) measured coolant temperature, 3) coolant temperature calculated
 setup['Exp']['Tc'] = 35                                                                                                  # Constant coolant temperature (degC)
 
+# ------------------------------------------
+# Plotting
+# ------------------------------------------
+setup['Exp']['plot'] = 1
+setup['Exp']['hFig'] = 900
+setup['Exp']['wFig'] = 2000
+
 # ==============================================================================
 # Data
 # ==============================================================================
-setup['Dat']['fs'] = 1                                                                                                   # Sampling frequency of the data (Hz)
+setup['Dat']['fs'] = 100                                                                                                   # Sampling frequency of the data (Hz)
 
 # ==============================================================================
 # Parameters

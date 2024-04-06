@@ -2,7 +2,7 @@
 #######################################################################################################################
 # Title:        Python Electric Vehicle Power Toolkit (PyEVPowerKit)
 # Topic:        EV Modeling
-# File:         mechSim
+# File:         plotVehDetail
 # Date:         18.03.2024
 # Author:       Dr. Pascal A. Schirmer
 # Version:      V.0.1
@@ -36,7 +36,8 @@ Outputs:    1)
 # ==============================================================================
 # External
 # ==============================================================================
-import numpy as np
+import plotly.graph_objects as go
+from plotly.subplots import make_subplots
 
 #######################################################################################################################
 # Additional Functions
@@ -46,152 +47,117 @@ import numpy as np
 #######################################################################################################################
 # Main Function
 #######################################################################################################################
-def mechSim(iter, GBX, EMA, dataTime, setup):
+def plotVehDetail(data, dataTime, setup):
+    ###################################################################################################################
+    # MSG IN
+    ###################################################################################################################
+    print("INFO: Plotting vehicle data (detail)")
+
     ###################################################################################################################
     # Initialisation
     ###################################################################################################################
     # ==============================================================================
     # Parameters
     # ==============================================================================
+    Ts = 1 / setup['Dat']['fs']
+    name = setup['Dat']['name']
 
     # ==============================================================================
     # Variables
     # ==============================================================================
-    # ------------------------------------------
-    # Front
-    # ------------------------------------------
-    M_Whe_F = dataTime['WHE']['F']['M'][iter]
-    n_Whe_F = dataTime['WHE']['F']['n'][iter]
+    time = data['t']
 
-    # ------------------------------------------
-    # Rear
-    # ------------------------------------------
-    M_Whe_R = dataTime['WHE']['R']['M'][iter]
-    n_Whe_R = dataTime['WHE']['R']['n'][iter]
-
+    ###################################################################################################################
+    # Loading Data
+    ###################################################################################################################
+    
     ###################################################################################################################
     # Pre-Processing
     ###################################################################################################################
-    # ==============================================================================
-    # FWD
-    # ==============================================================================
-    if setup['Par']['xwd'] == 'FWD':
-        M_Whe_R = 0
-        n_Whe_R = 0
-
-    # ==============================================================================
-    # RWD
-    # ==============================================================================
-    if setup['Par']['xwd'] == 'RWD':
-        M_Whe_F = 0
-        n_Whe_F = 0
+    fig = make_subplots(rows=5, cols=3, shared_xaxes=True, vertical_spacing=0.05)
 
     ###################################################################################################################
     # Calculation
     ###################################################################################################################
     # ==============================================================================
-    # GBX
+    # Forces
     # ==============================================================================
-    # ------------------------------------------
-    # Mechanical
-    # ------------------------------------------
-    [M_Gbx_F, n_Gbx_F, P_Gbx_F, P_Out_F, _, eta_Gbx_F] = GBX.calc_mech(M_Whe_F, n_Whe_F)
-    [M_Gbx_R, n_Gbx_R, P_Gbx_R, P_Out_R, _, eta_Gbx_R] = GBX.calc_mech(M_Whe_R, n_Whe_R)
-
-    # ------------------------------------------
-    # Losses
-    # ------------------------------------------
-    [Pv_Gbx_F, Pv_Gbx_B_F, Pv_Gbx_M_F, Pv_Gbx_W_F] = GBX.calc_loss(n_Gbx_F)
-    [Pv_Gbx_R, Pv_Gbx_B_R, Pv_Gbx_M_R, Pv_Gbx_W_R] = GBX.calc_loss(n_Gbx_R)
+    fig.add_trace(go.Scatter(x=time, y=dataTime['VEH']['F']['p'] / 1000, mode='lines', line=dict(color='#636EFA', dash='solid'), name='Vehicle Forces (Air)'), row=1, col=1)
+    fig.add_trace(go.Scatter(x=time, y=dataTime['VEH']['F']['r'] / 1000, mode='lines', line=dict(color='#EF553B', dash='solid'), name='Vehicle Forces (Rolling)'), row=2, col=1)
+    fig.add_trace(go.Scatter(x=time, y=dataTime['VEH']['F']['c'] / 1000, mode='lines', line=dict(color='#00CC96', dash='solid'), name='Vehicle Forces (Climbing)'), row=3, col=1)
+    fig.add_trace(go.Scatter(x=time, y=dataTime['VEH']['F']['a'] / 1000, mode='lines', line=dict(color='#AB63FA', dash='solid'), name='Vehicle Forces (Acceleration)'), row=4, col=1)
+    fig.add_trace(go.Scatter(x=time, y=dataTime['VEH']['F']['t'] / 1000, mode='lines', line=dict(color='#FFA15A', dash='solid'), name='Vehicle Forces (Total)'), row=5, col=1)
 
     # ==============================================================================
-    # EMA
+    # Power
     # ==============================================================================
-    [M_Ema_F, n_Ema_F, _, _, _] = EMA.calc_mech(M_Gbx_F, n_Gbx_F)
-    [M_Ema_R, n_Ema_R, _, _, _] = EMA.calc_mech(M_Gbx_R, n_Gbx_R)
+    fig.add_trace(go.Scatter(x=time, y=dataTime['VEH']['P']['p'] / 1000, mode='lines', line=dict(color='#636EFA', dash='dash'), name='Vehicle Power (Air)'), row=1, col=2)
+    fig.add_trace(go.Scatter(x=time, y=dataTime['VEH']['P']['r'] / 1000, mode='lines', line=dict(color='#EF553B', dash='dash'), name='Vehicle Power (Rolling)'), row=2, col=2)
+    fig.add_trace(go.Scatter(x=time, y=dataTime['VEH']['P']['c'] / 1000, mode='lines', line=dict(color='#00CC96', dash='dash'), name='Vehicle Power (Climbing)'), row=3, col=2)
+    fig.add_trace(go.Scatter(x=time, y=dataTime['VEH']['P']['a'] / 1000, mode='lines', line=dict(color='#AB63FA', dash='dash'), name='Vehicle Power (Acceleration)'), row=4, col=2)
+    fig.add_trace(go.Scatter(x=time, y=dataTime['VEH']['P']['t'] / 1000, mode='lines', line=dict(color='#FFA15A', dash='dash'), name='Vehicle Power (Total)'), row=5, col=2)
+
+    # ==============================================================================
+    # Energy
+    # ==============================================================================
+    fig.add_trace(go.Scatter(x=time, y=dataTime['VEH']['E']['p'] / 3.6e6, mode='lines', line=dict(color='#636EFA', dash='dot'), name='Vehicle Energy (Air)'), row=1, col=3)
+    fig.add_trace(go.Scatter(x=time, y=dataTime['VEH']['E']['r'] / 3.6e6, mode='lines', line=dict(color='#EF553B', dash='dot'), name='Vehicle Energy (Rolling)'), row=2, col=3)
+    fig.add_trace(go.Scatter(x=time, y=dataTime['VEH']['E']['c'] / 3.6e6, mode='lines', line=dict(color='#00CC96', dash='dot'), name='Vehicle Energy (Climbing)'), row=3, col=3)
+    fig.add_trace(go.Scatter(x=time, y=dataTime['VEH']['E']['a'] / 3.6e6, mode='lines', line=dict(color='#AB63FA', dash='dot'), name='Vehicle Energy (Acceleration)'), row=4, col=3)
+    fig.add_trace(go.Scatter(x=time, y=dataTime['VEH']['E']['t'] / 3.6e6, mode='lines', line=dict(color='#FFA15A', dash='dot'), name='Vehicle Energy (Total)'), row=5, col=3)
 
     ###################################################################################################################
     # Post-Processing
     ###################################################################################################################
     # ==============================================================================
-    # GBX
+    # Axis
     # ==============================================================================
     # ------------------------------------------
-    # Front
+    # Set y-axis titles
     # ------------------------------------------
-    # Mechanical
-    dataTime['GBX']['F']['M'][iter] = M_Gbx_F
-    dataTime['GBX']['F']['n'][iter] = n_Gbx_F
-    dataTime['GBX']['F']['Pin'][iter] = P_Gbx_F
-    dataTime['GBX']['F']['Pout'][iter] = P_Out_F
-    dataTime['GBX']['F']['eta'][iter] = eta_Gbx_F
+    # Forces
+    fig.update_yaxes(title_text="F (kN)", row=1, col=1)
+    fig.update_yaxes(title_text="F (kN)", row=2, col=1)
+    fig.update_yaxes(title_text="F (kN)", row=3, col=1)
+    fig.update_yaxes(title_text="F (kN)", row=4, col=1)
+    fig.update_yaxes(title_text="F (kN)", row=5, col=1)
 
-    # Losses
-    dataTime['GBX']['F']['Pv'][iter] = Pv_Gbx_F
-    dataTime['GBX']['F']['Pv_B'][iter] = Pv_Gbx_B_F
-    dataTime['GBX']['F']['Pv_M'][iter] = Pv_Gbx_M_F
-    dataTime['GBX']['F']['Pv_W'][iter] = Pv_Gbx_W_F
+    # Power
+    fig.update_yaxes(title_text="P (kW)", row=1, col=2)
+    fig.update_yaxes(title_text="P (kW)", row=2, col=2)
+    fig.update_yaxes(title_text="P (kW)", row=3, col=2)
+    fig.update_yaxes(title_text="P (kW)", row=4, col=2)
+    fig.update_yaxes(title_text="P (kW)", row=5, col=2)
 
-    # ------------------------------------------
-    # Rear
-    # ------------------------------------------
-    # Mechanical
-    dataTime['GBX']['R']['M'][iter] = M_Gbx_R
-    dataTime['GBX']['R']['n'][iter] = n_Gbx_R
-    dataTime['GBX']['R']['Pin'][iter] = P_Gbx_R
-    dataTime['GBX']['R']['Pout'][iter] = P_Out_R
-    dataTime['GBX']['R']['eta'][iter] = eta_Gbx_R
-
-    # Losses
-    dataTime['GBX']['R']['Pv'][iter] = Pv_Gbx_R
-    dataTime['GBX']['R']['Pv_B'][iter] = Pv_Gbx_B_R
-    dataTime['GBX']['R']['Pv_M'][iter] = Pv_Gbx_M_R
-    dataTime['GBX']['R']['Pv_W'][iter] = Pv_Gbx_W_R
+    # Energy
+    fig.update_yaxes(title_text="E (kWh)", row=1, col=3)
+    fig.update_yaxes(title_text="E (kWh)", row=2, col=3)
+    fig.update_yaxes(title_text="E (kWh)", row=3, col=3)
+    fig.update_yaxes(title_text="E (kWh)", row=4, col=3)
+    fig.update_yaxes(title_text="E (kWh)", row=5, col=3)
 
     # ------------------------------------------
-    # Total
+    # Set x-axis title for the last subplot
     # ------------------------------------------
-    # Mechanical
-    dataTime['GBX']['T']['M'][iter] = M_Gbx_F + M_Gbx_R
-    dataTime['GBX']['T']['n'][iter] = (n_Gbx_F + n_Gbx_R) / 2
-    dataTime['GBX']['T']['Pin'][iter] = P_Gbx_F + P_Gbx_R
-    dataTime['GBX']['T']['Pout'][iter] = P_Out_F + P_Out_R
-    dataTime['GBX']['T']['eta'][iter] = (eta_Gbx_F + eta_Gbx_R) / 2
-
-    # Losses
-    dataTime['GBX']['T']['Pv'][iter] = Pv_Gbx_F + Pv_Gbx_R
-    dataTime['GBX']['T']['Pv_B'][iter] = Pv_Gbx_B_F + Pv_Gbx_B_R
-    dataTime['GBX']['T']['Pv_M'][iter] = Pv_Gbx_M_F + Pv_Gbx_M_R
-    dataTime['GBX']['T']['Pv_W'][iter] = Pv_Gbx_W_F + Pv_Gbx_W_R
+    fig.update_xaxes(title_text="time (sec)", row=5, col=1)
+    fig.update_xaxes(title_text="time (sec)", row=5, col=2)
+    fig.update_xaxes(title_text="time (sec)", row=5, col=3)
 
     # ==============================================================================
-    # EMA
+    # Title
     # ==============================================================================
-    # ------------------------------------------
-    # Front
-    # ------------------------------------------
-    dataTime['EMA']['F']['M'][iter] = M_Ema_F
-    dataTime['EMA']['F']['n'][iter] = n_Ema_F
-    dataTime['EMA']['F']['Pm'][iter] = 2 * np.pi * n_Ema_F * M_Ema_F
+    txt = "Vehicle Forces, Power, Energies, and Efficiencies (Detail): "
+    fig.update_layout(height=setup['Exp']['hFig'], width=setup['Exp']['wFig'], title_text=txt)
 
-    # ------------------------------------------
-    # Rear
-    # ------------------------------------------
-    dataTime['EMA']['R']['M'][iter] = M_Ema_R
-    dataTime['EMA']['R']['n'][iter] = n_Ema_R
-    dataTime['EMA']['R']['Pm'][iter] = 2 * np.pi * n_Ema_R * M_Ema_R
-
-    # ------------------------------------------
-    # Total
-    # ------------------------------------------
-    dataTime['EMA']['T']['M'][iter] = M_Ema_F + M_Ema_R
-    dataTime['EMA']['T']['n'][iter] = (n_Ema_F + n_Ema_R) / 2
-    dataTime['EMA']['T']['Pm'][iter] = 2 * np.pi * (n_Ema_R * M_Ema_R + n_Ema_F * M_Ema_F)
+    # ==============================================================================
+    # Plot
+    # ==============================================================================
+    fig.show()
 
     ###################################################################################################################
     # Return
     ###################################################################################################################
-    return dataTime
+    return []
 
 #######################################################################################################################
 # References
