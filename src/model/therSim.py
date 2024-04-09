@@ -2,7 +2,7 @@
 #######################################################################################################################
 # Title:        Python Electric Vehicle Power Toolkit (PyEVPowerKit)
 # Topic:        EV Modeling
-# File:         plotGBX
+# File:         therSim
 # Date:         18.03.2024
 # Author:       Dr. Pascal A. Schirmer
 # Version:      V.0.1
@@ -36,8 +36,7 @@ Outputs:    1)
 # ==============================================================================
 # External
 # ==============================================================================
-import plotly.graph_objects as go
-from plotly.subplots import make_subplots
+import numpy as np
 
 #######################################################################################################################
 # Additional Functions
@@ -47,96 +46,129 @@ from plotly.subplots import make_subplots
 #######################################################################################################################
 # Main Function
 #######################################################################################################################
-def plotGBX(data, dataTime, setup):
-    ###################################################################################################################
-    # MSG IN
-    ###################################################################################################################
-    print("INFO: Plotting GBX data")
-
+def therSim(iter, GBX, EMA, INV, HVS, dataTime, setup):
     ###################################################################################################################
     # Initialisation
     ###################################################################################################################
-    time = data['t']
-    axis = setup['Exp']['plotAxis']
+    # ==============================================================================
+    # Parameters
+    # ==============================================================================
+    Ts = 1 / setup['Dat']['fs']
 
-    ###################################################################################################################
-    # Pre-Processing
-    ###################################################################################################################
-    fig = make_subplots(rows=3, cols=3, shared_xaxes=True, vertical_spacing=0.05)
+    # ==============================================================================
+    # Variables
+    # ==============================================================================
+    # ------------------------------------------
+    # Vehicles
+    # ------------------------------------------
+    Tc = dataTime['VEH']['Tc'][iter - 1]
+
+    # ------------------------------------------
+    # GBX
+    # ------------------------------------------
+    # Front
+    Pv_Gbx_F = dataTime['GBX']['F']['Pv']
+    T_Gbx_F = dataTime['GBX']['F']['T']
+
+    # Rear
+    Pv_Gbx_R = dataTime['GBX']['R']['Pv']
+    T_Gbx_R = dataTime['GBX']['R']['T']
+
+    # ------------------------------------------
+    # EMA
+    # ------------------------------------------
+    # Front
+    Pv_Ema_F = dataTime['EMA']['F']['Pv']
+    T_Ema_F = dataTime['EMA']['F']['T']
+
+    # Rear
+    Pv_Ema_R = dataTime['EMA']['R']['Pv']
+    T_Ema_R = dataTime['EMA']['R']['T']
+
+    # ------------------------------------------
+    # INV
+    # ------------------------------------------
+    # Front
+    Pv_Inv_F = dataTime['INV']['F']['Pv']
+    T_Inv_F = dataTime['INV']['F']['T']
+
+    # Rear
+    Pv_Inv_R = dataTime['INV']['R']['Pv']
+    T_Inv_R = dataTime['INV']['R']['T']
+
+    # ------------------------------------------
+    # HVS
+    # ------------------------------------------
+    Pv_Hvs = dataTime['HVS']['Pv']
+    T_Hvs = dataTime['HVS']['T']
 
     ###################################################################################################################
     # Calculation
     ###################################################################################################################
     # ==============================================================================
-    # Plotting
+    # GBX
     # ==============================================================================
-    # ------------------------------------------
-    # Mechanical
-    # ------------------------------------------
-    fig.add_trace(go.Scatter(x=time, y=dataTime['GBX'][axis]['M'], mode='lines', line=dict(color='#636EFA', dash='solid'), name='GBX Torque'), row=1, col=1)
-    fig.add_trace(go.Scatter(x=time, y=dataTime['GBX'][axis]['n'], mode='lines', line=dict(color='#636EFA', dash='solid'), name='GBX Speed'), row=2, col=1)
-    fig.add_trace(go.Scatter(x=time, y=dataTime['GBX'][axis]['Pin'], mode='lines', line=dict(color='#636EFA', dash='solid'), name='GBX Power'), row=3, col=1)
+    T_GBX_F = GBX.calc_therm(Ts, T_Gbx_F[iter - 1] - Tc, Pv_Gbx_F[iter - 1], Pv_Gbx_F[iter])
+    T_GBX_R = GBX.calc_therm(Ts, T_Gbx_R[iter - 1] - Tc, Pv_Gbx_R[iter - 1], Pv_Gbx_R[iter])
 
-    # ------------------------------------------
-    # Losses
-    # ------------------------------------------
-    fig.add_trace(go.Scatter(x=time, y=dataTime['GBX'][axis]['Pv_B'], mode='lines', line=dict(color='#EF553B', dash='solid'), name='Losses Bearing'), row=1, col=2)
-    fig.add_trace(go.Scatter(x=time, y=dataTime['GBX'][axis]['Pv_M'], mode='lines', line=dict(color='#EF553B', dash='solid'), name='Losses Meshing'), row=2, col=2)
-    fig.add_trace(go.Scatter(x=time, y=dataTime['GBX'][axis]['Pv_W'], mode='lines', line=dict(color='#EF553B', dash='solid'), name='Losses Windage'), row=3, col=2)
+    # ==============================================================================
+    # EMA
+    # ==============================================================================
+    T_EMA_F = EMA.calc_therm(Ts, T_Ema_F[iter - 1] - Tc, Pv_Ema_F[iter - 1], Pv_Ema_F[iter])
+    T_EMA_R = EMA.calc_therm(Ts, T_Ema_R[iter - 1] - Tc, Pv_Ema_R[iter - 1], Pv_Ema_R[iter])
 
-    # ------------------------------------------
-    # Thermal
-    # ------------------------------------------
-    fig.add_trace(go.Scatter(x=time, y=dataTime['GBX'][axis]['Pv'], mode='lines', line=dict(color='#00CC96', dash='solid'), name='Total Losses'), row=1, col=3)
-    fig.add_trace(go.Scatter(x=time, y=dataTime['GBX'][axis]['eta'], mode='lines', line=dict(color='#00CC96', dash='solid'), name='Total Efficiency'), row=2, col=3)
-    fig.add_trace(go.Scatter(x=time, y=dataTime['GBX'][axis]['T'], mode='lines', line=dict(color='#00CC96', dash='solid'), name='Temperature'), row=3, col=3)
+    # ==============================================================================
+    # INV
+    # ==============================================================================
+    T_INV_F = INV.calc_therm(Ts, T_Inv_F[iter - 1] - Tc, Pv_Inv_F[iter - 1], Pv_Inv_F[iter])
+    T_INV_R = INV.calc_therm(Ts, T_Inv_R[iter - 1] - Tc, Pv_Inv_R[iter - 1], Pv_Inv_R[iter])
+
+    # ==============================================================================
+    # HVS
+    # ==============================================================================
+    T_HVS = HVS.calc_therm(Ts, T_Hvs[iter - 1] - Tc, Pv_Hvs[iter - 1], Pv_Hvs[iter])
+
+    # ==============================================================================
+    # VEH
+    # ==============================================================================
 
     ###################################################################################################################
     # Post-Processing
     ###################################################################################################################
     # ==============================================================================
-    # Axis
+    # EMA
     # ==============================================================================
-    # ------------------------------------------
-    # Set y-axis titles
-    # ------------------------------------------
-    # Mechanics
-    fig.update_yaxes(title_text="M (Nm)", row=1, col=1)
-    fig.update_yaxes(title_text="n (1/s)", row=2, col=1)
-    fig.update_yaxes(title_text="P (W)", row=3, col=1)
-
-    # Losses
-    fig.update_yaxes(title_text="Pv (W)", row=1, col=2)
-    fig.update_yaxes(title_text="Pv (W)", row=2, col=2)
-    fig.update_yaxes(title_text="Pv (W)", row=3, col=2)
-
-    # Thermal
-    fig.update_yaxes(title_text="Pv (W)", row=1, col=3)
-    fig.update_yaxes(title_text="Eta (%)", row=2, col=3)
-    fig.update_yaxes(title_text="T (degC)", row=3, col=3)
-
-    # ------------------------------------------
-    # Set x-axis title for the last subplot
-    # ------------------------------------------
-    fig.update_xaxes(title_text="time (sec)", row=3, col=1)
-    fig.update_xaxes(title_text="time (sec)", row=3, col=2)
-    fig.update_xaxes(title_text="time (sec)", row=3, col=3)
+    dataTime['GBX']['F']['T'][iter] = T_GBX_F + Tc
+    dataTime['GBX']['R']['T'][iter] = T_GBX_R + Tc
+    dataTime['GBX']['T']['T'][iter] = np.max((T_GBX_F, T_GBX_R)) + Tc
 
     # ==============================================================================
-    # Title
+    # EMA
     # ==============================================================================
-    txt = "Gearbox Mechanics, Losses, and Thermal (" + axis + ")"
-    fig.update_layout(height=setup['Exp']['hFig'], width=setup['Exp']['wFig'], title_text=txt)
+    dataTime['EMA']['F']['T'][iter] = T_EMA_F + Tc
+    dataTime['EMA']['R']['T'][iter] = T_EMA_R + Tc
+    dataTime['EMA']['T']['T'][iter] = np.max((T_EMA_F, T_EMA_R)) + Tc
 
     # ==============================================================================
-    # Plot
+    # INV
     # ==============================================================================
-    fig.show()
+    dataTime['INV']['F']['T'][iter] = T_INV_F + Tc
+    dataTime['INV']['R']['T'][iter] = T_INV_R + Tc
+    dataTime['INV']['T']['T'][iter] = np.max((T_EMA_F, T_EMA_R)) + Tc
+
+    # ==============================================================================
+    # HVS
+    # ==============================================================================
+    dataTime['HVS']['T'][iter] = T_HVS + Tc
+
+    # ==============================================================================
+    # VEH
+    # ==============================================================================
 
     ###################################################################################################################
     # Return
     ###################################################################################################################
-    return []
+    return dataTime
 
 #######################################################################################################################
 # References

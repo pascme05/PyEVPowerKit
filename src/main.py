@@ -41,6 +41,7 @@ from src.model.initComp import initComp
 from src.model.mechSim import mechSim
 from src.plot.plotting import plotting
 from src.model.elecSim import elecSim
+from src.model.therSim import therSim
 
 
 # ==============================================================================
@@ -173,17 +174,17 @@ def main(setup, path):
                               'Pin': np.zeros(N), 'Pout': np.zeros(N), 'Pv': np.zeros(N), 'Pv_m': np.zeros(N),
                               'Pv_s': np.zeros(N), 'Pv_r': np.zeros(N), 'eta': np.zeros(N), 'PF': np.zeros(N),
                               'Id': np.zeros(N), 'Iq': np.zeros(N), 'Is': np.zeros(N), 'Vd': np.zeros(N),
-                              'Vq': np.zeros(N), 'Vs': np.zeros(N), 'lam': np.zeros(N)},
+                              'Vq': np.zeros(N), 'Vs': np.zeros(N), 'lam': np.zeros(N), 'Min': np.zeros(N)},
                         'R': {'T': Tinit * np.ones(N), 'M': np.zeros(N), 'n': np.zeros(N), 'Pm': np.zeros(N),
                               'Pin': np.zeros(N), 'Pout': np.zeros(N), 'Pv': np.zeros(N), 'Pv_m': np.zeros(N),
                               'Pv_s': np.zeros(N), 'Pv_r': np.zeros(N), 'eta': np.zeros(N), 'PF': np.zeros(N),
                               'Id': np.zeros(N), 'Iq': np.zeros(N), 'Is': np.zeros(N), 'Vd': np.zeros(N),
-                              'Vq': np.zeros(N), 'Vs': np.zeros(N), 'lam': np.zeros(N)},
+                              'Vq': np.zeros(N), 'Vs': np.zeros(N), 'lam': np.zeros(N), 'Min': np.zeros(N)},
                         'T': {'T': Tinit * np.ones(N), 'M': np.zeros(N), 'n': np.zeros(N), 'Pm': np.zeros(N),
                               'Pin': np.zeros(N), 'Pout': np.zeros(N), 'Pv': np.zeros(N), 'Pv_m': np.zeros(N),
                               'Pv_s': np.zeros(N), 'Pv_r': np.zeros(N), 'eta': np.zeros(N), 'PF': np.zeros(N),
                               'Id': np.zeros(N), 'Iq': np.zeros(N), 'Is': np.zeros(N), 'Vd': np.zeros(N),
-                              'Vq': np.zeros(N), 'Vs': np.zeros(N), 'lam': np.zeros(N)}},
+                              'Vq': np.zeros(N), 'Vs': np.zeros(N), 'lam': np.zeros(N), 'Min': np.zeros(N)}},
                 'INV': {'F': {'T': Tinit * np.ones(N), 'Pin': np.zeros(N), 'Pout': np.zeros(N), 'Pv': np.zeros(N),
                               'Pv_sw': np.zeros(N), 'Pv_cap': np.zeros(N), 'Pv_ac': np.zeros(N), 'Pv_dc': np.zeros(N),
                               'eta': np.zeros(N), 'Idc': np.zeros(N), 'Ic': np.zeros(N), 'Is': np.zeros(N),
@@ -197,8 +198,8 @@ def main(setup, path):
                               'eta': np.zeros(N), 'Idc': np.zeros(N), 'Ic': np.zeros(N), 'Is': np.zeros(N),
                               'Mi': np.zeros(N)}},
                 'HVS': {'T': Tinit * np.ones(N), 'dQ': np.zeros(N), 'SOC': np.zeros(N), 'Vdc': np.zeros(N),
-                        'Pin': np.zeros(N), 'Pout': np.zeros(N), 'Pv': np.zeros(N), 'eta': np.zeros(N)}}
-
+                        'Pin': np.zeros(N), 'Pout': np.zeros(N), 'Pv': np.zeros(N), 'eta': np.zeros(N),
+                        'Idc': np.zeros(N)}}
 
     # ==============================================================================
     # Vehicle
@@ -245,7 +246,7 @@ def main(setup, path):
     [GBX, EMA, INV, HVS] = initComp(setup)
 
     # ------------------------------------------
-    # Iteration
+    # Target Simulation
     # ------------------------------------------
     for iter in tqdm(range(len(data['t'])), desc='Mission Profile'):
         # Mechanical
@@ -254,10 +255,12 @@ def main(setup, path):
         # Electrical
         dataTime = elecSim(iter, EMA, INV, HVS, dataTime, setup)
 
-        '''
         # Thermal
-        dataTime = therSim(data, dataTime, iter, setup)
-        '''
+        dataTime = therSim(iter, GBX, EMA, INV, HVS, dataTime, setup)
+
+    # ------------------------------------------
+    # Actual Simulation
+    # ------------------------------------------
 
     # ==============================================================================
     # MSG OUT

@@ -23,7 +23,6 @@ from src.main import main
 # External
 # ==============================================================================
 import warnings
-import os
 
 #######################################################################################################################
 # Format
@@ -53,28 +52,29 @@ setup = initSetup()
 # Files
 # ------------------------------------------
 setup['Exp']['name'] = 'test'                                                                                            # Name of the simulation
-setup['Dat']['name'] = 'data_Test'                                                                                       # Name of the data file
+setup['Dat']['name'] = 'data_Test3'                                                                                       # Name of the data file
 setup['Par']['name'] = 'setup_Template'                                                                                  # Name of the setup file
 
 # ------------------------------------------
 # Settings
 # ------------------------------------------
 setup['Exp']['SOC'] = 0.8                                                                                                # Starting SOC value of the HVS (p.u.)
-setup['Exp']['Vdc'] = 1                                                                                                  # 1) constant nominal voltage, 2) measured voltage, 3) SOC based
+setup['Exp']['Vdc'] = 3                                                                                                  # 1) constant nominal voltage, 2) measured voltage, 3) SOC based
 setup['Exp']['Cool'] = 1                                                                                                 # 1) constant coolant temperature, 2) measured coolant temperature, 3) coolant temperature calculated
 setup['Exp']['Tc'] = 35                                                                                                  # Constant coolant temperature (degC)
 
 # ------------------------------------------
 # Plotting
 # ------------------------------------------
-setup['Exp']['plot'] = 1
-setup['Exp']['hFig'] = 900
-setup['Exp']['wFig'] = 2000
+setup['Exp']['plot'] = 1                                                                                                 # 1) Plotting reduced, 2) Plotting detail
+setup['Exp']['plotAxis'] = 'R'                                                                                           # R) Rear axis, F) Front axis, T) Total values
+setup['Exp']['hFig'] = 900                                                                                               # Figure height (px)
+setup['Exp']['wFig'] = 2000                                                                                              # Figure width (px)
 
 # ==============================================================================
 # Data
 # ==============================================================================
-setup['Dat']['fs'] = 100                                                                                                   # Sampling frequency of the data (Hz)
+setup['Dat']['fs'] = 10                                                                                                  # Sampling frequency of the data (Hz)
 
 # ==============================================================================
 # Parameters
@@ -87,14 +87,16 @@ setup['Par']['xwd'] = 'RWD'                                                     
 # ------------------------------------------
 # Physical
 # ------------------------------------------
-setup['Par']['p_a'] = 1.2
-setup['Par']['v_w'] = 0
+setup['Par']['p_a'] = 1.2                                                                                                # air density (kg/m3)
+setup['Par']['v_w'] = 0                                                                                                  # wind speed (m/s)
 
 # ------------------------------------------
 # Numeric
 # ------------------------------------------
+setup['Par']['sol'] = 1                                                                                                  # 1) numeric, 2) symbolic
 setup['Par']['eps'] = 1e-12
 setup['Par']['err'] = 1e-6
+setup['Par']['iterMax'] = 20
 
 #######################################################################################################################
 # Calculations

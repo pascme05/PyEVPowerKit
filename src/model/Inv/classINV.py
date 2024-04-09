@@ -43,14 +43,19 @@ class classB6:
     ###################################################################################################################
     # Constructor
     ###################################################################################################################
-    def __init__(self, fs, Sw, nSw, V_0, I_0, T_0, Tj_max, V_ce0, r_T, V_d0, r_D, E_on, E_off, E_rec, alpha, R_esr, R_g, C_dc, R_ac, R_dc, C_th, R_th):
+    def __init__(self, fs, Sw, nSw, nCap, V_0, I_0, T_0, Tj_max, alpha, P_max, I_max, V_ce0, r_T, V_d0, r_D, E_on, E_off,
+                 E_rec, R_g, R_esr, C_dc, R_ac, R_dc, C_th, R_th, h_th, A_th, Ea, k, n, L0, Nf0, F0, beta, CL, Bx):
         self.fs = fs
         self.Sw = Sw
         self.nSw = nSw
+        self.nCap = nCap
         self.V_0 = V_0
         self.I_0 = I_0
         self.T_0 = T_0
         self.Tj_max = Tj_max
+        self.alpha = alpha
+        self.P_max = P_max
+        self.I_max = I_max
         self.V_ce0 = V_ce0
         self.r_T = r_T
         self.V_d0 = V_d0
@@ -58,7 +63,6 @@ class classB6:
         self.E_on = E_on
         self.E_off = E_off
         self.E_rec = E_rec
-        self.alpha = alpha
         self.R_esr = R_esr
         self.R_g = R_g
         self.C_dc = C_dc
@@ -66,6 +70,17 @@ class classB6:
         self.R_dc = R_dc
         self.C_th = C_th
         self.R_th = R_th
+        self.h_th = h_th
+        self.A_th = A_th
+        self.Ea = Ea
+        self.k = k
+        self.n = n
+        self.L0 = L0
+        self.Nf0 = Nf0
+        self.F0 = F0
+        self.beta = beta
+        self.CL = CL
+        self.Bx = Bx
 
     ###################################################################################################################
     # Electrical
@@ -74,7 +89,7 @@ class classB6:
         # ==============================================================================
         # Pre-Processing
         # ==============================================================================
-        Mi = Vs / (Vdc/2)
+        Mi = Vs * np.sqrt(2) / (Vdc/2)
 
         # ==============================================================================
         # Calculation
@@ -82,7 +97,7 @@ class classB6:
         # ------------------------------------------
         # Currents
         # ------------------------------------------
-        Idc = 3 / 4 * np.sqrt(2) * Is * cos_phi
+        Idc = 3 / 4 * np.sqrt(2) * Is * Mi * cos_phi
         Ic = np.sqrt(2 * Mi * (np.sqrt(3) / (4 * np.pi) + cos_phi ** 2 * (np.sqrt(3) / np.pi - 9 / 16 * Mi))) * Is
 
         # ------------------------------------------
@@ -93,9 +108,23 @@ class classB6:
         # ==============================================================================
         # Post-Processing
         # ==============================================================================
+        # ------------------------------------------
+        # Power
+        # ------------------------------------------
         Pin = Vdc * Idc + Pv
-        Pout = 3 / 2 * Is * Vs * cos_phi
+        Idc = Idc + Pv / Vdc
+        Pout = 3 * Is * Vs * cos_phi
+
+        # ------------------------------------------
+        # Efficiency
+        # ------------------------------------------
+        # Init
         eta = Pout / Pin
+        eta = np.nan_to_num(eta, nan=1)
+
+        # Recuperation
+        if eta >= 1:
+            eta = 1 / eta
 
         # ==============================================================================
         # Return
@@ -152,7 +181,7 @@ class classB6:
         # ------------------------------------------
         # DC-Link Capacitor
         # ------------------------------------------
-        p_l_cap = self.R_esr * Ic ** 2
+        p_l_cap = self.nCap * self.R_esr * (Ic / self.nCap) ** 2
 
         # ------------------------------------------
         # Busbars

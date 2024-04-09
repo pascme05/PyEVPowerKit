@@ -54,8 +54,8 @@ def elecSim(iter, EMA, INV, HVS, dataTime, setup):
     # Parameters
     # ==============================================================================
     magType = setup['Par']['EMA']['Mag']
-    fs = setup['Par']['INV']['fs']
-    Ts = 1 / fs
+    fsw = setup['Par']['INV']['fs']
+    Ts = 1 / setup['Dat']['fs']
 
     # ==============================================================================
     # Variables
@@ -63,7 +63,7 @@ def elecSim(iter, EMA, INV, HVS, dataTime, setup):
     # ------------------------------------------
     # Vehicles
     # ------------------------------------------
-    Vdc = dataTime['VEH']['Vdc'][iter-1]
+    Vdc = dataTime['VEH']['Vdc'][iter-1][0]
     SOC = dataTime['VEH']['SOC'][iter-1]
 
     # ------------------------------------------
@@ -106,17 +106,14 @@ def elecSim(iter, EMA, INV, HVS, dataTime, setup):
     # ------------------------------------------
     # Electrical
     # ------------------------------------------
-    #n_Ema_F = 37.5
-    #M_Ema_F = 427.5
-    #Vdc = 250
-    [id_F, iq_F, Is_F, vd_F, vq_F, Vs_F, lam_F, Pin_F, Pout_F, _, eta_F, PF_F] = EMA.calc_elec(n_Ema_F, M_Ema_F, magType, Vdc, fs, T_Ema_F)
-    [id_R, iq_R, Is_R, vd_R, vq_R, Vs_R, lam_R, Pin_R, Pout_R, _, eta_R, PF_R] = EMA.calc_elec(n_Ema_R, M_Ema_R, magType, Vdc, fs, T_Ema_R)
+    [id_F, iq_F, Is_F, vd_F, vq_F, Vs_F, lam_F, Pin_F, Pout_F, _, eta_F, PF_F, Min_F] = EMA.calc_elec(n_Ema_F, M_Ema_F, magType, Vdc, fsw, T_Ema_F)
+    [id_R, iq_R, Is_R, vd_R, vq_R, Vs_R, lam_R, Pin_R, Pout_R, _, eta_R, PF_R, Min_R] = EMA.calc_elec(n_Ema_R, M_Ema_R, magType, Vdc, fsw, T_Ema_R)
 
     # ------------------------------------------
     # Losses
     # ------------------------------------------
-    [Pv_F, Pv_m_F, Pv_s_F, Pv_r_F] = EMA.calc_loss(n_Ema_F, Is_F, Vs_F, Vdc, fs, T_Ema_F)
-    [Pv_R, Pv_m_R, Pv_s_R, Pv_r_R] = EMA.calc_loss(n_Ema_R, Is_R, Vs_R, Vdc, fs, T_Ema_R)
+    [Pv_F, Pv_m_F, Pv_s_F, Pv_r_F] = EMA.calc_loss(n_Ema_F, Is_F, Vs_F, Vdc, fsw, T_Ema_F)
+    [Pv_R, Pv_m_R, Pv_s_R, Pv_r_R] = EMA.calc_loss(n_Ema_R, Is_R, Vs_R, Vdc, fsw, T_Ema_R)
 
     # ==============================================================================
     # INV
@@ -124,14 +121,14 @@ def elecSim(iter, EMA, INV, HVS, dataTime, setup):
     # ------------------------------------------
     # Electrical
     # ------------------------------------------
-    [Mi_F, Idc_F, Ic_F, Pin_INV_F, Pout_INV_F, _, eta_INV_F] = INV.calc_elec(PF_F, Vs_F, Is_F, Vdc, T_Inv_F)
-    [Mi_R, Idc_R, Ic_R, Pin_INV_R, Pout_INV_R, _, eta_INV_R] = INV.calc_elec(PF_R, Vs_R, Is_R, Vdc, T_Inv_R)
+    [Mi_F, Idc_F, Ic_F, Pin_INV_F, Pout_INV_F, Pv_INV_F, eta_INV_F] = INV.calc_elec(PF_F, Vs_F, Is_F, Vdc, T_Inv_F)
+    [Mi_R, Idc_R, Ic_R, Pin_INV_R, Pout_INV_R, Pv_INV_R, eta_INV_R] = INV.calc_elec(PF_R, Vs_R, Is_R, Vdc, T_Inv_R)
 
     # ------------------------------------------
     # Losses
     # ------------------------------------------
-    [Pv_INV_F, p_l_swi_F, p_l_cap_F, p_l_ac_F, p_l_dc_F] = INV.calc_loss(Mi_F, PF_F, Is_F, Ic_F, Idc_F, Vdc, T_Inv_F)
-    [Pv_INV_R, p_l_swi_R, p_l_cap_R, p_l_ac_R, p_l_dc_R] = INV.calc_loss(Mi_R, PF_R, Is_R, Ic_R, Idc_R, Vdc, T_Inv_R)
+    [Pv_INV_F, p_l_swi_F, p_l_cap_F, p_l_ac_F, p_l_dc_F] = INV.calc_loss(Mi_F, PF_F, Is_F, Ic_F, Idc_F - Pv_INV_F / Vdc, Vdc, T_Inv_F)
+    [Pv_INV_R, p_l_swi_R, p_l_cap_R, p_l_ac_R, p_l_dc_R] = INV.calc_loss(Mi_R, PF_R, Is_R, Ic_R, Idc_R - Pv_INV_R / Vdc, Vdc, T_Inv_R)
 
     # ==============================================================================
     # HVS
@@ -162,6 +159,7 @@ def elecSim(iter, EMA, INV, HVS, dataTime, setup):
     dataTime['EMA']['F']['Vq'][iter] = vq_F
     dataTime['EMA']['F']['Vs'][iter] = Vs_F
     dataTime['EMA']['F']['lam'][iter] = lam_F
+    dataTime['EMA']['F']['Min'][iter] = Min_F
 
     # ------------------------------------------
     # Rear
@@ -181,6 +179,7 @@ def elecSim(iter, EMA, INV, HVS, dataTime, setup):
     dataTime['EMA']['R']['Vq'][iter] = vq_R
     dataTime['EMA']['R']['Vs'][iter] = Vs_R
     dataTime['EMA']['R']['lam'][iter] = lam_R
+    dataTime['EMA']['R']['Min'][iter] = Min_R
 
     # ------------------------------------------
     # Total
@@ -200,6 +199,7 @@ def elecSim(iter, EMA, INV, HVS, dataTime, setup):
     dataTime['EMA']['T']['Vq'][iter] = (vq_F + vq_R) / 2
     dataTime['EMA']['T']['Vs'][iter] = (Vs_F + Vs_R) / 2
     dataTime['EMA']['T']['lam'][iter] = (lam_F + lam_R) / 2
+    dataTime['EMA']['T']['Min'][iter] = Min_R + Min_F
 
     # ==============================================================================
     # INV
@@ -258,6 +258,7 @@ def elecSim(iter, EMA, INV, HVS, dataTime, setup):
     dataTime['HVS']['dQ'][iter] = dQ
     dataTime['HVS']['SOC'][iter] = SOC
     dataTime['HVS']['Vdc'][iter] = Vdc
+    dataTime['HVS']['Idc'][iter] = Idc_R + Idc_F
     dataTime['HVS']['Pin'][iter] = Pin_HVS
     dataTime['HVS']['Pout'][iter] = Pout_HVS
     dataTime['HVS']['Pv'][iter] = Pv_HVS

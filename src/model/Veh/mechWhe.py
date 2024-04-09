@@ -48,7 +48,7 @@ def mechWhe(data, dataTime, setup):
     # ==============================================================================
     # Variables
     # ==============================================================================
-    v = data['v']
+    v = data['v'].to_numpy()
     F_t_d = copy.deepcopy(dataTime['VEH']['F']['t'])
     F_t_d[F_t_d <= 0] = 0
     F_t_b = copy.deepcopy(dataTime['VEH']['F']['t'])

@@ -45,26 +45,39 @@ class classPSM:
     ###################################################################################################################
     # Constructor
     ###################################################################################################################
-    def __init__(self, p, n_max, n_0, T_max, J_rot, I_max, P_max, Psi, L_d, L_q, L_sig, R_s, K_h, K_f, c_b, c_w, C_th,
-                 R_th):
+    def __init__(self, Type, Mag, p, n_0, J_rot, T_max, n_max, P_max, I_max, Psi, L_d, L_q, L_sig, R_s, c_b, c_w, K_h,
+                 K_f, C_th, R_th, h_th, A_th, Ea, k, n, L0, Nf0, F0, beta, CL, Bx):
+        self.Type = Type
+        self.Mag = Mag
         self.p = p
-        self.n_max = n_max
         self.n_0 = n_0
-        self.T_max = T_max
         self.J_rot = J_rot
-        self.I_max = I_max
+        self.T_max = T_max
+        self.n_max = n_max
         self.P_max = P_max
+        self.I_max = I_max
         self.Psi = Psi
         self.L_d = L_d
         self.L_q = L_q
         self.L_sig = L_sig
         self.R_s = R_s
-        self.K_h = K_h
-        self.K_f = K_f
         self.c_b = c_b
         self.c_w = c_w
+        self.K_h = K_h
+        self.K_f = K_f
         self.C_th = C_th
         self.R_th = R_th
+        self.h_th = h_th
+        self.A_th = A_th
+        self.Ea = Ea
+        self.k = k
+        self.n = n
+        self.L0 = L0
+        self.Nf0 = Nf0
+        self.F0 = F0
+        self.beta = beta
+        self.CL = CL
+        self.Bx = Bx
 
     ###################################################################################################################
     # Mechanics
@@ -95,128 +108,6 @@ class classPSM:
         # Return
         # ==============================================================================
         return [M_Ema, n_Ema, P_Ema, Pv, eta]
-
-    ###################################################################################################################
-    # Calc Electrical
-    ###################################################################################################################
-    def calc_MTPA(self, n_Ema, M_Ema, Vdc, T):
-        # ==============================================================================
-        # Init
-        # ==============================================================================
-        id = sy.symbols('id')
-
-        # ==============================================================================
-        # Pre-processing
-        # ==============================================================================
-        Rs = self.R_s * (1 + 0.00393 * (T - 20))
-        v_max = Vdc / np.sqrt(3) - Rs * self.I_max
-        w_m_base = 2 * np.pi * self.n_0
-        w_m = 2 * sy.pi * n_Ema
-        w_e = self.p * w_m
-        R_Fe = 1 / (self.K_f + self.K_h / (self.p * w_e + 1) + 1e-9)
-
-        # ==============================================================================
-        # Base Speed
-        # ==============================================================================
-        if M_Ema == 0:
-            id = 0
-            iq = 0
-            vd = 0
-            vq = 0
-            Is = 0
-            Vs = 0
-
-            return [id, iq, Is, vd, vq, Vs]
-
-        # ==============================================================================
-        # MTPA
-        # ==============================================================================
-        # ------------------------------------------
-        # Currents
-        # ------------------------------------------
-        i_dlist = (sy.solveset(sy.Eq(sy.diff((id ** 2 + ((2 * M_Ema) / (3 * self.p * (
-                self.Psi + (self.L_d - self.L_q) * id))) ** 2), id), 0), id, sy.Interval(-self.I_max, 0)))
-        id = list(i_dlist)[0]
-        iq = (2 * M_Ema) / (3 * self.p * (self.Psi + (self.L_d - self.L_q) * id))
-
-        # ------------------------------------------
-        # Voltage
-        # ------------------------------------------
-        vd = (id * self.R_s - w_e * self.L_q * iq).evalf()
-        vq = (iq * self.R_s + (self.L_d * id + self.Psi) * w_e).evalf()
-
-        # ==============================================================================
-        # Voltage Limit
-        # ==============================================================================
-        if sy.sqrt(vd ** 2 + vq ** 2) > v_max:
-            # ------------------------------------------
-            # Init
-            # ------------------------------------------
-            i_d = sy.symbols('i_d')
-
-            # ------------------------------------------
-            # Positive Torque
-            # ------------------------------------------
-            if M_Ema > 0:
-                #func = sy.lambdify(id, (2 * M_Ema) / (3 * self.p * (self.Psi + (self.L_d - self.L_q) * id)) - sy.sqrt((v_max ** 2 - (w_e * self.Psi + w_e * self.L_d * id) ** 2) / (w_e ** 2 * self.L_q ** 2)))
-                func = sy.lambdify(i_d, (2 * M_Ema) / (3 * self.p * (self.Psi + (
-                        self.L_d - self.L_q) * i_d)) + sy.sqrt((v_max ** 2 - (
-                        w_e * self.Psi + w_e * self.L_d * i_d) ** 2) / (w_e ** 2 * self.L_q ** 2)))
-
-                with np.errstate(invalid='ignore'):
-                    xx = np.linspace(-self.I_max, 0, 10000)
-                with np.errstate(invalid='ignore'):
-                    A = np.diff(np.sign(func(xx)))
-                A[np.isnan(A)] = 0
-                test = xx[np.where(A)[0]]
-                if not test.size > 0:
-                    test = [0]
-                id = test[0]
-                iq = ((2 * M_Ema) / (3 * self.p * (self.Psi + (self.L_d - self.L_q) * list(test)[0])))
-                vd = (id * self.R_s - w_e * self.L_q * iq).evalf()
-                vq = (iq * self.R_s + (self.L_d * id + self.Psi) * w_e).evalf()
-
-            # ------------------------------------------
-            # Negative Torque
-            # ------------------------------------------
-            elif M_Ema < 0:
-                func = sy.lambdify(id, (2 * M_Ema) / (3 * self.p * (self.Psi + (
-                        self.L_d - self.L_q) * id)) + sy.sqrt((v_max ** 2 - (
-                        w_e * self.Psi + w_e * self.L_d * id) ** 2) / (w_e ** 2 * self.L_q ** 2)))
-                with np.errstate(invalid='ignore'):
-                    xx = np.linspace(-self.I_max, 0, 10000)
-                with np.errstate(invalid='ignore'):
-                    A = np.diff(np.sign(func(xx)))
-                A[np.isnan(A)] = 0
-                test = xx[np.where(A)[0]]
-                if not test.size > 0:
-                    test = [0]
-                id = test[0]
-                iq = ((2 * M_Ema) / (3 * self.p * (self.Psi + (self.L_d - self.L_q) * list(test)[0])))
-                vd = (id * self.R_s - w_e * self.L_q * iq).evalf()
-                vq = (iq * self.R_s + (self.L_d * id + self.Psi) * w_e).evalf()
-
-        # ==============================================================================
-        # Post-Processing
-        # ==============================================================================
-        # ------------------------------------------
-        # Convert Values
-        # ------------------------------------------
-        id = np.array([id]).astype(float)
-        iq = np.array([iq]).astype(float)
-        vd = np.array([vd]).astype(float)
-        vq = np.array([vq]).astype(float)
-
-        # ------------------------------------------
-        # Stator Quantities
-        # ------------------------------------------
-        Is = np.sqrt(id ** 2 + iq ** 2)
-        Vs = np.sqrt(vd ** 2 + vq ** 2)
-
-        # ==============================================================================
-        # Return
-        # ==============================================================================
-        return [id, iq, Is, vd, vq, Vs]
 
     ###################################################################################################################
     # Elec Surface Magnets
@@ -323,6 +214,7 @@ class classPSM:
         # d/q Currents (stationary)
         # ------------------------------------------
         w_m_base = (1 / self.p) * v_max / (np.sqrt((self.L_q * iq_mtpa) ** 2 + (self.Psi + self.L_d*id_mtpa) ** 2))
+        w_m_base = 2 * np.pi * self.n_0 * self.p
 
         # ------------------------------------------
         # d/q Currents (stationary)
@@ -379,6 +271,171 @@ class classPSM:
         return [id, iq, Is, vd, vq, Vs]
 
     ###################################################################################################################
+    # Function
+    ###################################################################################################################
+    def calcEMA_MTPA(self, T, n, Theta, Vdc, verbose=False):
+        # ==============================================================================
+        # Init
+        # ==============================================================================
+        erg = {}
+        i_d = sy.symbols('i_d')
+        Rs = self.R_s * (1 + 0.00393 * (Theta - 20))
+        v_max = Vdc / np.sqrt(3) - Rs * self.I_max
+        w_e = 2 * sy.pi * n * self.p
+
+        # ==============================================================================
+        # Pre-processing
+        # ==============================================================================
+        R_Fe = 1 / (self.K_f + self.K_h / (w_e + 1) + 1e-9)
+
+        # ==============================================================================
+        # Base Speed
+        # ==============================================================================
+        if T == 0:
+            erg["status"] = 'Status: Basic Speed Range'
+            erg["i_d"] = 0
+            erg["i_q"] = 0
+            erg["v_d"] = 0
+            erg["v_q"] = 0
+            return erg
+
+        # ==============================================================================
+        # Above Max Speed
+        # ==============================================================================
+        if n > self.n_max:
+            erg["status"] = 'Error: Rotational limit reached!'
+            return erg
+
+        # ==============================================================================
+        # MTPA
+        # ==============================================================================
+        # ------------------------------------------
+        # Currents
+        # ------------------------------------------
+        i_dlist = (sy.solveset(sy.Eq(sy.diff((i_d ** 2 + ((2 * T) / (3 * self.p * (
+                self.Psi + (self.L_d - self.L_q) * i_d))) ** 2), i_d), 0), i_d, sy.Interval(-self.I_max, 0)))
+        if len(list(i_dlist)) == 0:
+            erg["status"] = 'Error: Current limit reached!'
+            return (erg)
+        i_ds = list(i_dlist)[0]
+        erg["i_d"] = i_ds
+        i_q = (2 * T) / (3 * self.p * (self.Psi + (self.L_d - self.L_q) * i_ds))
+        erg["i_q"] = i_q
+
+        # ------------------------------------------
+        # MTPC
+        # ------------------------------------------
+        if verbose:
+            erg["fuc_T"] = sy.lambdify(i_d, (2 * T) / (3 * self.p * (self.Psi + (self.L_d - self.L_q) * i_d)))
+            erg["MTPC"] = (i_ds, i_q)
+        if i_ds ** 2 + i_q ** 2 > self.I_max ** 2:
+            erg["status"] = 'Error: Current limit reached!'
+            return erg
+
+        # ------------------------------------------
+        # Voltage
+        # ------------------------------------------
+        v_d = (i_ds * Rs - w_e * self.L_q * i_q).evalf()
+        erg["v_d"] = v_d
+        v_q = (i_q * Rs + (self.L_d * i_ds + self.Psi) * w_e).evalf()
+        erg["v_q"] = v_q
+
+        # ------------------------------------------
+        # Current Limits
+        # ------------------------------------------
+        if verbose:
+            if T > 0:
+                erg['fuc_Imax'] = sy.lambdify(i_d, sy.sqrt(self.I_max ** 2 - i_d ** 2))
+            elif T < 0:
+                erg['fuc_Imax'] = sy.lambdify(i_d, -sy.sqrt(self.I_max ** 2 - i_d ** 2))
+
+        # ==============================================================================
+        # Voltage Limit
+        # ==============================================================================
+        if sy.sqrt(v_d ** 2 + v_q ** 2) > v_max:
+            # ------------------------------------------
+            # Positive Torque
+            # ------------------------------------------
+            if T > 0:
+                func = sy.lambdify(i_d, (2 * T) / (3 * self.p * (self.Psi + (
+                        self.L_d - self.L_q) * i_d)) - sy.sqrt((v_max ** 2 - (
+                        w_e * self.Psi + w_e * self.L_d * i_d) ** 2) / (w_e ** 2 * self.L_q ** 2)))
+                with np.errstate(invalid='ignore'):
+                    xx = np.linspace(-self.I_max, 0, 10000)
+                    if np.nanmin(func(xx)) > 0:
+                        # erg["fuc_V"] = func
+                        erg["fuc_V"] = sy.lambdify(i_d, sy.sqrt((v_max ** 2 - (w_e * self.Psi + w_e * self.L_d * i_d) ** 2) / (w_e ** 2 * self.L_q ** 2)))
+                        erg["status"] = 'Error: Voltage limit reached!'
+                        return erg
+
+                with np.errstate(invalid='ignore'):
+                    A = np.diff(np.sign(func(xx)))
+                A[np.isnan(A)] = 0
+                test = xx[np.where(A)[0]]
+                if not test.size > 0:
+                    test = [0]
+                i_ds = test[0]
+                erg["i_d"] = i_ds
+                i_q = ((2 * T) / (3 * self.p * (self.Psi + (self.L_d - self.L_q) * list(test)[0])))  # .evalf() )
+                erg["i_q"] = i_q
+                erg["status"] = 'Status: Field-Weakening!'
+                v_d = (i_ds * Rs - w_e * self.L_q * i_q).evalf()
+                erg["v_d"] = v_d
+                v_q = (i_q * Rs + (self.L_d * i_ds + self.Psi) * w_e).evalf()
+                erg["v_q"] = v_q
+                if verbose:
+                    erg["fuc_V"] = sy.lambdify(i_d, sy.sqrt(
+                        (v_max ** 2 - (w_e * self.Psi + w_e * self.L_d * i_d) ** 2) / (w_e ** 2 * self.L_q ** 2)))
+                if i_ds ** 2 + i_q ** 2 > self.I_max ** 2:
+                    erg["status"] = 'Error: Current limit under voltage limit reached!'
+                    return erg
+                return erg
+
+            # ------------------------------------------
+            # Negative Torque
+            # ------------------------------------------
+            elif T < 0:
+                func = sy.lambdify(i_d, (2 * T) / (3 * self.p * (self.Psi + (
+                        self.L_d - self.L_q) * i_d)) + sy.sqrt((v_max ** 2 - (
+                        w_e * self.Psi + w_e * self.L_d * i_d) ** 2) / (w_e ** 2 * self.L_q ** 2)))
+                with np.errstate(invalid='ignore'):
+                    xx = np.linspace(-self.I_max, 0, 10000)
+                    if np.nanmax(func(xx)) < 0:
+                        # erg["fuc_V"] = func
+                        erg["fuc_V"] = sy.lambdify(i_d, sy.sqrt((v_max ** 2 - (w_e * self.Psi + w_e * self.L_d * i_d) ** 2) / (w_e ** 2 * self.L_q ** 2)))
+                        erg["status"] = 'Error: Voltage limit reached!'
+                        return erg
+                with np.errstate(invalid='ignore'):
+                    A = np.diff(np.sign(func(xx)))
+                A[np.isnan(A)] = 0
+                test = xx[np.where(A)[0]]
+                if not test.size > 0:
+                    test = [0]
+                i_ds = test[0]
+                erg["i_d"] = i_ds
+                i_q = ((2 * T) / (3 * self.p * (self.Psi + (self.L_d - self.L_q) * list(test)[0])))
+                erg["i_q"] = i_q
+                erg["status"] = 'Status: Field-Weakening!'
+                v_d = (i_ds * Rs - w_e * self.L_q * i_q).evalf()
+                erg["v_d"] = v_d
+                v_q = (i_q * Rs + (self.L_d * i_ds + self.Psi) * w_e).evalf()
+                erg["v_q"] = v_q
+                if verbose:
+                    erg["fuc_V"] = sy.lambdify(i_d, -sy.sqrt(
+                        (v_max ** 2 - (w_e * self.Psi + w_e * self.L_d * i_d) ** 2) / (w_e ** 2 * self.L_q ** 2)))
+                if i_ds ** 2 + i_q ** 2 > self.I_max ** 2:
+                    erg["status"] = 'Error: Current limit under voltage limit reached!'
+                    return (erg)
+                return (erg)
+
+        erg["status"] = 'Status: Basic Speed Range'
+
+        # ==============================================================================
+        # Return
+        # ==============================================================================
+        return erg
+
+    ###################################################################################################################
     # Electrical
     ###################################################################################################################
     def calc_elec(self, n_Ema, M_Ema, sel, Vdc, fs, T):
@@ -387,6 +444,8 @@ class classPSM:
         # ==============================================================================
         w_m = 2 * np.pi * n_Ema
         Pout = M_Ema * w_m
+        i = 0
+        i_max = 50
 
         # ==============================================================================
         # Pre-processing
@@ -403,15 +462,37 @@ class classPSM:
         # ------------------------------------------
         # Currents and Voltages
         # ------------------------------------------
-        # [id, iq, Is, vd, vq, Vs] = self.calc_MTPA(n_Ema, M_in, Vdc, T)
-
         # Interior Magnet
         if sel == 2:
-            [id, iq, Is, vd, vq, Vs] = self.calc_elec_IM(n_Ema, M_in, Vdc, T)
+            #[id, iq, Is, vd, vq, Vs] = self.calc_elec_IM(n_Ema, M_in, Vdc, T)
+            while i < i_max:
+                erg = self.calcEMA_MTPA(M_in, n_Ema, T, Vdc)
+                if not erg['status'][0:5] == 'Error':
+                    id = float(erg['i_d'])
+                    iq = float(erg['i_q'])
+                    vd = float(erg['v_d'])
+                    vq = float(erg['v_q'])
+                    break
+                else:
+                    M_in = M_in * 0.99
+                    i = i + 1
 
         # Surface Magnet
         else:
-            [id, iq, Is, vd, vq, Vs] = self.calc_elec_SM(n_Ema, M_in, Vdc, T)
+            #[id, iq, Is, vd, vq, Vs] = self.calc_elec_SM(n_Ema, M_in, Vdc, T)
+            while i < i_max:
+                erg = self.calcEMA_MTPA(M_in, n_Ema, T, Vdc)
+                if not erg['status'][0:5] == 'Error':
+                    id = float(erg['i_d'])
+                    iq = float(erg['i_q'])
+                    vd = float(erg['v_d'])
+                    vq = float(erg['v_q'])
+                    break
+                else:
+                    M_in = M_in * 0.99
+                    i = i + 1
+        Is = np.sqrt(id ** 2 + iq ** 2) / np.sqrt(2)
+        Vs = np.sqrt(vd ** 2 + vq ** 2) / np.sqrt(2)
 
         # ------------------------------------------
         # Flux
@@ -428,25 +509,49 @@ class classPSM:
         # ------------------------------------------
         # Inner Torque
         # ------------------------------------------
-        # T_in = 3 / 2 * self.p * (iq * lam_d - id * lam_q)
+        Min = 3 / 2 * self.p * (iq * lam_d - id * lam_q)
 
         # ==============================================================================
         # Post-Processing
         # ==============================================================================
-        Pin = Pout + Pv
+        # ------------------------------------------
+        # Power
+        # ------------------------------------------
+        # Driving
+        if Pout >= 0:
+            Pin = Pout + Pv
+
+        # Recuperation
+        else:
+            if abs(Pv) < abs(Pout):
+                Pin = Pout + Pv
+            else:
+                Pin = -1e-12
+
+        # ------------------------------------------
+        # Efficiency
+        # ------------------------------------------
+        # Init
         eta = Pout / Pin
         eta = np.nan_to_num(eta, nan=1)
+
+        # Recuperation
+        if eta >= 1:
+            eta = 1/eta
+
+        # ------------------------------------------
+        # Power Factor
+        # ------------------------------------------
         try:
             phi = mt.acos(Pin / (3 * Vs * Is + 1e-9))
             PF = np.cos(phi)
         except:
-            phi = 0
             PF = 1
 
         # ==============================================================================
         # Return
         # ==============================================================================
-        return [id, iq, Is, vd, vq, Vs, lam_s, Pin, Pout, Pv, eta, PF]
+        return [id, iq, Is, vd, vq, Vs, lam_s, Pin, Pout, Pv, eta, PF, Min]
 
     ###################################################################################################################
     # Losses
