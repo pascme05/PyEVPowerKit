@@ -27,7 +27,7 @@ from scipy import integrate
 #######################################################################################################################
 # Function
 #######################################################################################################################
-def mechVeh(data, setup):
+def mechVeh(data, dataTime, setup):
     ###################################################################################################################
     # MSG IN
     ###################################################################################################################
@@ -89,11 +89,11 @@ def mechVeh(data, setup):
     # ==============================================================================
     # Forces
     # ==============================================================================
-    out['F']['p'] = 0.5 * p_a * A * c_w * (v_w-v)**2
-    out['F']['r'] = c_r * m * g * np.cos(ang) * state
-    out['F']['c'] = m * g * np.sin(ang)
-    out['F']['a'] = (m + m_a) * a
-    out['F']['t'] = out['F']['p'] + out['F']['r'] + out['F']['c'] + out['F']['a']
+    dataTime['VEH']['F']['p'] = 0.5 * p_a * A * c_w * (v_w-v)**2
+    dataTime['VEH']['F']['r'] = c_r * m * g * np.cos(ang) * state
+    dataTime['VEH']['F']['c'] = m * g * np.sin(ang)
+    dataTime['VEH']['F']['a'] = (m + m_a) * a
+    dataTime['VEH']['F']['t'] = dataTime['VEH']['F']['p'] + dataTime['VEH']['F']['r'] + dataTime['VEH']['F']['c'] + dataTime['VEH']['F']['a']
 
     # ==============================================================================
     # Power
@@ -101,21 +101,21 @@ def mechVeh(data, setup):
     # ------------------------------------------
     # Ideal
     # ------------------------------------------
-    for name in out['F'].keys():
-        out['P'][name] = out['F'][name] * v
+    for name in dataTime['VEH']['F'].keys():
+        dataTime['VEH']['P'][name] = dataTime['VEH']['F'][name] * v
 
     # ------------------------------------------
     # Efficiency
     # ------------------------------------------
     # Without Recu
-    rec_off[out['P']['t'] < 0] = 0
-    rec_off[out['P']['t'] >= 0] = 1 / eta_sys
-    out['P']['rec_off'] = out['P']['t'] * rec_off
+    rec_off[dataTime['VEH']['P']['t'] < 0] = 0
+    rec_off[dataTime['VEH']['P']['t'] >= 0] = 1 / eta_sys
+    dataTime['VEH']['P']['rec_off'] = dataTime['VEH']['P']['t'] * rec_off
 
     # With Recu
-    rec_on[out['P']['t'] < 0] = eta_sys
-    rec_on[out['P']['t'] >= 0] = 1 / eta_sys
-    out['P']['rec_on'] = out['P']['t'] * rec_on
+    rec_on[dataTime['VEH']['P']['t'] < 0] = eta_sys
+    rec_on[dataTime['VEH']['P']['t'] >= 0] = 1 / eta_sys
+    dataTime['VEH']['P']['rec_on'] = dataTime['VEH']['P']['t'] * rec_on
 
     # ==============================================================================
     # Energy
@@ -123,23 +123,23 @@ def mechVeh(data, setup):
     # ------------------------------------------
     # Ideal
     # ------------------------------------------
-    for name in out['F'].keys():
-        out['E'][name] = integrate.cumtrapz(out['P'][name], t, initial=0)
+    for name in dataTime['VEH']['F'].keys():
+        dataTime['VEH']['E'][name] = integrate.cumtrapz(dataTime['VEH']['P'][name], t, initial=0)
 
     # ------------------------------------------
     # Efficiency
     # ------------------------------------------
     # Without Recu
-    out['E']['rec_off'] = integrate.cumtrapz(out['P']['rec_off'], t, initial=0)
+    dataTime['VEH']['E']['rec_off'] = integrate.cumtrapz(dataTime['VEH']['P']['rec_off'], t, initial=0)
 
     # With Recu
-    out['E']['rec_on'] = integrate.cumtrapz(out['P']['rec_on'], t, initial=0)
+    dataTime['VEH']['E']['rec_on'] = integrate.cumtrapz(dataTime['VEH']['P']['rec_on'], t, initial=0)
 
     ###################################################################################################################
     # Post-Processing
     ###################################################################################################################
-    out['eta']['t'] = out['E']['t'] / 3.6e6 / (s + 1e-12) * 1e5
-    out['eta']['rec_on'] = out['E']['rec_on'] / 3.6e6 / (s + 1e-12) * 1e5
-    out['eta']['rec_off'] = out['E']['rec_off'] / 3.6e6 / (s + 1e-12) * 1e5
+    dataTime['VEH']['eta']['t'] = dataTime['VEH']['E']['t'] / 3.6e6 / (s + 1e-12) * 1e5
+    dataTime['VEH']['eta']['rec_on'] = dataTime['VEH']['E']['rec_on'] / 3.6e6 / (s + 1e-12) * 1e5
+    dataTime['VEH']['eta']['rec_off'] = dataTime['VEH']['E']['rec_off'] / 3.6e6 / (s + 1e-12) * 1e5
 
-    return out
+    return dataTime

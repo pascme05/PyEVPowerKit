@@ -33,6 +33,7 @@ from src.model.Gbx.classGBX import classGBX
 from src.model.Ema.classEMA import classPSM
 from src.model.Inv.classINV import classB6
 from src.model.Bat.classHVS import classBat
+from src.model.Veh.classVeh import classVEH
 
 # ==============================================================================
 # External
@@ -104,14 +105,24 @@ def initComp(setup):
                    setup['Par']['HVS']['V_nom'], setup['Par']['HVS']['V_max'], setup['Par']['HVS']['V_min'],
                    setup['Par']['HVS']['E_a'], setup['Par']['HVS']['E_bat'], setup['Par']['HVS']['C_th'],
                    setup['Par']['HVS']['R_th'], setup['Par']['HVS']['h_th'], setup['Par']['HVS']['A_th'],
-                   setup['Par']['INV']['Ea'], setup['Par']['INV']['k'], setup['Par']['INV']['n'],
-                   setup['Par']['INV']['L0'], setup['Par']['INV']['Nf0'], setup['Par']['INV']['F0'],
-                   setup['Par']['INV']['beta'], setup['Par']['INV']['CL'], setup['Par']['INV']['Bx'])
+                   setup['Par']['HVS']['Ea'], setup['Par']['HVS']['k'], setup['Par']['HVS']['n'],
+                   setup['Par']['HVS']['L0'], setup['Par']['HVS']['Nf0'], setup['Par']['HVS']['F0'],
+                   setup['Par']['HVS']['beta'], setup['Par']['HVS']['CL'], setup['Par']['HVS']['Bx'])
+
+    # ==============================================================================
+    # VEH
+    # ==============================================================================
+    VEH = classVEH(setup['Par']['VEH']['m'], setup['Par']['VEH']['c_r'], setup['Par']['VEH']['A'],
+                   setup['Par']['VEH']['c_w'], setup['Par']['VEH']['r_rim'], setup['Par']['VEH']['m_rim'],
+                   setup['Par']['VEH']['r_tire'], setup['Par']['VEH']['m_tire'], setup['Par']['VEH']['r_flat'],
+                   setup['Par']['VEH']['d_b'], setup['Par']['VEH']['d_a'], setup['Par']['VEH']['eta'],
+                   setup['Par']['VEH']['c_Vol'], setup['Par']['VEH']['c_rho'], setup['Par']['VEH']['c_Cp'],
+                   setup['Par']['VEH']['c_vis'], setup['Par']['VEH']['A_r'], setup['Par']['VEH']['A_b'])
 
     ###################################################################################################################
     # Return
     ###################################################################################################################
-    return [GBX, EMA, INV, HVS]
+    return [GBX, EMA, INV, HVS, VEH]
 
 #######################################################################################################################
 # References

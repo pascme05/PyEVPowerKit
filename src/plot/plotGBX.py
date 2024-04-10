@@ -89,7 +89,8 @@ def plotGBX(data, dataTime, setup):
     # ------------------------------------------
     fig.add_trace(go.Scatter(x=time, y=dataTime['GBX'][axis]['Pv'], mode='lines', line=dict(color='#00CC96', dash='solid'), name='Total Losses'), row=1, col=3)
     fig.add_trace(go.Scatter(x=time, y=dataTime['GBX'][axis]['eta'], mode='lines', line=dict(color='#00CC96', dash='solid'), name='Total Efficiency'), row=2, col=3)
-    fig.add_trace(go.Scatter(x=time, y=dataTime['GBX'][axis]['T'], mode='lines', line=dict(color='#00CC96', dash='solid'), name='Temperature'), row=3, col=3)
+    fig.add_trace(go.Scatter(x=time, y=dataTime['GBX'][axis]['T'], mode='lines', line=dict(color='#00CC96', dash='solid'), name='Hotspot Temperature'), row=3, col=3)
+    fig.add_trace(go.Scatter(x=time, y=dataTime['VEH']['Tc'], mode='lines', line=dict(color='#00CC96', dash='dash'), name='Coolant Temperature'), row=3, col=3)
 
     ###################################################################################################################
     # Post-Processing

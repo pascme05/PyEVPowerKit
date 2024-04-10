@@ -159,7 +159,8 @@ def main(setup, path):
     # ==============================================================================
     N = len(data['t'])
     Tinit = data['T_C'][0]
-    dataTime = {'VEH': {'Vdc': np.zeros(N), 'Tc': np.zeros(N), 'SOC': np.zeros(N)},
+    dataTime = {'VEH': {'Vdc': np.zeros(N), 'Tc': np.zeros(N), 'SOC': np.zeros(N), 'dQ': np.zeros(N),
+                        'F': {}, 'P': {}, 'E': {}, 'eta': {}},
                 'WHE': {'F': {}, 'R': {}},
                 'GBX': {'F': {'T': Tinit * np.ones(N), 'M': np.zeros(N), 'n': np.zeros(N), 'Pin': np.zeros(N),
                               'Pout': np.zeros(N), 'Pv': np.zeros(N), 'Pv_B': np.zeros(N), 'Pv_M': np.zeros(N),
@@ -215,7 +216,7 @@ def main(setup, path):
     # Mechanical
     # ------------------------------------------
     # Vehicle
-    dataTime['VEH'] = mechVeh(data, setup)
+    dataTime = mechVeh(data, dataTime, setup)
 
     # Wheels
     dataTime = mechWhe(data, dataTime, setup)
@@ -243,7 +244,7 @@ def main(setup, path):
     # ------------------------------------------
     # Init Components
     # ------------------------------------------
-    [GBX, EMA, INV, HVS] = initComp(setup)
+    [GBX, EMA, INV, HVS, VEH] = initComp(setup)
 
     # ------------------------------------------
     # Target Simulation
@@ -256,7 +257,7 @@ def main(setup, path):
         dataTime = elecSim(iter, EMA, INV, HVS, dataTime, setup)
 
         # Thermal
-        dataTime = therSim(iter, GBX, EMA, INV, HVS, dataTime, setup)
+        dataTime = therSim(iter, GBX, EMA, INV, HVS, VEH, data, dataTime, setup)
 
     # ------------------------------------------
     # Actual Simulation

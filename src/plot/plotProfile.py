@@ -47,7 +47,7 @@ from plotly.subplots import make_subplots
 #######################################################################################################################
 # Main Function
 #######################################################################################################################
-def plotProfile(data, setup):
+def plotProfile(data, dataTime, setup):
     ###################################################################################################################
     # MSG IN
     ###################################################################################################################
@@ -84,6 +84,7 @@ def plotProfile(data, setup):
     fig.add_trace(go.Scatter(x=time, y=data['a'], mode='lines', name='Vehicle Acceleration'), row=3, col=1)
     fig.add_trace(go.Scatter(x=time, y=data['ang'], mode='lines', name='Surface Angle'), row=4, col=1)
     fig.add_trace(go.Scatter(x=time, y=data['T_A'], mode='lines', name='Ambient Temperature'), row=5, col=1)
+    fig.add_trace(go.Scatter(x=time, y=dataTime['VEH']['Tc'], mode='lines', name='Coolant Temperature'), row=5, col=1)
 
     ###################################################################################################################
     # Post-Processing
@@ -98,7 +99,7 @@ def plotProfile(data, setup):
     fig.update_yaxes(title_text="s (m)", row=2, col=1)
     fig.update_yaxes(title_text="a (m/s2)", row=3, col=1)
     fig.update_yaxes(title_text="ang (rad)", row=4, col=1)
-    fig.update_yaxes(title_text="Ta (degC)", row=5, col=1)
+    fig.update_yaxes(title_text="T (degC)", row=5, col=1)
 
     # ------------------------------------------
     # Set x-axis title for the last subplot
