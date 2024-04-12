@@ -62,7 +62,7 @@ def plotGBX(data, dataTime, setup):
     ###################################################################################################################
     # Pre-Processing
     ###################################################################################################################
-    fig = make_subplots(rows=3, cols=3, shared_xaxes=True, vertical_spacing=0.05)
+    fig = make_subplots(rows=3, cols=2, shared_xaxes=True, vertical_spacing=0.05)
 
     ###################################################################################################################
     # Calculation
@@ -78,19 +78,15 @@ def plotGBX(data, dataTime, setup):
     fig.add_trace(go.Scatter(x=time, y=dataTime['GBX'][axis]['Pin'], mode='lines', line=dict(color='#636EFA', dash='solid'), name='GBX Power'), row=3, col=1)
 
     # ------------------------------------------
-    # Losses
-    # ------------------------------------------
-    fig.add_trace(go.Scatter(x=time, y=dataTime['GBX'][axis]['Pv_B'], mode='lines', line=dict(color='#EF553B', dash='solid'), name='Losses Bearing'), row=1, col=2)
-    fig.add_trace(go.Scatter(x=time, y=dataTime['GBX'][axis]['Pv_M'], mode='lines', line=dict(color='#EF553B', dash='solid'), name='Losses Meshing'), row=2, col=2)
-    fig.add_trace(go.Scatter(x=time, y=dataTime['GBX'][axis]['Pv_W'], mode='lines', line=dict(color='#EF553B', dash='solid'), name='Losses Windage'), row=3, col=2)
-
-    # ------------------------------------------
     # Thermal
     # ------------------------------------------
-    fig.add_trace(go.Scatter(x=time, y=dataTime['GBX'][axis]['Pv'], mode='lines', line=dict(color='#00CC96', dash='solid'), name='Total Losses'), row=1, col=3)
-    fig.add_trace(go.Scatter(x=time, y=dataTime['GBX'][axis]['eta'], mode='lines', line=dict(color='#00CC96', dash='solid'), name='Total Efficiency'), row=2, col=3)
-    fig.add_trace(go.Scatter(x=time, y=dataTime['GBX'][axis]['T'], mode='lines', line=dict(color='#00CC96', dash='solid'), name='Hotspot Temperature'), row=3, col=3)
-    fig.add_trace(go.Scatter(x=time, y=dataTime['VEH']['Tc'], mode='lines', line=dict(color='#00CC96', dash='dash'), name='Coolant Temperature'), row=3, col=3)
+    fig.add_trace(go.Scatter(x=time, y=dataTime['GBX'][axis]['Pv'], mode='lines', line=dict(color='#EF553B', dash='solid'), name='Total Losses'), row=1, col=2)
+    fig.add_trace(go.Scatter(x=time, y=dataTime['GBX'][axis]['Pv_B'], mode='lines', line=dict(color='#EF553B', dash='dash'), name='Losses Bearing'), row=1, col=2)
+    fig.add_trace(go.Scatter(x=time, y=dataTime['GBX'][axis]['Pv_M'], mode='lines', line=dict(color='#EF553B', dash='dot'), name='Losses Meshing'), row=1, col=2)
+    fig.add_trace(go.Scatter(x=time, y=dataTime['GBX'][axis]['Pv_W'], mode='lines', line=dict(color='#EF553B', dash='dashdot'), name='Losses Windage'), row=1, col=2)
+    fig.add_trace(go.Scatter(x=time, y=dataTime['GBX'][axis]['eta'], mode='lines', line=dict(color='#EF553B', dash='solid'), name='Total Efficiency'), row=2, col=2)
+    fig.add_trace(go.Scatter(x=time, y=dataTime['GBX'][axis]['T'], mode='lines', line=dict(color='#EF553B', dash='solid'), name='Hotspot Temperature'), row=3, col=2)
+    fig.add_trace(go.Scatter(x=time, y=dataTime['VEH']['Tc'], mode='lines', line=dict(color='#EF553B', dash='dash'), name='Coolant Temperature'), row=3, col=2)
 
     ###################################################################################################################
     # Post-Processing
@@ -106,11 +102,6 @@ def plotGBX(data, dataTime, setup):
     fig.update_yaxes(title_text="n (1/s)", row=2, col=1)
     fig.update_yaxes(title_text="P (W)", row=3, col=1)
 
-    # Losses
-    fig.update_yaxes(title_text="Pv (W)", row=1, col=2)
-    fig.update_yaxes(title_text="Pv (W)", row=2, col=2)
-    fig.update_yaxes(title_text="Pv (W)", row=3, col=2)
-
     # Thermal
     fig.update_yaxes(title_text="Pv (W)", row=1, col=3)
     fig.update_yaxes(title_text="Eta (%)", row=2, col=3)
@@ -121,7 +112,6 @@ def plotGBX(data, dataTime, setup):
     # ------------------------------------------
     fig.update_xaxes(title_text="time (sec)", row=3, col=1)
     fig.update_xaxes(title_text="time (sec)", row=3, col=2)
-    fig.update_xaxes(title_text="time (sec)", row=3, col=3)
 
     # ==============================================================================
     # Title

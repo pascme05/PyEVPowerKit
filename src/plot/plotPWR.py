@@ -229,7 +229,7 @@ def plotPWR(data, dataTime, setup):
     # ==============================================================================
     # Figure
     # ==============================================================================
-    fig = make_subplots(rows=5, cols=2, shared_xaxes=True, vertical_spacing=0.05)
+    fig = make_subplots(rows=4, cols=2, shared_xaxes=True, vertical_spacing=0.05)
 
     ###################################################################################################################
     # Calculation
@@ -276,11 +276,13 @@ def plotPWR(data, dataTime, setup):
     # ------------------------------------------
     # Error
     # ------------------------------------------
+    '''
     fig.add_trace(go.Scatter(x=time, y=Diff_HVS, mode='lines', name='HVS Error'), row=5, col=1)
     fig.add_trace(go.Scatter(x=time, y=Diff_INV, mode='lines', name='INV Error'), row=5, col=1)
     fig.add_trace(go.Scatter(x=time, y=Diff_EMA, mode='lines', name='EMA Error'), row=5, col=1)
     fig.add_trace(go.Scatter(x=time, y=Diff_GBX, mode='lines', name='GBX Error'), row=5, col=1)
     fig.add_trace(go.Scatter(x=time, y=Diff_WHE, mode='lines', name='WEH Error'), row=5, col=1)
+    '''
 
     # ==============================================================================
     # Average Values
@@ -367,14 +369,14 @@ def plotPWR(data, dataTime, setup):
     fig.update_yaxes(title_text="Po (W)", row=2, col=1)
     fig.update_yaxes(title_text="Pv (W)", row=3, col=1)
     fig.update_yaxes(title_text="Eta (%)", row=4, col=1)
-    fig.update_yaxes(title_text="Er (W)", row=5, col=1)
+    # fig.update_yaxes(title_text="Er (W)", row=5, col=1)
 
     # Rear
     fig.update_yaxes(title_text="Pi (W)", row=1, col=2)
     fig.update_yaxes(title_text="Po (W)", row=2, col=2)
     fig.update_yaxes(title_text="Pv (W)", row=3, col=2)
-    fig.update_yaxes(title_text="Eta (%)", row=4, col=1)
-    fig.update_yaxes(title_text="Er (W)", row=5, col=2)
+    fig.update_yaxes(title_text="Eta (%)", row=4, col=2)
+    # fig.update_yaxes(title_text="Er (W)", row=5, col=2)
 
     # ------------------------------------------
     # Set x-axis title for the last subplot

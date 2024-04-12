@@ -2,7 +2,7 @@
 #######################################################################################################################
 # Title:        Python Electric Vehicle Power Toolkit (PyEVPowerKit)
 # Topic:        EV Modeling
-# File:         plotProfile
+# File:         vehSim
 # Date:         18.03.2024
 # Author:       Dr. Pascal A. Schirmer
 # Version:      V.0.1
@@ -36,8 +36,7 @@ Outputs:    1)
 # ==============================================================================
 # External
 # ==============================================================================
-import plotly.graph_objects as go
-from plotly.subplots import make_subplots
+from scipy import integrate
 
 #######################################################################################################################
 # Additional Functions
@@ -47,83 +46,54 @@ from plotly.subplots import make_subplots
 #######################################################################################################################
 # Main Function
 #######################################################################################################################
-def plotProfile(data, dataTime, setup):
-    ###################################################################################################################
-    # MSG IN
-    ###################################################################################################################
-    print("INFO: Plotting mission profile")
-
+def vehSim(iter, VEH, data, dataTime, setup):
     ###################################################################################################################
     # Initialisation
     ###################################################################################################################
     # ==============================================================================
     # Parameters
     # ==============================================================================
-    Ts = 1 / setup['Dat']['fs']
-    name = setup['Dat']['name']
+    ang = data['ang'].values[iter]
 
     # ==============================================================================
     # Variables
     # ==============================================================================
-    time = data['t']
+    s = dataTime['VEH']['s'][iter]
+    v = dataTime['VEH']['v'][iter]
+    M_EMA = dataTime['EMA']['T']['Msh'][iter]
 
-    ###################################################################################################################
-    # Loading Data
-    ###################################################################################################################
-    
     ###################################################################################################################
     # Pre-Processing
     ###################################################################################################################
-    fig = make_subplots(rows=5, cols=1, shared_xaxes=True, vertical_spacing=0.05)
+    # ==============================================================================
+    # GBX
+    # ==============================================================================
+    if M_EMA > 0:
+        eta = dataTime['GBX']['T']['eta'][iter]
+    else:
+        eta = 1 / dataTime['GBX']['T']['eta'][iter]
+
+    # ==============================================================================
+    # Variables
+    # ==============================================================================
+    M = M_EMA * setup['Par']['GBX']['i'] * eta
 
     ###################################################################################################################
     # Calculation
     ###################################################################################################################
-    fig.add_trace(go.Scatter(x=time, y=data['v'], mode='lines', line=dict(color='#636EFA', dash='solid'), name='Vehicle Velocity (tar)'), row=1, col=1)
-    fig.add_trace(go.Scatter(x=time, y=dataTime['VEH']['v'], mode='lines', line=dict(color='#636EFA', dash='dash'), name='Vehicle Velocity (act)'), row=1, col=1)
-    fig.add_trace(go.Scatter(x=time, y=data['s'], mode='lines', line=dict(color='#EF553B', dash='solid'), name='Vehicle Distance (tar)'), row=2, col=1)
-    fig.add_trace(go.Scatter(x=time, y=dataTime['VEH']['s'], mode='lines', line=dict(color='#EF553B', dash='dash'), name='Vehicle Distance (act)'), row=2, col=1)
-    fig.add_trace(go.Scatter(x=time, y=data['a'], mode='lines', line=dict(color='#00CC96', dash='solid'), name='Vehicle Acceleration (tar)'), row=3, col=1)
-    fig.add_trace(go.Scatter(x=time, y=dataTime['VEH']['a'], mode='lines', line=dict(color='#00CC96', dash='dash'), name='Vehicle Acceleration (act)'), row=3, col=1)
-    fig.add_trace(go.Scatter(x=time, y=data['ang'], mode='lines', name='Surface Angle'), row=4, col=1)
-    fig.add_trace(go.Scatter(x=time, y=data['T_A'], mode='lines', name='Ambient Temperature'), row=5, col=1)
-    fig.add_trace(go.Scatter(x=time, y=dataTime['VEH']['Tc'], mode='lines', name='Coolant Temperature'), row=5, col=1)
+    a = VEH.calc_acc(M, v, ang, setup)
 
     ###################################################################################################################
     # Post-Processing
     ###################################################################################################################
-    # ==============================================================================
-    # Axis
-    # ==============================================================================
-    # ------------------------------------------
-    # Set y-axis titles
-    # ------------------------------------------
-    fig.update_yaxes(title_text="v (m/s)", row=1, col=1)
-    fig.update_yaxes(title_text="s (m)", row=2, col=1)
-    fig.update_yaxes(title_text="a (m/s2)", row=3, col=1)
-    fig.update_yaxes(title_text="ang (rad)", row=4, col=1)
-    fig.update_yaxes(title_text="T (degC)", row=5, col=1)
-
-    # ------------------------------------------
-    # Set x-axis title for the last subplot
-    # ------------------------------------------
-    fig.update_xaxes(title_text="time (sec)", row=5, col=1)
-
-    # ==============================================================================
-    # Title
-    # ==============================================================================
-    txt = "Vehicle Mission Profile: " + str(name) + " with Sampling Rate: " + str(Ts) + " (sec)"
-    fig.update_layout(height=setup['Exp']['hFig'], width=setup['Exp']['wFig'], title_text=txt)
-
-    # ==============================================================================
-    # Plot
-    # ==============================================================================
-    fig.show()
+    dataTime['VEH']['a'][iter] = a
+    dataTime['VEH']['v'] = integrate.cumtrapz(dataTime['VEH']['a'], data['t'].values, initial=0)
+    dataTime['VEH']['s'] = integrate.cumtrapz(dataTime['VEH']['v'], data['t'].values, initial=0)
 
     ###################################################################################################################
     # Return
     ###################################################################################################################
-    return []
+    return dataTime
 
 #######################################################################################################################
 # References

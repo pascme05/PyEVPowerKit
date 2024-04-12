@@ -36,7 +36,7 @@ Outputs:    1)
 # ==============================================================================
 # External
 # ==============================================================================
-import numpy as np
+
 
 #######################################################################################################################
 # Additional Functions
@@ -106,8 +106,8 @@ def elecSim(iter, EMA, INV, HVS, dataTime, setup):
     # ------------------------------------------
     # Electrical
     # ------------------------------------------
-    [id_F, iq_F, Is_F, vd_F, vq_F, Vs_F, lam_F, Pin_F, Pout_F, _, eta_F, PF_F, Min_F] = EMA.calc_elec(n_Ema_F, M_Ema_F, magType, Vdc, fsw, T_Ema_F)
-    [id_R, iq_R, Is_R, vd_R, vq_R, Vs_R, lam_R, Pin_R, Pout_R, _, eta_R, PF_R, Min_R] = EMA.calc_elec(n_Ema_R, M_Ema_R, magType, Vdc, fsw, T_Ema_R)
+    [id_F, iq_F, Is_F, vd_F, vq_F, Vs_F, lam_F, Pin_F, Pout_F, _, eta_F, PF_F, Min_F, Msh_F] = EMA.calc_elec(n_Ema_F, M_Ema_F, magType, Vdc, fsw, T_Ema_F)
+    [id_R, iq_R, Is_R, vd_R, vq_R, Vs_R, lam_R, Pin_R, Pout_R, _, eta_R, PF_R, Min_R, Msh_R] = EMA.calc_elec(n_Ema_R, M_Ema_R, magType, Vdc, fsw, T_Ema_R)
 
     # ------------------------------------------
     # Losses
@@ -160,6 +160,7 @@ def elecSim(iter, EMA, INV, HVS, dataTime, setup):
     dataTime['EMA']['F']['Vs'][iter] = Vs_F
     dataTime['EMA']['F']['lam'][iter] = lam_F
     dataTime['EMA']['F']['Min'][iter] = Min_F
+    dataTime['EMA']['F']['Msh'][iter] = Msh_F
 
     # ------------------------------------------
     # Rear
@@ -180,6 +181,7 @@ def elecSim(iter, EMA, INV, HVS, dataTime, setup):
     dataTime['EMA']['R']['Vs'][iter] = Vs_R
     dataTime['EMA']['R']['lam'][iter] = lam_R
     dataTime['EMA']['R']['Min'][iter] = Min_R
+    dataTime['EMA']['R']['Msh'][iter] = Msh_R
 
     # ------------------------------------------
     # Total
@@ -200,6 +202,7 @@ def elecSim(iter, EMA, INV, HVS, dataTime, setup):
     dataTime['EMA']['T']['Vs'][iter] = (Vs_F + Vs_R) / 2
     dataTime['EMA']['T']['lam'][iter] = (lam_F + lam_R) / 2
     dataTime['EMA']['T']['Min'][iter] = Min_R + Min_F
+    dataTime['EMA']['T']['Msh'][iter] = Msh_R + Msh_F
 
     # ==============================================================================
     # INV

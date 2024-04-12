@@ -52,7 +52,7 @@ setup = initSetup()
 # Files
 # ------------------------------------------
 setup['Exp']['name'] = 'test'                                                                                            # Name of the simulation
-setup['Dat']['name'] = 'data_Test3'                                                                                       # Name of the data file
+setup['Dat']['name'] = 'data_Test2'                                                                                      # Name of the data file
 setup['Par']['name'] = 'setup_Template'                                                                                  # Name of the setup file
 
 # ------------------------------------------
@@ -62,6 +62,7 @@ setup['Exp']['SOC'] = 0.8                                                       
 setup['Exp']['Vdc'] = 3                                                                                                  # 1) constant nominal voltage, 2) measured voltage, 3) SOC based
 setup['Exp']['Cool'] = 1                                                                                                 # 1) constant coolant temperature, 2) measured coolant temperature, 3) coolant temperature calculated
 setup['Exp']['Tc'] = 35                                                                                                  # Constant coolant temperature (degC)
+setup['Exp']['lim'] = 1                                                                                                  # 0) component limits are not used, 1) component limits enforced
 
 # ------------------------------------------
 # Plotting
@@ -74,7 +75,7 @@ setup['Exp']['wFig'] = 2000                                                     
 # ==============================================================================
 # Data
 # ==============================================================================
-setup['Dat']['fs'] = 1                                                                                                  # Sampling frequency of the data (Hz)
+setup['Dat']['fs'] = 1                                                                                                   # Sampling frequency of the data (Hz)
 
 # ==============================================================================
 # Parameters
@@ -94,9 +95,9 @@ setup['Par']['v_w'] = 0                                                         
 # Numeric
 # ------------------------------------------
 setup['Par']['sol'] = 1                                                                                                  # 1) numeric, 2) symbolic
-setup['Par']['eps'] = 1e-12
-setup['Par']['err'] = 1e-6
-setup['Par']['iterMax'] = 20
+setup['Par']['eps'] = 1e-12                                                                                              # Small numerical value
+setup['Par']['err'] = 1e-6                                                                                               # Numerical error
+setup['Par']['iterMax'] = 20                                                                                             # Maximum number of iterations
 
 #######################################################################################################################
 # Calculations

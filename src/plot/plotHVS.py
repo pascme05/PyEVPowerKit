@@ -61,7 +61,7 @@ def plotHVS(data, dataTime, setup):
     ###################################################################################################################
     # Pre-Processing
     ###################################################################################################################
-    fig = make_subplots(rows=3, cols=3, shared_xaxes=True, vertical_spacing=0.05)
+    fig = make_subplots(rows=2, cols=3, shared_xaxes=True, vertical_spacing=0.05)
 
     ###################################################################################################################
     # Calculation
@@ -74,22 +74,19 @@ def plotHVS(data, dataTime, setup):
     # ------------------------------------------
     fig.add_trace(go.Scatter(x=time, y=dataTime['HVS']['Vdc'], mode='lines', line=dict(color='#636EFA', dash='solid'), name='HVS Voltage'), row=1, col=1)
     fig.add_trace(go.Scatter(x=time, y=dataTime['HVS']['Idc'], mode='lines', line=dict(color='#636EFA', dash='solid'), name='HVS Current'), row=2, col=1)
-    fig.add_trace(go.Scatter(x=time, y=dataTime['HVS']['Pin'], mode='lines', line=dict(color='#636EFA', dash='solid'), name='Input Power'), row=3, col=1)
-    fig.add_trace(go.Scatter(x=time, y=dataTime['HVS']['Pout'], mode='lines', line=dict(color='#636EFA', dash='dash'), name='Output Power'), row=3, col=1)
 
     # ------------------------------------------
     # Charge
     # ------------------------------------------
-    fig.add_trace(go.Scatter(x=time, y=dataTime['HVS']['Vdc'], mode='lines', line=dict(color='#EF553B', dash='solid'), name='HVS Voltage'), row=1, col=2)
+    fig.add_trace(go.Scatter(x=time, y=dataTime['HVS']['SOC'], mode='lines', line=dict(color='#EF553B', dash='solid'), name='HVS SOC'), row=1, col=2)
     fig.add_trace(go.Scatter(x=time, y=dataTime['HVS']['dQ'], mode='lines', line=dict(color='#EF553B', dash='solid'), name='HVS Charge'), row=2, col=2)
-    fig.add_trace(go.Scatter(x=time, y=dataTime['HVS']['SOC'], mode='lines', line=dict(color='#EF553B', dash='solid'), name='HVS SOC'), row=3, col=2)
 
     # ------------------------------------------
     # Thermal
     # ------------------------------------------
     fig.add_trace(go.Scatter(x=time, y=dataTime['HVS']['Pv'], mode='lines', line=dict(color='#00CC96', dash='solid'), name='Total Losses'), row=1, col=3)
-    fig.add_trace(go.Scatter(x=time, y=dataTime['HVS']['eta'], mode='lines', line=dict(color='#00CC96', dash='solid'), name='Total Efficiency'), row=2, col=3)
-    fig.add_trace(go.Scatter(x=time, y=dataTime['HVS']['T'], mode='lines', line=dict(color='#00CC96', dash='solid'), name='Temperature'), row=3, col=3)
+    fig.add_trace(go.Scatter(x=time, y=dataTime['HVS']['T'], mode='lines', line=dict(color='#00CC96', dash='solid'), name='Hotspot Temperature'), row=2, col=3)
+    fig.add_trace(go.Scatter(x=time, y=dataTime['VEH']['Tc'], mode='lines', line=dict(color='#00CC96', dash='dash'), name='Coolant Temperature'), row=2, col=3)
 
     ###################################################################################################################
     # Post-Processing
@@ -103,17 +100,14 @@ def plotHVS(data, dataTime, setup):
     # Electrical
     fig.update_yaxes(title_text="Vdc (V)", row=1, col=1)
     fig.update_yaxes(title_text="Idc RMS (A)", row=2, col=1)
-    fig.update_yaxes(title_text="P (W)", row=3, col=1)
 
     # Charge
-    fig.update_yaxes(title_text="Vdc (V)", row=1, col=2)
+    fig.update_yaxes(title_text="SOC (%)", row=1, col=2)
     fig.update_yaxes(title_text="dQ (Ws)", row=2, col=2)
-    fig.update_yaxes(title_text="SOC (%)", row=3, col=2)
 
     # Thermal
     fig.update_yaxes(title_text="Pv (W)", row=1, col=3)
-    fig.update_yaxes(title_text="Eta (%)", row=2, col=3)
-    fig.update_yaxes(title_text="T (degC)", row=3, col=3)
+    fig.update_yaxes(title_text="T (degC)", row=2, col=3)
 
     # ------------------------------------------
     # Set x-axis title for the last subplot

@@ -76,7 +76,6 @@ def mechVeh(data, dataTime, setup):
     state = np.zeros(N)
     rec_on = np.zeros(N)
     rec_off = np.zeros(N)
-    out = {'F': {}, 'P': {}, 'E': {}, 'eta': {}}
 
     ###################################################################################################################
     # Pre-Processing

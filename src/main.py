@@ -42,6 +42,7 @@ from src.model.mechSim import mechSim
 from src.plot.plotting import plotting
 from src.model.elecSim import elecSim
 from src.model.therSim import therSim
+from src.model.vehSim import vehSim
 
 
 # ==============================================================================
@@ -160,7 +161,7 @@ def main(setup, path):
     N = len(data['t'])
     Tinit = data['T_C'][0]
     dataTime = {'VEH': {'Vdc': np.zeros(N), 'Tc': np.zeros(N), 'SOC': np.zeros(N), 'dQ': np.zeros(N),
-                        'F': {}, 'P': {}, 'E': {}, 'eta': {}},
+                        'F': {}, 'P': {}, 'E': {}, 'eta': {}, 'a': np.zeros(N), 'v': np.zeros(N), 's': np.zeros(N)},
                 'WHE': {'F': {}, 'R': {}},
                 'GBX': {'F': {'T': Tinit * np.ones(N), 'M': np.zeros(N), 'n': np.zeros(N), 'Pin': np.zeros(N),
                               'Pout': np.zeros(N), 'Pv': np.zeros(N), 'Pv_B': np.zeros(N), 'Pv_M': np.zeros(N),
@@ -175,17 +176,20 @@ def main(setup, path):
                               'Pin': np.zeros(N), 'Pout': np.zeros(N), 'Pv': np.zeros(N), 'Pv_m': np.zeros(N),
                               'Pv_s': np.zeros(N), 'Pv_r': np.zeros(N), 'eta': np.zeros(N), 'PF': np.zeros(N),
                               'Id': np.zeros(N), 'Iq': np.zeros(N), 'Is': np.zeros(N), 'Vd': np.zeros(N),
-                              'Vq': np.zeros(N), 'Vs': np.zeros(N), 'lam': np.zeros(N), 'Min': np.zeros(N)},
+                              'Vq': np.zeros(N), 'Vs': np.zeros(N), 'lam': np.zeros(N), 'Min': np.zeros(N),
+                              'Msh': np.zeros(N)},
                         'R': {'T': Tinit * np.ones(N), 'M': np.zeros(N), 'n': np.zeros(N), 'Pm': np.zeros(N),
                               'Pin': np.zeros(N), 'Pout': np.zeros(N), 'Pv': np.zeros(N), 'Pv_m': np.zeros(N),
                               'Pv_s': np.zeros(N), 'Pv_r': np.zeros(N), 'eta': np.zeros(N), 'PF': np.zeros(N),
                               'Id': np.zeros(N), 'Iq': np.zeros(N), 'Is': np.zeros(N), 'Vd': np.zeros(N),
-                              'Vq': np.zeros(N), 'Vs': np.zeros(N), 'lam': np.zeros(N), 'Min': np.zeros(N)},
+                              'Vq': np.zeros(N), 'Vs': np.zeros(N), 'lam': np.zeros(N), 'Min': np.zeros(N),
+                              'Msh': np.zeros(N)},
                         'T': {'T': Tinit * np.ones(N), 'M': np.zeros(N), 'n': np.zeros(N), 'Pm': np.zeros(N),
                               'Pin': np.zeros(N), 'Pout': np.zeros(N), 'Pv': np.zeros(N), 'Pv_m': np.zeros(N),
                               'Pv_s': np.zeros(N), 'Pv_r': np.zeros(N), 'eta': np.zeros(N), 'PF': np.zeros(N),
                               'Id': np.zeros(N), 'Iq': np.zeros(N), 'Is': np.zeros(N), 'Vd': np.zeros(N),
-                              'Vq': np.zeros(N), 'Vs': np.zeros(N), 'lam': np.zeros(N), 'Min': np.zeros(N)}},
+                              'Vq': np.zeros(N), 'Vs': np.zeros(N), 'lam': np.zeros(N), 'Min': np.zeros(N),
+                              'Msh': np.zeros(N)}},
                 'INV': {'F': {'T': Tinit * np.ones(N), 'Pin': np.zeros(N), 'Pout': np.zeros(N), 'Pv': np.zeros(N),
                               'Pv_sw': np.zeros(N), 'Pv_cap': np.zeros(N), 'Pv_ac': np.zeros(N), 'Pv_dc': np.zeros(N),
                               'eta': np.zeros(N), 'Idc': np.zeros(N), 'Ic': np.zeros(N), 'Is': np.zeros(N),
@@ -247,7 +251,7 @@ def main(setup, path):
     [GBX, EMA, INV, HVS, VEH] = initComp(setup)
 
     # ------------------------------------------
-    # Target Simulation
+    # Iterative Simulation
     # ------------------------------------------
     for iter in tqdm(range(len(data['t'])), desc='Mission Profile'):
         # Mechanical
@@ -259,9 +263,8 @@ def main(setup, path):
         # Thermal
         dataTime = therSim(iter, GBX, EMA, INV, HVS, VEH, data, dataTime, setup)
 
-    # ------------------------------------------
-    # Actual Simulation
-    # ------------------------------------------
+        # Vehicle
+        dataTime = vehSim(iter, VEH, data, dataTime, setup)
 
     # ==============================================================================
     # MSG OUT
