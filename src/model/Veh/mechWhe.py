@@ -11,6 +11,18 @@
 #######################################################################################################################
 
 #######################################################################################################################
+# Function Description
+#######################################################################################################################
+"""
+This function calculates the forces on the wheels of the vehicle. It takes as input the physical forces acting on the
+vehicle breaking them down onto the four wheels depending on the vehicle architecture.
+Inputs:     1) data:        mission profile of the vehicle
+            2) dataTime:    internal time dependent variables
+            3) setup:       includes all simulation variables
+Outputs:    1) dataTime:    updated time dependent variables including the wheels
+"""
+
+#######################################################################################################################
 # Import libs
 #######################################################################################################################
 # ==============================================================================
@@ -39,11 +51,11 @@ def mechWhe(data, dataTime, setup):
     # ==============================================================================
     # Parameters
     # ==============================================================================
-    r = setup['Par']['VEH']['r_dyn']
-    N = len(dataTime['VEH']['F']['t'])
-    nWhe = 4
-    d_a = setup['Par']['VEH']['d_a']
-    d_b = setup['Par']['VEH']['d_b']
+    r = setup['Par']['VEH']['r_dyn']                                                                                     # dynamic tire radius (m)
+    N = len(dataTime['VEH']['F']['t'])                                                                                   # number of samples
+    nWhe = 4                                                                                                             # number of wheels
+    d_a = setup['Par']['VEH']['d_a']                                                                                     # ratio between front and rear acceleration forces for AWD operation
+    d_b = setup['Par']['VEH']['d_b']                                                                                     # ratio between front and rear breaking forces for AWD operation
 
     # ==============================================================================
     # Variables

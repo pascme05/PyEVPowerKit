@@ -95,8 +95,8 @@ def mechSim(iter, GBX, EMA, dataTime, setup):
     # ------------------------------------------
     # Mechanical
     # ------------------------------------------
-    [M_Gbx_F, n_Gbx_F, P_Gbx_F, P_Out_F, _, eta_Gbx_F] = GBX.calc_mech(M_Whe_F, n_Whe_F)
-    [M_Gbx_R, n_Gbx_R, P_Gbx_R, P_Out_R, _, eta_Gbx_R] = GBX.calc_mech(M_Whe_R, n_Whe_R)
+    [M_Gbx_F, n_Gbx_F, P_Gbx_F, P_Out_F, _, eta_Gbx_F] = GBX.calc_mech(M_Whe_F, n_Whe_F, setup)
+    [M_Gbx_R, n_Gbx_R, P_Gbx_R, P_Out_R, _, eta_Gbx_R] = GBX.calc_mech(M_Whe_R, n_Whe_R, setup)
 
     # ------------------------------------------
     # Losses

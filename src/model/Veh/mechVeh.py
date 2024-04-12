@@ -11,6 +11,19 @@
 #######################################################################################################################
 
 #######################################################################################################################
+# Function Description
+#######################################################################################################################
+"""
+This function calculates the mechanical vehicle forces, powers, and energy values. Additionally, a first estimation for
+the efficiencies are calculated.
+Inputs:     1) data:        mission profile of the vehicle
+            2) dataTime:    internal time dependent variables
+            3) setup:       includes all simulation variables
+Outputs:    1) dataTime:    updated time dependent variables including the vehicle quantities
+"""
+
+
+#######################################################################################################################
 # Import libs
 #######################################################################################################################
 # ==============================================================================
@@ -42,24 +55,24 @@ def mechVeh(data, dataTime, setup):
     # ------------------------------------------
     # General
     # ------------------------------------------
-    N = len(data['t'])
+    N = len(data['t'])                                                                                                   # number of samples
 
     # ------------------------------------------
     # Physical
     # ------------------------------------------
-    g = 9.81
+    g = 9.81                                                                                                             # acceleration due to gravity of the earth (m/s2)
 
     # ------------------------------------------
     # Vehicle
     # ------------------------------------------
-    p_a = setup['Par']['p_a']
-    v_w = setup['Par']['v_w']
-    A = setup['Par']['VEH']['A']
-    c_w = setup['Par']['VEH']['c_w']
-    m = setup['Par']['VEH']['m']
-    c_r = setup['Par']['VEH']['c_r']
-    m_a = setup['Par']['VEH']['m_a']
-    eta_sys = setup['Par']['VEH']['eta']
+    p_a = setup['Par']['p_a']                                                                                            # air density (kg/m3)
+    v_w = setup['Par']['v_w']                                                                                            # head-wind (m/s)
+    A = setup['Par']['VEH']['A']                                                                                         # vehicle front surface (m2)
+    c_w = setup['Par']['VEH']['c_w']                                                                                     # vehicle shape factor (-)
+    m = setup['Par']['VEH']['m']                                                                                         # vehicle mass (kg)
+    c_r = setup['Par']['VEH']['c_r']                                                                                     # vehicle rolling resistance (-)
+    m_a = setup['Par']['VEH']['m_a']                                                                                     # vehicle acceleration mass (kg)
+    eta_sys = setup['Par']['VEH']['eta']                                                                                 # overall vehicle efficiency (%)
 
     # ==============================================================================
     # Variables

@@ -14,13 +14,11 @@
 # Function Description
 #######################################################################################################################
 """
-A short description of the class goes here.
-Inputs:     1)
-            2)
-            N)
-Outputs:    1)
-            2)
-            M)
+This function builds the main part of the driving simulation. It takes the setup files and path variables as input and
+executes the program.
+Inputs:     1) setup:   includes all simulation variables
+            2) path:    includes all path variables
+Outputs:    None
 """
 
 #######################################################################################################################
@@ -33,6 +31,7 @@ from src.data.loadData import loadData
 from src.data.loadSetup import loadSetup
 from src.data.sampleData import sampleData
 from src.general.mechVehPara import mechVehPara
+from src.general.smallFnc import initOutVar
 from src.model.Veh.mechVeh import mechVeh
 from src.model.Veh.mechWhe import mechWhe
 from src.model.Veh.elecVeh import elecVeh
@@ -49,7 +48,6 @@ from src.model.vehSim import vehSim
 # External
 # ==============================================================================
 from tqdm import tqdm
-import numpy as np
 
 
 #######################################################################################################################
@@ -158,53 +156,7 @@ def main(setup, path):
     # ==============================================================================
     # Init
     # ==============================================================================
-    N = len(data['t'])
-    Tinit = data['T_C'][0]
-    dataTime = {'VEH': {'Vdc': np.zeros(N), 'Tc': np.zeros(N), 'SOC': np.zeros(N), 'dQ': np.zeros(N),
-                        'F': {}, 'P': {}, 'E': {}, 'eta': {}, 'a': np.zeros(N), 'v': np.zeros(N), 's': np.zeros(N)},
-                'WHE': {'F': {}, 'R': {}},
-                'GBX': {'F': {'T': Tinit * np.ones(N), 'M': np.zeros(N), 'n': np.zeros(N), 'Pin': np.zeros(N),
-                              'Pout': np.zeros(N), 'Pv': np.zeros(N), 'Pv_B': np.zeros(N), 'Pv_M': np.zeros(N),
-                              'Pv_W': np.zeros(N), 'eta': np.zeros(N)},
-                        'R': {'T': Tinit * np.ones(N), 'M': np.zeros(N), 'n': np.zeros(N), 'Pin': np.zeros(N),
-                              'Pout': np.zeros(N), 'Pv': np.zeros(N), 'Pv_B': np.zeros(N), 'Pv_M': np.zeros(N),
-                              'Pv_W': np.zeros(N), 'eta': np.zeros(N)},
-                        'T': {'T': Tinit * np.ones(N), 'M': np.zeros(N), 'n': np.zeros(N), 'Pin': np.zeros(N),
-                              'Pout': np.zeros(N), 'Pv': np.zeros(N), 'Pv_B': np.zeros(N), 'Pv_M': np.zeros(N),
-                              'Pv_W': np.zeros(N), 'eta': np.zeros(N)}},
-                'EMA': {'F': {'T': Tinit * np.ones(N), 'M': np.zeros(N), 'n': np.zeros(N), 'Pm': np.zeros(N),
-                              'Pin': np.zeros(N), 'Pout': np.zeros(N), 'Pv': np.zeros(N), 'Pv_m': np.zeros(N),
-                              'Pv_s': np.zeros(N), 'Pv_r': np.zeros(N), 'eta': np.zeros(N), 'PF': np.zeros(N),
-                              'Id': np.zeros(N), 'Iq': np.zeros(N), 'Is': np.zeros(N), 'Vd': np.zeros(N),
-                              'Vq': np.zeros(N), 'Vs': np.zeros(N), 'lam': np.zeros(N), 'Min': np.zeros(N),
-                              'Msh': np.zeros(N)},
-                        'R': {'T': Tinit * np.ones(N), 'M': np.zeros(N), 'n': np.zeros(N), 'Pm': np.zeros(N),
-                              'Pin': np.zeros(N), 'Pout': np.zeros(N), 'Pv': np.zeros(N), 'Pv_m': np.zeros(N),
-                              'Pv_s': np.zeros(N), 'Pv_r': np.zeros(N), 'eta': np.zeros(N), 'PF': np.zeros(N),
-                              'Id': np.zeros(N), 'Iq': np.zeros(N), 'Is': np.zeros(N), 'Vd': np.zeros(N),
-                              'Vq': np.zeros(N), 'Vs': np.zeros(N), 'lam': np.zeros(N), 'Min': np.zeros(N),
-                              'Msh': np.zeros(N)},
-                        'T': {'T': Tinit * np.ones(N), 'M': np.zeros(N), 'n': np.zeros(N), 'Pm': np.zeros(N),
-                              'Pin': np.zeros(N), 'Pout': np.zeros(N), 'Pv': np.zeros(N), 'Pv_m': np.zeros(N),
-                              'Pv_s': np.zeros(N), 'Pv_r': np.zeros(N), 'eta': np.zeros(N), 'PF': np.zeros(N),
-                              'Id': np.zeros(N), 'Iq': np.zeros(N), 'Is': np.zeros(N), 'Vd': np.zeros(N),
-                              'Vq': np.zeros(N), 'Vs': np.zeros(N), 'lam': np.zeros(N), 'Min': np.zeros(N),
-                              'Msh': np.zeros(N)}},
-                'INV': {'F': {'T': Tinit * np.ones(N), 'Pin': np.zeros(N), 'Pout': np.zeros(N), 'Pv': np.zeros(N),
-                              'Pv_sw': np.zeros(N), 'Pv_cap': np.zeros(N), 'Pv_ac': np.zeros(N), 'Pv_dc': np.zeros(N),
-                              'eta': np.zeros(N), 'Idc': np.zeros(N), 'Ic': np.zeros(N), 'Is': np.zeros(N),
-                              'Mi': np.zeros(N)},
-                        'R': {'T': Tinit * np.ones(N), 'Pin': np.zeros(N), 'Pout': np.zeros(N), 'Pv': np.zeros(N),
-                              'Pv_sw': np.zeros(N), 'Pv_cap': np.zeros(N), 'Pv_ac': np.zeros(N), 'Pv_dc': np.zeros(N),
-                              'eta': np.zeros(N), 'Idc': np.zeros(N), 'Ic': np.zeros(N), 'Is': np.zeros(N),
-                              'Mi': np.zeros(N)},
-                        'T': {'T': Tinit * np.ones(N), 'Pin': np.zeros(N), 'Pout': np.zeros(N), 'Pv': np.zeros(N),
-                              'Pv_sw': np.zeros(N), 'Pv_cap': np.zeros(N), 'Pv_ac': np.zeros(N), 'Pv_dc': np.zeros(N),
-                              'eta': np.zeros(N), 'Idc': np.zeros(N), 'Ic': np.zeros(N), 'Is': np.zeros(N),
-                              'Mi': np.zeros(N)}},
-                'HVS': {'T': Tinit * np.ones(N), 'dQ': np.zeros(N), 'SOC': np.zeros(N), 'Vdc': np.zeros(N),
-                        'Pin': np.zeros(N), 'Pout': np.zeros(N), 'Pv': np.zeros(N), 'eta': np.zeros(N),
-                        'Idc': np.zeros(N)}}
+    dataTime = initOutVar(len(data['t']), data['T_C'][0])
 
     # ==============================================================================
     # Vehicle

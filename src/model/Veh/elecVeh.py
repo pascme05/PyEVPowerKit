@@ -11,6 +11,18 @@
 #######################################################################################################################
 
 #######################################################################################################################
+# Function Description
+#######################################################################################################################
+"""
+This function sets the electrical properties of the battery and the initial state of charge.
+Inputs:     1) data:        mission profile of the vehicle
+            2) dataTime:    internal time dependent variables
+            3) setup:       includes all simulation variables
+Outputs:    1) dataTime:    updated state of charge of the battery
+"""
+
+
+#######################################################################################################################
 # Import libs
 #######################################################################################################################
 # ==============================================================================
@@ -35,11 +47,11 @@ def elecVeh(data, dataTime, setup):
     ###################################################################################################################
     # Initialisation
     ###################################################################################################################
-    V_max = setup['Par']['HVS']['V_max']
-    V_min = setup['Par']['HVS']['V_min']
-    V_nom = setup['Par']['HVS']['V_nom']
-    SOC = setup['Exp']['SOC']
-    N = len(data['t'])
+    V_max = setup['Par']['HVS']['V_max']                                                                                 # maximum battery voltage (V)
+    V_min = setup['Par']['HVS']['V_min']                                                                                 # minimum battery voltage (V)
+    V_nom = setup['Par']['HVS']['V_nom']                                                                                 # nominal battery voltage (V)
+    SOC = setup['Exp']['SOC']                                                                                            # battery state of charge (%)
+    N = len(data['t'])                                                                                                   # number of samples
 
     ###################################################################################################################
     # Calculation

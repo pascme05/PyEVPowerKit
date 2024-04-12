@@ -11,6 +11,18 @@
 #######################################################################################################################
 
 #######################################################################################################################
+# Function Description
+#######################################################################################################################
+"""
+This function loads the remaining setup parameters from the setup file located under \setup. This includes vehicle
+(VEH), gearbox (GBX), machine (EMA), converter (INV), and battery (HVS) parameters. The parameters are summarized in one
+common setup variable.
+Inputs:     1) setup:   includes all simulation variables
+            2) path:    includes all path variables
+Outputs:    1) setup:   extended setup variable
+"""
+
+#######################################################################################################################
 # Import libs
 #######################################################################################################################
 # ==============================================================================
@@ -62,6 +74,11 @@ def loadSetup(setup, path):
         setupHVSRaw = pd.read_excel(filename, sheet_name='HVS')
         print("INFO: Setup file loaded")
     except:
+        setupVehRaw = []
+        setupGBXRaw = []
+        setupEMARaw = []
+        setupINVRaw = []
+        setupHVSRaw = []
         print("ERROR: Setup file could not be loaded")
 
     ###################################################################################################################

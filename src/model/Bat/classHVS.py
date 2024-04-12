@@ -14,13 +14,13 @@
 # Function Description
 #######################################################################################################################
 """
-A short description of the class goes here.
-Inputs:     1)
-            2)
-            N)
-Outputs:    1)
-            2)
-            M)
+Class of the battery pack including loss calculation, electrical calculation, and thermal calculation.
+
+Fnc:
+1)  calc_elec:  calculates the electrical values and updates the SOC
+2)  calc_loss:  calculates the losses based on the internal cell resistance
+3)  calc_ther:  calculates the self-heating based on the thermal parameters and the losses
+
 """
 
 #######################################################################################################################
@@ -73,6 +73,29 @@ class classBat:
     ###################################################################################################################
     def calc_elec(self, Vdc, Idc, dt, SOC, T):
         # ==============================================================================
+        # Description
+        # ==============================================================================
+        """
+        This function calculates the electrical parameters of the battery.
+
+        Input:
+        1) Vdc:     DC battery voltage (V)
+        2) Idc:     DC battery current (A)
+        3) dt:      discrete time step between two samples (sec)
+        4) SOC:     state-of-charge of the battery (%)
+        5) T:       temperature of the battery (degC)
+
+        Output:
+        1) dQ:      Change of charge (Ws)
+        2) SOC:     Updated state-of-charge of the battery (%)
+        3) Vdc:     Update DC battery voltage (V)
+        4) Pin:     Input power (W)
+        5) Pout:    Output power (W)
+        6) Pv:      Losses (W)
+        7) eta:     Efficiency (%)
+        """
+
+        # ==============================================================================
         # Calculation
         # ==============================================================================
         # ------------------------------------------
@@ -118,6 +141,20 @@ class classBat:
     ###################################################################################################################
     def calc_loss(self, Idc, T):
         # ==============================================================================
+        # Description
+        # ==============================================================================
+        """
+        This function calculates the losses of the battery.
+
+        Input:
+        1) Idc:     DC battery current (A)
+        2) T:       temperature of the battery (degC)
+
+        Output:
+        1) Pv:      Losses (W)
+        """
+
+        # ==============================================================================
         # Pre-processing
         # ==============================================================================
         Ri = self.R_i * np.exp(-self.E_a_temp / self.kB * (1 / 293.15 - 1/(T + 273.15)))
@@ -135,7 +172,23 @@ class classBat:
     ###################################################################################################################
     # Thermal
     ###################################################################################################################
-    def calc_therm(self, dt, Tc, Pv1, Pv2):
+    def calc_therm(self, dt, T, Pv1, Pv2):
+        # ==============================================================================
+        # Description
+        # ==============================================================================
+        """
+        This function calculates the self-heating of the battery.
+
+        Input:
+        1) dt:      discrete time step between two samples (sec)
+        2) T:       Temperature of the previous time step (degC)
+        3) Pv1:     Losses of the previous time step (W)
+        4) Pv2:     Losses of the actual time step (W)
+
+        Output:
+        1) dT:      Temperature change (K)
+        """
+
         # ==============================================================================
         # Initialisation
         # ==============================================================================
@@ -145,7 +198,7 @@ class classBat:
         # ==============================================================================
         # Calculation
         # ==============================================================================
-        dT = (2 * tau - dt) / (2 * tau + dt) * Tc + (Rth * dt) / (2 * tau + dt) * (Pv1 + Pv2)
+        dT = (2 * tau - dt) / (2 * tau + dt) * T + (Rth * dt) / (2 * tau + dt) * (Pv1 + Pv2)
 
         # ==============================================================================
         # Return

@@ -14,13 +14,13 @@
 # Function Description
 #######################################################################################################################
 """
-A short description of the class goes here.
-Inputs:     1)
-            2)
-            N)
-Outputs:    1)
-            2)
-            M)
+Class of the vehicle including coolant temperature, force, and acceleration calculation.
+
+Fnc:
+1)  calc_cool:   calculates the coolant temperature based on the net heat input
+2)  calc_force:  calculates the driving forces of the vehicle
+3)  calc_acc:    calculates the acceleration of the vehicle based on the torque
+
 """
 
 #######################################################################################################################
@@ -68,6 +68,28 @@ class classVEH:
     ###################################################################################################################
     def calc_cool(self, dQ_HVS, dQ_INV, dQ_EMA, dQ_GBX, v, Vol, Ta, Tc, dt):
         # ==============================================================================
+        # Description
+        # ==============================================================================
+        """
+        This function calculates the coolant temperature.
+
+        Input:
+        1) dQ_HVS:  Heat flux battery (W)
+        2) dQ_INV:  Heat flux converter (W)
+        3) dQ_EMA:  Heat flux machine (W)
+        4) dQ_GBX:  Heat flux gear box (W)
+        5) v:       Vehicle speed (m/s)
+        6) Vol:     Volume flow coolant (l/min)
+        7) Ta:      Ambient temperature (degC)
+        8) Tc:      Coolant temperature (degC)
+        9) dt:      Discrete time step (sec)
+
+        Output:
+        1) Tc:      Updated coolant temperature (degC)
+        2) dQ_net:  Net heat flux (W)
+        """
+
+        # ==============================================================================
         # Init
         # ==============================================================================
         # ------------------------------------------
@@ -109,7 +131,27 @@ class classVEH:
     ###################################################################################################################
     # Forces
     ###################################################################################################################
-    def calc_Force(self, v, a, ang, setup):
+    def calc_force(self, v, a, ang, setup):
+        # ==============================================================================
+        # Description
+        # ==============================================================================
+        """
+        This function calculates the driving forces.
+
+        Input:
+        1) v:       Vehicle speed (m/s)
+        2) a:       Vehicle acceleration (m/s2)
+        3) ang:     Surface angle (rad)
+        4) setup:   Setup variables of the simulation
+
+        Output:
+        1) Fp:      Air friction force (N)
+        2) Fr:      Rolling friction force (N)
+        3) Fc:      Climbing force (N)
+        4) Fa:      Acceleration force (N)
+        5) Ft:      Total force (N)
+        """
+
         # ==============================================================================
         # Init
         # ==============================================================================
@@ -149,6 +191,22 @@ class classVEH:
     ###################################################################################################################
     def calc_acc(self, M, v, ang, setup):
         # ==============================================================================
+        # Description
+        # ==============================================================================
+        """
+        This function calculates the acceleration.
+
+        Input:
+        1) M:       Total wheel torque (Nm)
+        2) v:       Vehicle speed (m/s)
+        3) ang:     Surface angle (rad)
+        4) setup:   Setup variables of the simulation
+
+        Output:
+        1) a:       Vehicle acceleration (m/s2)
+        """
+
+        # ==============================================================================
         # Init
         # ==============================================================================
         r = setup['Par']['VEH']['r_dyn']
@@ -157,7 +215,7 @@ class classVEH:
         # ==============================================================================
         # Pre-Processing
         # ==============================================================================
-        [Fp, Fr, Fc, _, _] = self.calc_Force(v, 0, ang, setup)
+        [Fp, Fr, Fc, _, _] = self.calc_force(v, 0, ang, setup)
         Fd = Fp + Fr + Fc
 
         # ==============================================================================

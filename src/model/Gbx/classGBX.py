@@ -14,13 +14,13 @@
 # Function Description
 #######################################################################################################################
 """
-A short description of the class goes here.
-Inputs:     1)
-            2)
-            N)
-Outputs:    1)
-            2)
-            M)
+Class of the gear box including loss calculation, mechanical calculation, and thermal calculation.
+
+Fnc:
+1)  calc_mech:  calculates the mechanical values
+2)  calc_loss:  calculates the losses based on the rotational speed
+3)  calc_ther:  calculates the self-heating based on the thermal parameters and the losses
+
 """
 
 #######################################################################################################################
@@ -69,10 +69,47 @@ class classGBX:
     ###################################################################################################################
     # Mechanics
     ###################################################################################################################
-    def calc_mech(self, M_Whe, n_Whe):
+    def calc_mech(self, M_Whe, n_Whe, setup):
+        # ==============================================================================
+        # Description
+        # ==============================================================================
+        """
+        This function calculates the electrical parameters of the battery.
+
+        Input:
+        1) M_Whe:   Torque of the wheel (Nm)
+        2) n_Whe:   Rotational speed of the wheel (1/s)
+
+        Output:
+        1) M_Gbx:   Torque of the gearbox (Nm)
+        2) n_Gbx:   Rotational speed of the gearbox (1/s)
+        3) P_Gbx:   Input power (W)
+        4) Pout:    Output power (W)
+        5) Pv:      Losses (W)
+        6) eta:     Efficiency (%)
+        """
+
+        # ==============================================================================
+        # Init
+        # ==============================================================================
+        def sat(x, theta):
+            return min(theta, max(-theta, x))
+
         # ==============================================================================
         # Pre-Processing
         # ==============================================================================
+        # ------------------------------------------
+        # Limit
+        # ------------------------------------------
+        if setup['Exp']['lim'] == 1:
+            n_Whe = sat(n_Whe, self.n_max / self.i)
+            M_Whe = sat(M_Whe, self.T_max * self.i)
+            P_Whe = sat(2 * np.pi * M_Whe * n_Whe, self.P_max)
+            M_Whe = P_Whe / (2 * np.pi * n_Whe)
+
+        # ------------------------------------------
+        # Output
+        # ------------------------------------------
         n_Gbx = n_Whe * self.i
         w_m = 2 * np.pi * n_Whe
         Pout = M_Whe * w_m
@@ -127,26 +164,58 @@ class classGBX:
     ###################################################################################################################
     def calc_loss(self, n_Gbx):
         # ==============================================================================
+        # Description
+        # ==============================================================================
+        """
+        This function calculates the losses of the battery.
+
+        Input:
+        1) n_Gbx:   Rotational speed gearbox (1/s)
+
+        Output:
+        1) Pv:      Total losses (W)
+        2) Pv_b:    Bearing losses (W)
+        3) Pv_m:    Meshing losses (W)
+        4) Pv_w:    Windage losses (W)
+        """
+
+        # ==============================================================================
         # Calculation
         # ==============================================================================
-        bear_loss = self.c_b * np.abs(n_Gbx)
-        mesh_loss = self.c_m * np.abs(n_Gbx)
-        wind_loss = self.c_w * n_Gbx**2
+        Pv_b = self.c_b * np.abs(n_Gbx)
+        Pv_m = self.c_m * np.abs(n_Gbx)
+        Pv_w = self.c_w * n_Gbx**2
 
         # ==============================================================================
         # Post-Processing
         # ==============================================================================
-        Pv = bear_loss + mesh_loss + wind_loss
+        Pv = Pv_b + Pv_m + Pv_w
 
         # ==============================================================================
         # Return
         # ==============================================================================
-        return [Pv, bear_loss, mesh_loss, wind_loss]
+        return [Pv, Pv_b, Pv_m, Pv_w]
 
     ###################################################################################################################
     # Thermal
     ###################################################################################################################
     def calc_therm(self, dt, T, Pv1, Pv2):
+        # ==============================================================================
+        # Description
+        # ==============================================================================
+        """
+        This function calculates the self-heating of the gearbox.
+
+        Input:
+        1) dt:      discrete time step between two samples (sec)
+        2) T:       Temperature of the previous time step (degC)
+        3) Pv1:     Losses of the previous time step (W)
+        4) Pv2:     Losses of the actual time step (W)
+
+        Output:
+        1) dT:      Temperature change (K)
+        """
+
         # ==============================================================================
         # Initialisation
         # ==============================================================================

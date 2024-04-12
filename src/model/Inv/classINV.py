@@ -14,13 +14,13 @@
 # Function Description
 #######################################################################################################################
 """
-A short description of the class goes here.
-Inputs:     1)
-            2)
-            N)
-Outputs:    1)
-            2)
-            M)
+Class of the converter including loss calculation, electrical calculation, and thermal calculation.
+
+Fnc:
+1)  calc_elec:  calculates the electrical values
+2)  calc_loss:  calculates the losses based on the currents and voltages
+3)  calc_ther:  calculates the self-heating based on the thermal parameters and the losses
+
 """
 
 #######################################################################################################################
@@ -87,6 +87,29 @@ class classB6:
     ###################################################################################################################
     def calc_elec(self, cos_phi, Vs, Is, Vdc, Tj):
         # ==============================================================================
+        # Description
+        # ==============================================================================
+        """
+        This function calculates the electrical parameters of the converter.
+
+        Input:
+        1) cos_phi: Power factor of the electric machine (-)
+        2) Vs:      RMS stator voltage (V)
+        3) Is:      RMS stator current (A)
+        4) Vdc:     DC-link voltage (V)
+        5) Tj:      Junction temperature of the power module (degC)
+
+        Output:
+        1) Mi:      Modulation index (-)
+        2) Idc:     Inverter input current (A)
+        3) Ic:      Capacitor current (A)
+        4) Pin:     Input power (W)
+        5) Pout:    Output power (W)
+        6) Pv:      Losses (W)
+        7) eta:     Efficiency (%)
+        """
+
+        # ==============================================================================
         # Pre-Processing
         # ==============================================================================
         Mi = Vs * np.sqrt(2) / (Vdc/2)
@@ -136,6 +159,29 @@ class classB6:
     ###################################################################################################################
     def calc_loss(self, Mi, cos_phi, Is, Ic, Idc, Vdc, Tj):
         # ==============================================================================
+        # Description
+        # ==============================================================================
+        """
+        This function calculates the losses of the converter.
+
+        Input:
+        1) Mi:      Modulation index (-)
+        2) cos_phi: Power factor of the electric machine (-)
+        3) Is:      RMS stator current (A)
+        4) Ic:      Capacitor current (A)
+        5) Idc:     Inverter input current (A)
+        6) Vdc:     DC-link voltage (V)
+        7) Tj:      Junction temperature of the power module (degC)
+
+        Output:
+        1) Pv:      Total losses (W)
+        2) Pv_swi:  Losses power module (W)
+        3) Pv_cap:  Losses dc-link capacitor (W)
+        4) Pv_ac:   Losses AC busbar (W)
+        5) Pv_dc:   Losses DC busbar (W)
+        """
+
+        # ==============================================================================
         # Pre-Processing
         # ==============================================================================
         # ------------------------------------------
@@ -169,40 +215,56 @@ class classB6:
             p_l_sw_con = r_T * I0 ** 2 * (1 / 8 + (Mi * cos_phi) / (3 * np.pi))
             p_l_di_con = self.V_d0 * I0 * (1 / (2 * np.pi) - (Mi * cos_phi) / 8) + r_D * I0 ** 2 * (1 / 8 - (Mi * cos_phi) / (3 * np.pi))
             p_l_sw_swi = (E_on + E_off + E_rec) * self.fs
-            p_l_swi = self.nSw * (p_l_sw_con + p_l_di_con + p_l_sw_swi)
+            Pv_swi = self.nSw * (p_l_sw_con + p_l_di_con + p_l_sw_swi)
 
         # IGBT
         else:
             p_l_sw_con = self.V_ce0 * I0 * (1 / (2*np.pi) + (Mi * cos_phi) / 8) + r_T * I0**2 * (1/8 + (Mi * cos_phi) / (3*np.pi))
             p_l_di_con = self.V_d0 * I0 * (1 / (2*np.pi) - (Mi * cos_phi) / 8) + r_D * I0**2 * (1/8 - (Mi * cos_phi) / (3*np.pi))
             p_l_sw_swi = (E_on + E_off + E_rec) * self.fs
-            p_l_swi = self.nSw * (p_l_sw_con + p_l_di_con + p_l_sw_swi)
+            Pv_swi = self.nSw * (p_l_sw_con + p_l_di_con + p_l_sw_swi)
 
         # ------------------------------------------
         # DC-Link Capacitor
         # ------------------------------------------
-        p_l_cap = self.nCap * self.R_esr * (Ic / self.nCap) ** 2
+        Pv_cap = self.nCap * self.R_esr * (Ic / self.nCap) ** 2
 
         # ------------------------------------------
         # Busbars
         # ------------------------------------------
-        p_l_ac = 3 * Rac * Is ** 2
-        p_l_dc = 2 * Rdc * Idc ** 2
+        Pv_ac = 3 * Rac * Is ** 2
+        Pv_dc = 2 * Rdc * Idc ** 2
 
         # ==============================================================================
         # Post-Processing
         # ==============================================================================
-        Pv = p_l_swi + p_l_cap + p_l_ac + p_l_dc
+        Pv = Pv_swi + Pv_cap + Pv_ac + Pv_dc
 
         # ==============================================================================
         # Return
         # ==============================================================================
-        return [Pv, p_l_swi, p_l_cap, p_l_ac, p_l_dc]
+        return [Pv, Pv_swi, Pv_cap, Pv_ac, Pv_dc]
 
     ###################################################################################################################
     # Thermal
     ###################################################################################################################
     def calc_therm(self, dt, Tc, Pv1, Pv2):
+        # ==============================================================================
+        # Description
+        # ==============================================================================
+        """
+        This function calculates the self-heating of the converter.
+
+        Input:
+        1) dt:      discrete time step between two samples (sec)
+        2) T:       Temperature of the previous time step (degC)
+        3) Pv1:     Losses of the previous time step (W)
+        4) Pv2:     Losses of the actual time step (W)
+
+        Output:
+        1) dT:      Temperature change (K)
+        """
+
         # ==============================================================================
         # Initialisation
         # ==============================================================================

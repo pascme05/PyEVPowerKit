@@ -14,13 +14,14 @@
 # Function Description
 #######################################################################################################################
 """
-A short description of the class goes here.
-Inputs:     1)
-            2)
-            N)
-Outputs:    1)
-            2)
-            M)
+Class of the electric machine including losses, mechanical, electrical, and temperatures.
+
+Fnc:
+1)  calc_mech:  calculates the mechanical values based on torque and rotational speed
+2)  calc_loss:  calculates the losses based on the mechanical and electrical parameters
+3)  calc_elec:  calculates the electrical parameters of the machine
+4)  calc_ther:  calculates the self-heating based on the thermal parameters and the losses
+
 """
 
 #######################################################################################################################
@@ -83,6 +84,25 @@ class classPSM:
     # Mechanics
     ###################################################################################################################
     def calc_mech(self, M_Gbx, n_Gbx):
+        # ==============================================================================
+        # Description
+        # ==============================================================================
+        """
+        This function calculates the mechanical parameters of the electric machinery.
+
+        Input:
+        1) M_Gbx:   Torque of the gearbox (Nm)
+        2) n_Gbx:   Rotational speed of the gearbox (1/s)
+
+        Output:
+        1) M_Ema:   Torque of the electric machine (Nm)
+        2) n_Ema:   Rotational speed of the electric machine (1/s)
+        3) P_Ema:   Input power (W)
+        4) Pout:    Output power (W)
+        5) Pv:      Losses (W)
+        6) eta:     Efficiency (%)
+        """
+
         # ==============================================================================
         # Pre-Processing
         # ==============================================================================

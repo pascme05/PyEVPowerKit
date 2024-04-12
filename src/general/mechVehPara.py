@@ -11,6 +11,17 @@
 #######################################################################################################################
 
 #######################################################################################################################
+# Function Description
+#######################################################################################################################
+"""
+This function calculates the mechanical vehicle parameters. In detail, the moments of inertia for the gearbox, rotor,
+and the wheels of the vehicle. Additionally, the equivalent acceleration masses are determined.
+Inputs:     1) setup:   includes all simulation variables
+Outputs:    1) setup:   updated setup file
+"""
+
+
+#######################################################################################################################
 # Import libs
 #######################################################################################################################
 # ==============================================================================
@@ -37,8 +48,8 @@ def mechVehPara(setup):
     m_rim = setup['Par']['VEH']['m_rim']                                                                                 # mass rim (kg)
     r_tire = setup['Par']['VEH']['r_tire']                                                                               # radius tire (m)
     r_rim = setup['Par']['VEH']['r_rim']                                                                                 # radius rim (m)
-    setup['Par']['VEH']['r_dyn'] = r_tire - setup['Par']['VEH']['r_flat']                                                # radius dynamic (m)
-    r_dyn = setup['Par']['VEH']['r_dyn']
+    setup['Par']['VEH']['r_dyn'] = r_tire - setup['Par']['VEH']['r_flat']                                                # flatten tire (m)
+    r_dyn = setup['Par']['VEH']['r_dyn']                                                                                 # radius dynamic (m)
 
     ###################################################################################################################
     # Calculation
@@ -46,19 +57,19 @@ def mechVehPara(setup):
     # ==============================================================================
     # Vehicle
     # ==============================================================================
-    J_tire = 0.5 * m_tire * (r_tire**2 + r_rim**2)                                                                       # moment of inertia tire in (kg * m ^ 2)
-    J_rim = 0.5 * m_rim * r_rim**2                                                                                       # moment of inertia rim in (kg * m ^ 2)
-    m_acc_tire = 4 * ((J_tire + J_rim) / r_dyn**2)                                                                       # equivalent mass acceleration for the tire in (kg)
+    J_tire = 0.5 * m_tire * (r_tire ** 2 + r_rim ** 2)                                                                   # moment of inertia tire in (kg * m ^ 2)
+    J_rim = 0.5 * m_rim * r_rim ** 2                                                                                     # moment of inertia rim in (kg * m ^ 2)
+    m_acc_tire = 4 * ((J_tire + J_rim) / r_dyn ** 2)                                                                     # equivalent mass acceleration for the tire in (kg)
 
     # ==============================================================================
     # GBX
     # ==============================================================================
-    m_acc_gbx = setup['Par']['GBX']['J_gbx'] * setup['Par']['GBX']['i']**2 / r_dyn**2                                    # gbx acceleration mass (kg)
+    m_acc_gbx = setup['Par']['GBX']['J_gbx'] * setup['Par']['GBX']['i'] ** 2 / r_dyn ** 2                                # gbx acceleration mass (kg)
 
     # ==============================================================================
     # EMA
     # ==============================================================================
-    m_acc_ema = setup['Par']['EMA']['J_rot'] * setup['Par']['GBX']['i']**2 / r_dyn**2                                    # rotor acceleration mass (kg)
+    m_acc_ema = setup['Par']['EMA']['J_rot'] * setup['Par']['GBX']['i'] ** 2 / r_dyn ** 2                                # rotor acceleration mass (kg)
 
     ###################################################################################################################
     # Post-Processing
