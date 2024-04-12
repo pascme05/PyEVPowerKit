@@ -65,7 +65,7 @@ def initComp(setup):
     # ==============================================================================
     # GBX
     # ==============================================================================
-    GBX = classGBX(setup['Par']['GBX']['i'], setup['Par']['GBX']['J_gbx'], setup['Par']['GBX']['T_max'],
+    GBX = classGBX(setup['Par']['GBX']['i'], setup['Par']['GBX']['J_gbx'], setup['Par']['GBX']['M_max'], setup['Par']['GBX']['T_max'],
                    setup['Par']['GBX']['n_max'], setup['Par']['GBX']['P_max'], setup['Par']['GBX']['c_m'],
                    setup['Par']['GBX']['c_b'], setup['Par']['GBX']['c_w'], setup['Par']['GBX']['C_th'],
                    setup['Par']['GBX']['R_th'], setup['Par']['GBX']['h_th'], setup['Par']['GBX']['A_th'],
@@ -77,7 +77,7 @@ def initComp(setup):
     # EMA
     # ==============================================================================
     EMA = classPSM(setup['Par']['EMA']['Type'], setup['Par']['EMA']['Mag'], setup['Par']['EMA']['p'],
-                   setup['Par']['EMA']['n_0'], setup['Par']['EMA']['J_rot'], setup['Par']['EMA']['T_max'],
+                   setup['Par']['EMA']['n_0'], setup['Par']['EMA']['J_rot'], setup['Par']['EMA']['M_max'], setup['Par']['EMA']['T_max'],
                    setup['Par']['EMA']['n_max'], setup['Par']['EMA']['P_max'], setup['Par']['EMA']['I_max'],
                    setup['Par']['EMA']['Psi_pm'], setup['Par']['EMA']['L_d'], setup['Par']['EMA']['L_q'],
                    setup['Par']['EMA']['L_sig'], setup['Par']['EMA']['R_s'], setup['Par']['EMA']['c_b'],
@@ -94,7 +94,7 @@ def initComp(setup):
     INV = classB6(setup['Par']['INV']['fs'], setup['Par']['INV']['Sw'], setup['Par']['INV']['nSw'],
                   setup['Par']['INV']['nCap'], setup['Par']['INV']['V_0'], setup['Par']['INV']['I_0'],
                   setup['Par']['INV']['T_0'], setup['Par']['INV']['Tj_max'], setup['Par']['INV']['alpha'],
-                  setup['Par']['INV']['P_max'], setup['Par']['INV']['I_max'], setup['Par']['INV']['V_ce0'],
+                  setup['Par']['INV']['P_max'], setup['Par']['INV']['T_max'], setup['Par']['INV']['I_max'], setup['Par']['INV']['V_ce0'],
                   setup['Par']['INV']['r_T'], setup['Par']['INV']['V_d0'], setup['Par']['INV']['r_D'],
                   setup['Par']['INV']['E_on'], setup['Par']['INV']['E_off'], setup['Par']['INV']['E_rec'],
                   setup['Par']['INV']['R_g'], setup['Par']['INV']['R_esr'], setup['Par']['INV']['C_dc'],
@@ -107,7 +107,7 @@ def initComp(setup):
     # ==============================================================================
     # HVS
     # ==============================================================================
-    HVS = classBat(setup['Par']['HVS']['P_Max'], setup['Par']['HVS']['I_Max'], setup['Par']['HVS']['R_i'],
+    HVS = classBat(setup['Par']['HVS']['P_Max'], setup['Par']['INV']['T_max'], setup['Par']['HVS']['I_Max'], setup['Par']['HVS']['R_i'],
                    setup['Par']['HVS']['V_nom'], setup['Par']['HVS']['V_max'], setup['Par']['HVS']['V_min'],
                    setup['Par']['HVS']['E_a'], setup['Par']['HVS']['E_bat'], setup['Par']['HVS']['C_th'],
                    setup['Par']['HVS']['R_th'], setup['Par']['HVS']['h_th'], setup['Par']['HVS']['A_th'],

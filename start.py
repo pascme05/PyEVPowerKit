@@ -62,7 +62,7 @@ setup['Exp']['SOC'] = 0.8                                                       
 setup['Exp']['Vdc'] = 3                                                                                                  # 1) constant nominal voltage, 2) measured voltage, 3) SOC based
 setup['Exp']['Cool'] = 1                                                                                                 # 1) constant coolant temperature, 2) measured coolant temperature, 3) coolant temperature calculated
 setup['Exp']['Tc'] = 35                                                                                                  # Constant coolant temperature (degC)
-setup['Exp']['lim'] = 1                                                                                                  # 0) component limits are not used, 1) component limits enforced
+setup['Exp']['lim'] = 0                                                                                                  # 0) component limits are not used, 1) component limits enforced
 
 # ------------------------------------------
 # Plotting

@@ -43,9 +43,11 @@ class classGBX:
     ###################################################################################################################
     # Constructor
     ###################################################################################################################
-    def __init__(self, i, J, T_max, n_max, P_max, c_m, c_b, c_w, C_th, R_th, h_th, A_th, Ea, k, n, L0, Nf0, F0, beta, CL, Bx):
+    def __init__(self, i, J, M_max, T_max, n_max, P_max, c_m, c_b, c_w, C_th, R_th, h_th, A_th, Ea, k, n, L0, Nf0, F0,
+                 beta, CL, Bx):
         self.i = i
         self.J = J
+        self.M_max = M_max
         self.T_max = T_max
         self.n_max = n_max
         self.P_max = P_max
@@ -104,10 +106,10 @@ class classGBX:
         # ------------------------------------------
         if setup['Exp']['lim'] == 1:
             n_Whe = sat(n_Whe, self.n_max / self.i)
-            M_Whe = sat(M_Whe, self.T_max * self.i)
+            M_Whe = sat(M_Whe, self.M_max * self.i)
             P_Whe = sat(2 * np.pi * M_Whe * n_Whe, self.P_max)
             if n_Whe != 0:
-                M_Whe = P_Whe / (2 * np.pi * n_Whe)
+                M_Whe = P_Whe / (2 * np.pi * n_Whe + 1e-9)
 
         # ------------------------------------------
         # Output

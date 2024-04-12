@@ -43,8 +43,8 @@ class classB6:
     ###################################################################################################################
     # Constructor
     ###################################################################################################################
-    def __init__(self, fs, Sw, nSw, nCap, V_0, I_0, T_0, Tj_max, alpha, P_max, I_max, V_ce0, r_T, V_d0, r_D, E_on, E_off,
-                 E_rec, R_g, R_esr, C_dc, R_ac, R_dc, C_th, R_th, h_th, A_th, Ea, k, n, L0, Nf0, F0, beta, CL, Bx):
+    def __init__(self, fs, Sw, nSw, nCap, V_0, I_0, T_0, Tj_max, alpha, P_max, T_max, I_max, V_ce0, r_T, V_d0, r_D, E_on,
+                 E_off, E_rec, R_g, R_esr, C_dc, R_ac, R_dc, C_th, R_th, h_th, A_th, Ea, k, n, L0, Nf0, F0, beta, CL, Bx):
         self.fs = fs
         self.Sw = Sw
         self.nSw = nSw
@@ -55,6 +55,7 @@ class classB6:
         self.Tj_max = Tj_max
         self.alpha = alpha
         self.P_max = P_max
+        self.T_max = T_max
         self.I_max = I_max
         self.V_ce0 = V_ce0
         self.r_T = r_T
@@ -125,7 +126,8 @@ class classB6:
         if setup['Exp']['lim'] == 1:
             Is = sat(Is, self.I_max)
             P_lim = sat(3 * Is * Vs * cos_phi, self.P_max)
-            Is = P_lim / (3 * Vs * cos_phi)
+            if (3 * Vs * cos_phi) != 0:
+                Is = P_lim / (3 * Vs * cos_phi + 1e-9)
 
         # ------------------------------------------
         # Modulation Index

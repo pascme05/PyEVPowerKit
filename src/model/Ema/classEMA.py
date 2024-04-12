@@ -46,13 +46,14 @@ class classPSM:
     ###################################################################################################################
     # Constructor
     ###################################################################################################################
-    def __init__(self, Type, Mag, p, n_0, J_rot, T_max, n_max, P_max, I_max, Psi, L_d, L_q, L_sig, R_s, c_b, c_w, K_h,
-                 K_f, C_th, R_th, h_th, A_th, Ea, k, n, L0, Nf0, F0, beta, CL, Bx):
+    def __init__(self, Type, Mag, p, n_0, J_rot, M_max, T_max, n_max, P_max, I_max, Psi, L_d, L_q, L_sig, R_s, c_b, c_w,
+                 K_h, K_f, C_th, R_th, h_th, A_th, Ea, k, n, L0, Nf0, F0, beta, CL, Bx):
         self.Type = Type
         self.Mag = Mag
         self.p = p
         self.n_0 = n_0
         self.J_rot = J_rot
+        self.M_max = M_max
         self.T_max = T_max
         self.n_max = n_max
         self.P_max = P_max
@@ -118,7 +119,7 @@ class classPSM:
         # ------------------------------------------
         if setup['Exp']['lim'] == 1:
             n_Gbx = sat(n_Gbx, self.n_max)
-            M_Gbx = sat(M_Gbx, self.T_max)
+            M_Gbx = sat(M_Gbx, self.M_max)
             P_Gbx = sat(2 * np.pi * M_Gbx * n_Gbx, self.P_max)
             if n_Gbx != 0:
                 M_Gbx = P_Gbx / (2 * np.pi * n_Gbx)
@@ -646,10 +647,10 @@ class classPSM:
         # ------------------------------------------
         if setup['Exp']['lim'] == 1:
             n_Ema = sat(n_Ema, self.n_max)
-            M_Ema = sat(M_Ema, self.T_max)
+            M_Ema = sat(M_Ema, self.M_max)
             P_Ema = sat(2 * np.pi * M_Ema * n_Ema, self.P_max)
             if n_Ema != 0:
-                M_Ema = P_Ema / (2 * np.pi * n_Ema)
+                M_Ema = P_Ema / (2 * np.pi * n_Ema + 1e-9)
 
         # ------------------------------------------
         # Friction Torque

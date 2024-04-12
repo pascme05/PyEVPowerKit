@@ -43,9 +43,10 @@ class classBat:
     ###################################################################################################################
     # Constructor
     ###################################################################################################################
-    def __init__(self, P_max, I_max, R_i, V_nom, V_max, V_min, E_a_temp, E_bat, C_th, R_th, h_th, A_th, Ea, k, n, L0,
+    def __init__(self, P_max, T_max, I_max, R_i, V_nom, V_max, V_min, E_a_temp, E_bat, C_th, R_th, h_th, A_th, Ea, k, n, L0,
                  Nf0, F0, beta, CL, Bx):
         self.P_max = P_max
+        self.T_max = T_max
         self.I_max = I_max
         self.R_i = R_i
         self.V_nom = V_nom
@@ -108,7 +109,8 @@ class classBat:
         if setup['Exp']['lim'] == 1:
             Idc = sat(Idc, self.I_max)
             P_lim = sat(Vdc * Idc, self.P_max)
-            Idc = P_lim / Vdc
+            if Vdc != 0:
+                Idc = P_lim / (Vdc + 1e-9)
 
         # ==============================================================================
         # Calculation
