@@ -17,13 +17,19 @@
 # Function Description
 #######################################################################################################################
 """
-A short description of the function goes here.
-Inputs:     1)
-            2)
-            N)
-Outputs:    1)
-            2)
-            M)
+This function calculates the thermal outputs of the drive train.
+
+Inputs:     1) iter:        iteration number
+            2) GBX:         GBX instance
+            3) EMA:         EMA instance
+            4) INV:         INV instance
+            5) HVS:         HVS instance
+            6) VEH:         VEH instance
+            7) data:        mission profile
+            8) dataTime:    internal time dependent variables
+            9) setup:       includes all simulation variables
+Outputs:    1) dataTime:    updated internal time dependent variables
+
 """
 
 #######################################################################################################################

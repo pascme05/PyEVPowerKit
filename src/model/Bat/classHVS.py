@@ -71,7 +71,7 @@ class classBat:
     ###################################################################################################################
     # Electrical
     ###################################################################################################################
-    def calc_elec(self, Vdc, Idc, dt, SOC, T):
+    def calc_elec(self, Vdc, Idc, dt, SOC, T, setup):
         # ==============================================================================
         # Description
         # ==============================================================================
@@ -84,6 +84,7 @@ class classBat:
         3) dt:      discrete time step between two samples (sec)
         4) SOC:     state-of-charge of the battery (%)
         5) T:       temperature of the battery (degC)
+        6) setup:   setup file of the simulation
 
         Output:
         1) dQ:      Change of charge (Ws)
@@ -94,6 +95,20 @@ class classBat:
         6) Pv:      Losses (W)
         7) eta:     Efficiency (%)
         """
+
+        # ==============================================================================
+        # Fnc
+        # ==============================================================================
+        def sat(x, theta):
+            return min(theta, max(-theta, x))
+
+        # ==============================================================================
+        # Pre-Processing
+        # ==============================================================================
+        if setup['Exp']['lim'] == 1:
+            Idc = sat(Idc, self.I_max)
+            P_lim = sat(Vdc * Idc, self.P_max)
+            Idc = P_lim / Vdc
 
         # ==============================================================================
         # Calculation

@@ -17,13 +17,16 @@
 # Function Description
 #######################################################################################################################
 """
-A short description of the function goes here.
-Inputs:     1)
-            2)
-            N)
-Outputs:    1)
-            2)
-            M)
+This function calculates the electrical outputs of the drive train.
+
+Inputs:     1) iter:        iteration number
+            2) EMA:         EMA instance
+            3) INV:         INV instance
+            4) HVS:         HVS instance
+            5) dataTime:    internal time dependent variables
+            6) setup:       includes all simulation variables
+Outputs:    1) dataTime:    updated internal time dependent variables
+
 """
 
 #######################################################################################################################
@@ -93,10 +96,6 @@ def elecSim(iter, EMA, INV, HVS, dataTime, setup):
     T_HVS = dataTime['HVS']['T'][iter]
 
     ###################################################################################################################
-    # Pre-Processing
-    ###################################################################################################################
-
-    ###################################################################################################################
     # Calculation
     ###################################################################################################################
     # ==============================================================================
@@ -120,8 +119,8 @@ def elecSim(iter, EMA, INV, HVS, dataTime, setup):
     # ------------------------------------------
     # Electrical
     # ------------------------------------------
-    [Mi_F, Idc_F, Ic_F, Pin_INV_F, Pout_INV_F, Pv_INV_F, eta_INV_F] = INV.calc_elec(PF_F, Vs_F, Is_F, Vdc, T_Inv_F)
-    [Mi_R, Idc_R, Ic_R, Pin_INV_R, Pout_INV_R, Pv_INV_R, eta_INV_R] = INV.calc_elec(PF_R, Vs_R, Is_R, Vdc, T_Inv_R)
+    [Mi_F, Idc_F, Ic_F, Pin_INV_F, Pout_INV_F, Pv_INV_F, eta_INV_F] = INV.calc_elec(PF_F, Vs_F, Is_F, Vdc, T_Inv_F, setup)
+    [Mi_R, Idc_R, Ic_R, Pin_INV_R, Pout_INV_R, Pv_INV_R, eta_INV_R] = INV.calc_elec(PF_R, Vs_R, Is_R, Vdc, T_Inv_R, setup)
 
     # ------------------------------------------
     # Losses
@@ -132,7 +131,7 @@ def elecSim(iter, EMA, INV, HVS, dataTime, setup):
     # ==============================================================================
     # HVS
     # ==============================================================================
-    [dQ, SOC, Vdc, Pin_HVS, Pout_HVS, Pv_HVS, eta_HVS] = HVS.calc_elec(Vdc, Idc_F+Idc_R, Ts, SOC, T_HVS)
+    [dQ, SOC, Vdc, Pin_HVS, Pout_HVS, Pv_HVS, eta_HVS] = HVS.calc_elec(Vdc, Idc_F+Idc_R, Ts, SOC, T_HVS, setup)
 
     ###################################################################################################################
     # Post-Processing

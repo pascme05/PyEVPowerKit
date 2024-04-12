@@ -650,8 +650,6 @@ class classPSM:
             P_Ema = sat(2 * np.pi * M_Ema * n_Ema, self.P_max)
             if n_Ema != 0:
                 M_Ema = P_Ema / (2 * np.pi * n_Ema)
-        else:
-            self.I_max = 1e9
 
         # ------------------------------------------
         # Friction Torque
