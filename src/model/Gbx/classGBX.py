@@ -79,6 +79,7 @@ class classGBX:
         Input:
         1) M_Whe:   Torque of the wheel (Nm)
         2) n_Whe:   Rotational speed of the wheel (1/s)
+        3) setup:   Setup variables
 
         Output:
         1) M_Gbx:   Torque of the gearbox (Nm)
@@ -90,7 +91,7 @@ class classGBX:
         """
 
         # ==============================================================================
-        # Init
+        # Fnc
         # ==============================================================================
         def sat(x, theta):
             return min(theta, max(-theta, x))
@@ -105,7 +106,8 @@ class classGBX:
             n_Whe = sat(n_Whe, self.n_max / self.i)
             M_Whe = sat(M_Whe, self.T_max * self.i)
             P_Whe = sat(2 * np.pi * M_Whe * n_Whe, self.P_max)
-            M_Whe = P_Whe / (2 * np.pi * n_Whe)
+            if n_Whe != 0:
+                M_Whe = P_Whe / (2 * np.pi * n_Whe)
 
         # ------------------------------------------
         # Output

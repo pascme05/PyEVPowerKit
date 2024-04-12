@@ -107,8 +107,8 @@ def mechSim(iter, GBX, EMA, dataTime, setup):
     # ==============================================================================
     # EMA
     # ==============================================================================
-    [M_Ema_F, n_Ema_F, _, _, _] = EMA.calc_mech(M_Gbx_F, n_Gbx_F)
-    [M_Ema_R, n_Ema_R, _, _, _] = EMA.calc_mech(M_Gbx_R, n_Gbx_R)
+    [M_Ema_F, n_Ema_F, _, _, _] = EMA.calc_mech(M_Gbx_F, n_Gbx_F, setup)
+    [M_Ema_R, n_Ema_R, _, _, _] = EMA.calc_mech(M_Gbx_R, n_Gbx_R, setup)
 
     ###################################################################################################################
     # Post-Processing
