@@ -54,10 +54,40 @@ def initComp(setup):
     print("START: Initialise Component Classes")
 
     ###################################################################################################################
-    # Calculation
+    # Pre-Processing
     ###################################################################################################################
-    if setup['Exp']['lim'] == 0:
+    if setup['Exp']['lim'] == 0 or setup['Exp']['lim'] == 2:
+        # ==============================================================================
+        # GBX
+        # ==============================================================================
+        setup['Par']['GBX']['M_max'] = setup['Par']['GBX']['M_max'] * 2
+        setup['Par']['GBX']['n_max'] = setup['Par']['GBX']['n_max'] * 2
+        setup['Par']['GBX']['P_max'] = setup['Par']['GBX']['P_max'] * 2
+
+        # ==============================================================================
+        # EMA
+        # ==============================================================================
         setup['Par']['EMA']['I_max'] = setup['Par']['EMA']['I_max'] * 2
+        setup['Par']['EMA']['M_max'] = setup['Par']['EMA']['M_max'] * 2
+        setup['Par']['EMA']['n_max'] = setup['Par']['EMA']['n_max'] * 2
+        setup['Par']['EMA']['P_max'] = setup['Par']['EMA']['P_max'] * 2
+
+        # ==============================================================================
+        # INV
+        # ==============================================================================
+        setup['Par']['INV']['I_max'] = setup['Par']['INV']['I_max'] * 2
+        setup['Par']['INV']['P_max'] = setup['Par']['INV']['P_max'] * 2
+
+        # ==============================================================================
+        # HVS
+        # ==============================================================================
+        setup['Par']['HVS']['I_max'] = setup['Par']['HVS']['I_max'] * 2
+        setup['Par']['HVS']['P_max'] = setup['Par']['HVS']['P_max'] * 2
+
+        if setup['Exp']['lim'] == 0:
+            setup['Par']['HVS']['V_max'] = 1000
+            setup['Par']['HVS']['V_min'] = 1000
+            setup['Par']['HVS']['V_nom'] = 1000
 
     ###################################################################################################################
     # Calculation
@@ -107,7 +137,7 @@ def initComp(setup):
     # ==============================================================================
     # HVS
     # ==============================================================================
-    HVS = classBat(setup['Par']['HVS']['P_Max'], setup['Par']['INV']['T_max'], setup['Par']['HVS']['I_Max'], setup['Par']['HVS']['R_i'],
+    HVS = classBat(setup['Par']['HVS']['P_max'], setup['Par']['INV']['T_max'], setup['Par']['HVS']['I_max'], setup['Par']['HVS']['R_i'],
                    setup['Par']['HVS']['V_nom'], setup['Par']['HVS']['V_max'], setup['Par']['HVS']['V_min'],
                    setup['Par']['HVS']['E_a'], setup['Par']['HVS']['E_bat'], setup['Par']['HVS']['C_th'],
                    setup['Par']['HVS']['R_th'], setup['Par']['HVS']['h_th'], setup['Par']['HVS']['A_th'],

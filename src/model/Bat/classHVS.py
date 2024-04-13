@@ -130,6 +130,7 @@ class classBat:
         # ------------------------------------------
         Pin = Pout + Pv
         dQ = Pin * dt
+        dQ = np.nan_to_num(dQ, nan=0)
 
         # ------------------------------------------
         # Efficiency

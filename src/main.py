@@ -180,12 +180,12 @@ def main(setup, path):
     # ------------------------------------------
     # Electrical
     # ------------------------------------------
-    dataTime = elecVeh(data, dataTime, setup)
+    [data, dataTime] = elecVeh(data, dataTime, setup)
 
     # ------------------------------------------
     # Thermal
     # ------------------------------------------
-    dataTime = therVeh(data, dataTime, setup)
+    [data, dataTime] = therVeh(data, dataTime, setup)
 
     # ==============================================================================
     # Components

@@ -103,9 +103,9 @@ def plotGBX(data, dataTime, setup):
     fig.update_yaxes(title_text="P (W)", row=3, col=1)
 
     # Thermal
-    fig.update_yaxes(title_text="Pv (W)", row=1, col=3)
-    fig.update_yaxes(title_text="Eta (%)", row=2, col=3)
-    fig.update_yaxes(title_text="T (degC)", row=3, col=3)
+    fig.update_yaxes(title_text="Pv (W)", row=1, col=2)
+    fig.update_yaxes(title_text="Eta (%)", row=2, col=2)
+    fig.update_yaxes(title_text="T (degC)", row=3, col=2)
 
     # ------------------------------------------
     # Set x-axis title for the last subplot

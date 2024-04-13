@@ -684,16 +684,20 @@ class classPSM:
         # Symbolic Solver
         else:
             while iter < iter_max:
-                erg = self.calcEMA_MTPA(M_in, n_Ema, T, Vdc)
-                if not erg['status'][0:5] == 'Error':
-                    id = float(erg['i_d'])
-                    iq = float(erg['i_q'])
-                    vd = float(erg['v_d'])
-                    vq = float(erg['v_q'])
+                try:
+                    erg = self.calcEMA_MTPA(M_in, n_Ema, T, Vdc)
+                    if not erg['status'][0:5] == 'Error':
+                        id = float(erg['i_d'])
+                        iq = float(erg['i_q'])
+                        vd = float(erg['v_d'])
+                        vq = float(erg['v_q'])
+                        break
+                    else:
+                        M_in = M_in * 0.99
+                        iter = iter + 1
+                except:
+                    [id, iq, _, vd, vq, _] = self.calc_elec_SM(n_Ema, M_in, Vdc, T)
                     break
-                else:
-                    M_in = M_in * 0.99
-                    iter = iter + 1
 
         # Stator Quantities
         Is = np.sqrt(id ** 2 + iq ** 2) / np.sqrt(2)

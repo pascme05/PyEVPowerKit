@@ -65,19 +65,19 @@ def elecSim(iter, EMA, INV, HVS, dataTime, setup):
     # ------------------------------------------
     # Vehicles
     # ------------------------------------------
-    Vdc = dataTime['VEH']['Vdc'][iter-1][0]
+    Vdc = dataTime['VEH']['Vdc'][iter-1]
     SOC = dataTime['VEH']['SOC'][iter-1]
 
     # ------------------------------------------
     # EMA
     # ------------------------------------------
     # Front
-    T_Ema_F = dataTime['EMA']['F']['T'][iter]
+    T_Ema_F = dataTime['EMA']['F']['T'][iter - 1]
     M_Ema_F = dataTime['EMA']['F']['M'][iter]
     n_Ema_F = dataTime['EMA']['F']['n'][iter]
 
     # Rear
-    T_Ema_R = dataTime['EMA']['R']['T'][iter]
+    T_Ema_R = dataTime['EMA']['R']['T'][iter - 1]
     M_Ema_R = dataTime['EMA']['R']['M'][iter]
     n_Ema_R = dataTime['EMA']['R']['n'][iter]
 
@@ -85,15 +85,15 @@ def elecSim(iter, EMA, INV, HVS, dataTime, setup):
     # INV
     # ------------------------------------------
     # Front
-    T_Inv_F = dataTime['INV']['F']['T'][iter]
+    T_Inv_F = dataTime['INV']['F']['T'][iter - 1]
 
     # Rear
-    T_Inv_R = dataTime['INV']['R']['T'][iter]
+    T_Inv_R = dataTime['INV']['R']['T'][iter - 1]
 
     # ------------------------------------------
     # HVS
     # ------------------------------------------
-    T_HVS = dataTime['HVS']['T'][iter]
+    T_HVS = dataTime['HVS']['T'][iter - 1]
 
     ###################################################################################################################
     # Calculation

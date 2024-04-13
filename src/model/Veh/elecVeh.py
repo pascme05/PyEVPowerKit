@@ -69,22 +69,31 @@ def elecVeh(data, dataTime, setup):
     # ==============================================================================
     elif setup['Exp']['Vdc'] == 3:
         print("INFO: Using SOC based HVS voltage")
-        dataTime['VEH']['Vdc'] = (V_max - (V_max - V_min) * (1 - SOC / 100)) * np.ones((N, 1))
-        dataTime['VEH']['SOC'] = SOC * np.ones((N, 1))
+        dataTime['VEH']['Vdc'] = (V_max - (V_max - V_min) * (1 - SOC)) * np.ones(N)
+        dataTime['VEH']['SOC'] = SOC * np.ones(N)
+        data['V_DC'] = (V_max - (V_max - V_min) * (1 - SOC)) * np.ones((N, 1))
 
     # ==============================================================================
     # Constant
     # ==============================================================================
     else:
         print("INFO: Using constant nominal HVS voltage")
-        dataTime['VEH']['Vdc'] = V_nom * np.ones((N, 1))
-        dataTime['VEH']['SOC'] = (V_nom - V_min) / (V_max - V_min) * np.ones((N, 1))
+        dataTime['VEH']['Vdc'] = V_nom * np.ones(N)
+        dataTime['VEH']['SOC'] = (V_nom - V_min) / (V_max - V_min) * np.ones(N)
+        data['V_DC'] = V_nom * np.ones((N, 1))
+
+    ###################################################################################################################
+    # Post-processing
+    ###################################################################################################################
+    if setup['Exp']['lim'] == 0:
+        dataTime['VEH']['Vdc'] = 1000 * np.ones(N)
+        data['V_DC'] = 1000 * np.ones(N)
 
     ###################################################################################################################
     # Return
     ###################################################################################################################
 
-    return dataTime
+    return [data, dataTime]
 
     ###################################################################################################################
     # References
