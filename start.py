@@ -71,15 +71,20 @@ setup['Exp']['lim'] = 1                                                         
 # ------------------------------------------
 # Plotting
 # ------------------------------------------
-setup['Exp']['plot'] = 1                                                                                                 # 1) Plotting reduced, 2) Plotting detail
+setup['Exp']['plot'] = 0                                                                                                 # 1) Plotting reduced, 2) Plotting detail
 setup['Exp']['plotAxis'] = 'R'                                                                                           # R) Rear axis, F) Front axis, T) Total values
 setup['Exp']['hFig'] = 900                                                                                               # Figure height (px)
 setup['Exp']['wFig'] = 2000                                                                                              # Figure width (px)
 
+# ------------------------------------------
+# Saving
+# ------------------------------------------
+setup['Exp']['save'] = 1                                                                                                 # 0) files are not saved, 2) files are saved in \results
+
 # ==============================================================================
 # Data
 # ==============================================================================
-setup['Dat']['fs'] = 10                                                                                                  # Sampling frequency of the data (Hz)
+setup['Dat']['fs'] = 1                                                                                                  # Sampling frequency of the data (Hz)
 
 # ==============================================================================
 # Parameters

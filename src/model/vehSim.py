@@ -37,6 +37,7 @@ Outputs:    1)
 # External
 # ==============================================================================
 from scipy import integrate
+import numpy as np
 
 #######################################################################################################################
 # Additional Functions
@@ -82,6 +83,62 @@ def vehSim(iter, VEH, data, dataTime, setup):
     ###################################################################################################################
     # Post-Processing
     ###################################################################################################################
+    # ==============================================================================
+    # GBX
+    # ==============================================================================
+    # ------------------------------------------
+    # Init
+    # ------------------------------------------
+    M_GBX = M / setup['Par']['GBX']['i']
+    P_GBX = 2 * np.pi * M_GBX * dataTime['EMA']['T']['n']
+
+    # ------------------------------------------
+    # Accelerating
+    # ------------------------------------------
+    if M_EMA > 0:
+        if setup['Par']['xwd'] == 'RWD':
+            dataTime['GBX']['T']['M'][iter] = M_GBX
+            dataTime['GBX']['F']['M'][iter] = 0
+            dataTime['GBX']['R']['M'][iter] = M_GBX
+        elif setup['Par']['xwd'] == 'FWD':
+            dataTime['GBX']['T']['M'][iter] = M_GBX
+            dataTime['GBX']['F']['M'][iter] = M_GBX
+            dataTime['GBX']['R']['M'][iter] = 0
+        else:
+            dataTime['GBX']['T']['M'][iter] = M_GBX
+            dataTime['GBX']['F']['M'][iter] = M_GBX * setup['Par']['VEH']['d_a']
+            dataTime['GBX']['R']['M'][iter] = M_GBX * (1 - setup['Par']['VEH']['d_a'])
+
+    # ------------------------------------------
+    # Breaking
+    # ------------------------------------------
+    else:
+        if setup['Par']['xwd'] == 'RWD':
+            dataTime['GBX']['T']['M'][iter] = M_GBX
+            dataTime['GBX']['F']['M'][iter] = 0
+            dataTime['GBX']['R']['M'][iter] = M_GBX
+        elif setup['Par']['xwd'] == 'FWD':
+            dataTime['GBX']['T']['M'][iter] = M_GBX
+            dataTime['GBX']['F']['M'][iter] = M_GBX
+            dataTime['GBX']['R']['M'][iter] = 0
+        else:
+            dataTime['GBX']['T']['M'][iter] = M_GBX
+            dataTime['GBX']['F']['M'][iter] = M_GBX * setup['Par']['VEH']['d_b']
+            dataTime['GBX']['R']['M'][iter] = M_GBX * (1 - setup['Par']['VEH']['d_b'])
+
+    # ------------------------------------------
+    # Power
+    # ------------------------------------------
+    dataTime['GBX']['T']['Pout'][iter] = 2 * np.pi * dataTime['EMA']['T']['n'][iter] * dataTime['GBX']['T']['M'][iter]
+    dataTime['GBX']['F']['Pout'][iter] = 2 * np.pi * dataTime['EMA']['F']['n'][iter] * dataTime['GBX']['F']['M'][iter]
+    dataTime['GBX']['R']['Pout'][iter] = 2 * np.pi * dataTime['EMA']['R']['n'][iter] * dataTime['GBX']['R']['M'][iter]
+    dataTime['GBX']['T']['Pin'][iter] = dataTime['GBX']['T']['Pout'][iter] + dataTime['GBX']['T']['Pv'][iter]
+    dataTime['GBX']['F']['Pin'][iter] = dataTime['GBX']['F']['Pout'][iter] + dataTime['GBX']['F']['Pv'][iter]
+    dataTime['GBX']['R']['Pin'][iter] = dataTime['GBX']['R']['Pout'][iter] + dataTime['GBX']['R']['Pv'][iter]
+
+    # ==============================================================================
+    # Vehicle
+    # ==============================================================================
     dataTime['VEH']['a'][iter] = a
     dataTime['VEH']['v'] = integrate.cumtrapz(dataTime['VEH']['a'], data['t'].values, initial=0)
     dataTime['VEH']['s'] = integrate.cumtrapz(dataTime['VEH']['v'], data['t'].values, initial=0)

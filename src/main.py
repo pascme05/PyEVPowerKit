@@ -42,6 +42,7 @@ from src.plot.plotting import plotting
 from src.model.elecSim import elecSim
 from src.model.therSim import therSim
 from src.model.vehSim import vehSim
+from src.general.save import save
 
 
 # ==============================================================================
@@ -277,6 +278,7 @@ def main(setup, path):
     # ------------------------------------------
     # Start
     # ------------------------------------------
+    save(dataTime, path, setup)
 
     # ==============================================================================
     # Plotting
@@ -291,7 +293,10 @@ def main(setup, path):
     # ------------------------------------------
     # Start
     # ------------------------------------------
-    plotting(data, dataTime, setup)
+    if setup['Exp']['plot'] == 1:
+        plotting(data, dataTime, setup)
+    else:
+        print("INFO: Plotting disabled")
 
     # ==============================================================================
     # MSG OUT
