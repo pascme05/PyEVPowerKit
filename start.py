@@ -51,12 +51,8 @@ setup = initSetup()
 # ------------------------------------------
 # Files
 # ------------------------------------------
-setup['Exp']['name'] = 'test'                                                                                            # Name of the simulation
-setup['Dat']['name'] = 'data_Vmax_Tesla3'                                                                            # Name of the data file
-# setup['Dat']['name'] = 'data_WLTP'                                                                            # Name of the data file
-# setup['Dat']['name'] = 'data_Grossglockner'                                                                             # Name of the data file
-# setup['Dat']['name'] = 'data_Artemis_150'                                                                             # Name of the data file
-# setup['Dat']['name'] = 'data_Constant_V'                                                                             # Name of the data file
+setup['Exp']['name'] = 'Tesla3_Vmax'                                                                                     # Name of the simulation
+setup['Dat']['name'] = 'data_Vmax_Tesla3'                                                                                # Name of the data file
 setup['Par']['name'] = 'setup_Tesla3'                                                                                    # Name of the setup file
 
 # ------------------------------------------
@@ -71,7 +67,7 @@ setup['Exp']['lim'] = 1                                                         
 # ------------------------------------------
 # Plotting
 # ------------------------------------------
-setup['Exp']['plot'] = 0                                                                                                 # 1) Plotting reduced, 2) Plotting detail
+setup['Exp']['plot'] = 1                                                                                                 # 1) Plotting reduced, 2) Plotting detail
 setup['Exp']['plotAxis'] = 'R'                                                                                           # R) Rear axis, F) Front axis, T) Total values
 setup['Exp']['hFig'] = 900                                                                                               # Figure height (px)
 setup['Exp']['wFig'] = 2000                                                                                              # Figure width (px)
@@ -79,12 +75,12 @@ setup['Exp']['wFig'] = 2000                                                     
 # ------------------------------------------
 # Saving
 # ------------------------------------------
-setup['Exp']['save'] = 1                                                                                                 # 0) files are not saved, 2) files are saved in \results
+setup['Exp']['save'] = 0                                                                                                 # 0) files are not saved, 2) files are saved in \results
 
 # ==============================================================================
 # Data
 # ==============================================================================
-setup['Dat']['fs'] = 1                                                                                                  # Sampling frequency of the data (Hz)
+setup['Dat']['fs'] = 10                                                                                                  # Sampling frequency of the data (Hz)
 
 # ==============================================================================
 # Parameters

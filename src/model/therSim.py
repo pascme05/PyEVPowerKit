@@ -167,7 +167,7 @@ def therSim(iter, GBX, EMA, INV, HVS, VEH, data, dataTime, setup):
     # ==============================================================================
     dataTime['INV']['F']['T'][iter] = T_INV_F + Tc
     dataTime['INV']['R']['T'][iter] = T_INV_R + Tc
-    dataTime['INV']['T']['T'][iter] = np.max((T_EMA_F, T_EMA_R)) + Tc
+    dataTime['INV']['T']['T'][iter] = np.max((T_INV_F, T_INV_R)) + Tc
 
     # ==============================================================================
     # HVS

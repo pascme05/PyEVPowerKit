@@ -90,7 +90,6 @@ def vehSim(iter, VEH, data, dataTime, setup):
     # Init
     # ------------------------------------------
     M_GBX = M / setup['Par']['GBX']['i']
-    P_GBX = 2 * np.pi * M_GBX * dataTime['EMA']['T']['n']
 
     # ------------------------------------------
     # Accelerating
