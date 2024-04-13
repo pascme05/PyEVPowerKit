@@ -89,7 +89,7 @@ def mechWhe(data, dataTime, setup):
         # Breaking
         # ------------------------------------------
         # Msg
-        print("INFO: RWD vehicle with constant force ration of ", d_b*100, " % during breaking chosen")
+        print("INFO: RWD vehicle with constant force ration of ", d_b*100, "% during breaking chosen")
 
         # Calc
         F_b_FL = F_t_b * d_b / 2
@@ -117,7 +117,7 @@ def mechWhe(data, dataTime, setup):
         # Breaking
         # ------------------------------------------
         # Msg
-        print("INFO: FWD vehicle with constant force ration of ", d_b*100, " % during breaking chosen")
+        print("INFO: FWD vehicle with constant force ration of ", d_b*100, "% during breaking chosen")
 
         # Calc
         F_b_FL = F_t_b * d_b / 2
@@ -133,7 +133,7 @@ def mechWhe(data, dataTime, setup):
         # Driving
         # ------------------------------------------
         # Msg
-        print("INFO: AWD vehicle with constant force ration of ", d_a*100, " % during driving chosen")
+        print("INFO: AWD vehicle with constant force ration of ", d_a*100, "% during driving chosen")
 
         # Calc
         F_d_FL = F_t_d * d_a / 2
@@ -145,7 +145,7 @@ def mechWhe(data, dataTime, setup):
         # Breaking
         # ------------------------------------------
         # Msg
-        print("INFO: AWD vehicle with constant force ration of ", d_b*100, " % during breaking chosen")
+        print("INFO: AWD vehicle with constant force ration of ", d_b*100, "% during breaking chosen")
 
         # Calc
         F_b_FL = F_t_b * d_b / 2

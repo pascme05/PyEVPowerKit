@@ -58,7 +58,6 @@ def vehSim(iter, VEH, data, dataTime, setup):
     # ==============================================================================
     # Variables
     # ==============================================================================
-    s = dataTime['VEH']['s'][iter]
     v = dataTime['VEH']['v'][iter]
     M_EMA = dataTime['EMA']['T']['Msh'][iter]
 
@@ -76,7 +75,15 @@ def vehSim(iter, VEH, data, dataTime, setup):
     # ==============================================================================
     # Variables
     # ==============================================================================
-    M = M_EMA * setup['Par']['GBX']['i'] * eta
+    if M_EMA > 0:
+        M = M_EMA * setup['Par']['GBX']['i'] * eta
+    else:
+        if setup['Par']['xwd'] == 'FWD':
+            M = M_EMA * setup['Par']['GBX']['i'] * eta / setup['Par']['VEH']['d_b']
+        elif setup['Par']['xwd'] == 'RWD':
+            M = M_EMA * setup['Par']['GBX']['i'] * eta / (1 - setup['Par']['VEH']['d_b'])
+        else:
+            M = M_EMA * setup['Par']['GBX']['i'] * eta
 
     ###################################################################################################################
     # Calculation
