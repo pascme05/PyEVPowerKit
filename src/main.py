@@ -278,7 +278,10 @@ def main(setup, path):
     # ------------------------------------------
     # Start
     # ------------------------------------------
-    save(dataTime, path, setup)
+    if setup['Exp']['save'] == 1:
+        save(dataTime, path, setup)
+    else:
+        print("INFO: Saving disabled")
 
     # ==============================================================================
     # Plotting

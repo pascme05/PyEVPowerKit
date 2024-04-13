@@ -17,13 +17,11 @@
 # Function Description
 #######################################################################################################################
 """
-A short description of the function goes here.
-Inputs:     1)
-            2)
-            N)
-Outputs:    1)
-            2)
-            M)
+This function saves the results to a .mat file under /results.
+Inputs:     1) dataTime:    time dependent data
+            2) path:        all path variables
+            3) setup:       includes all simulation variables
+Outputs:    None
 """
 
 #######################################################################################################################
@@ -37,8 +35,6 @@ Outputs:    1)
 # External
 # ==============================================================================
 from datetime import datetime
-from pathlib import Path
-import pandas as pd
 import os
 from scipy.io import savemat
 
@@ -68,7 +64,6 @@ def save(dataTime, path, setup):
     # ==============================================================================
     # Variables
     # ==============================================================================
-    dir_name = setup['Exp']['name']
     resultName = 'result_' + setup['Exp']['name'] + '_' + dt_string + '.mat'
 
     ###################################################################################################################
@@ -82,8 +77,6 @@ def save(dataTime, path, setup):
     # ==============================================================================
     # Saving Results
     # ==============================================================================
-    # df = pd.DataFrame(dataTime)
-    # df.to_csv(resultName, index=False)
     savemat(resultName, dataTime)
 
     # ==============================================================================
