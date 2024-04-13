@@ -64,26 +64,15 @@ def vehSim(iter, VEH, data, dataTime, setup):
     ###################################################################################################################
     # Pre-Processing
     ###################################################################################################################
-    # ==============================================================================
-    # GBX
-    # ==============================================================================
     if M_EMA > 0:
-        eta = dataTime['GBX']['T']['eta'][iter]
-    else:
-        eta = 1 / dataTime['GBX']['T']['eta'][iter]
-
-    # ==============================================================================
-    # Variables
-    # ==============================================================================
-    if M_EMA > 0:
-        M = M_EMA * setup['Par']['GBX']['i'] * eta
+        M = M_EMA * setup['Par']['GBX']['i'] * dataTime['GBX']['T']['eta'][iter]
     else:
         if setup['Par']['xwd'] == 'FWD':
-            M = M_EMA * setup['Par']['GBX']['i'] * eta / setup['Par']['VEH']['d_b']
+            M = M_EMA * setup['Par']['GBX']['i'] / dataTime['GBX']['T']['eta'][iter] / setup['Par']['VEH']['d_b']
         elif setup['Par']['xwd'] == 'RWD':
-            M = M_EMA * setup['Par']['GBX']['i'] * eta / (1 - setup['Par']['VEH']['d_b'])
+            M = M_EMA * setup['Par']['GBX']['i'] / dataTime['GBX']['T']['eta'][iter] / (1 - setup['Par']['VEH']['d_b'])
         else:
-            M = M_EMA * setup['Par']['GBX']['i'] * eta
+            M = M_EMA * setup['Par']['GBX']['i'] / dataTime['GBX']['T']['eta'][iter]
 
     ###################################################################################################################
     # Calculation

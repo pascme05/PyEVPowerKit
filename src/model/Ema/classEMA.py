@@ -674,39 +674,26 @@ class classPSM:
         # ------------------------------------------
         # Currents and Voltages
         # ------------------------------------------
-        # Interior Magnet
-        if magType == 2:
-            if setup['Par']['sol'] == 1:
+        # Numeric Solver
+        if setup['Par']['sol'] == 1:
+            if magType == 2:
                 [id, iq, _, vd, vq, _] = self.calc_elec_IM(n_Ema, M_in, Vdc, T)
             else:
-                while iter < iter_max:
-                    erg = self.calcEMA_MTPA(M_in, n_Ema, T, Vdc)
-                    if not erg['status'][0:5] == 'Error':
-                        id = float(erg['i_d'])
-                        iq = float(erg['i_q'])
-                        vd = float(erg['v_d'])
-                        vq = float(erg['v_q'])
-                        break
-                    else:
-                        M_in = M_in * 0.99
-                        iter = iter + 1
-
-        # Surface Magnet
-        else:
-            if setup['Par']['sol'] == 1:
                 [id, iq, _, vd, vq, _] = self.calc_elec_SM(n_Ema, M_in, Vdc, T)
-            else:
-                while iter < iter_max:
-                    erg = self.calcEMA_MTPA(M_in, n_Ema, T, Vdc)
-                    if not erg['status'][0:5] == 'Error':
-                        id = float(erg['i_d'])
-                        iq = float(erg['i_q'])
-                        vd = float(erg['v_d'])
-                        vq = float(erg['v_q'])
-                        break
-                    else:
-                        M_in = M_in * 0.99
-                        iter = iter + 1
+
+        # Symbolic Solver
+        else:
+            while iter < iter_max:
+                erg = self.calcEMA_MTPA(M_in, n_Ema, T, Vdc)
+                if not erg['status'][0:5] == 'Error':
+                    id = float(erg['i_d'])
+                    iq = float(erg['i_q'])
+                    vd = float(erg['v_d'])
+                    vq = float(erg['v_q'])
+                    break
+                else:
+                    M_in = M_in * 0.99
+                    iter = iter + 1
 
         # Stator Quantities
         Is = np.sqrt(id ** 2 + iq ** 2) / np.sqrt(2)

@@ -215,12 +215,8 @@ class classVEH:
         # ==============================================================================
         # Pre-Processing
         # ==============================================================================
-        if M > 0:
-            [Fp, Fr, Fc, _, _] = self.calc_force(v, 0, ang, setup)
-            Fd = Fp + Fr + Fc
-        else:
-            [Fp, Fr, Fc, _, _] = self.calc_force(v, 0, ang, setup)
-            Fd = Fp + Fr + Fc
+        [Fp, Fr, Fc, _, _] = self.calc_force(v, 0, ang, setup)
+        Fd = Fp + Fr + Fc
 
         # ==============================================================================
         # Calculation
