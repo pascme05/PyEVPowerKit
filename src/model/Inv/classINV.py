@@ -235,14 +235,14 @@ class classB6:
             p_l_sw_con = r_T * I0 ** 2 * (1 / 8 + (Mi * cos_phi) / (3 * np.pi))
             p_l_di_con = self.V_d0 * I0 * (1 / (2 * np.pi) - (Mi * cos_phi) / 8) + r_D * I0 ** 2 * (1 / 8 - (Mi * cos_phi) / (3 * np.pi))
             p_l_sw_swi = (E_on + E_off + E_rec) * self.fs
-            Pv_swi = self.nSw * (p_l_sw_con + p_l_di_con + p_l_sw_swi)
+            Pv_swi = 6 * self.nSw * (p_l_sw_con + p_l_di_con + p_l_sw_swi)
 
         # IGBT
         else:
             p_l_sw_con = self.V_ce0 * I0 * (1 / (2*np.pi) + (Mi * cos_phi) / 8) + r_T * I0**2 * (1/8 + (Mi * cos_phi) / (3*np.pi))
             p_l_di_con = self.V_d0 * I0 * (1 / (2*np.pi) - (Mi * cos_phi) / 8) + r_D * I0**2 * (1/8 - (Mi * cos_phi) / (3*np.pi))
             p_l_sw_swi = (E_on + E_off + E_rec) * self.fs
-            Pv_swi = self.nSw * (p_l_sw_con + p_l_di_con + p_l_sw_swi)
+            Pv_swi = 6 * self.nSw * (p_l_sw_con + p_l_di_con + p_l_sw_swi)
 
         # ------------------------------------------
         # DC-Link Capacitor
