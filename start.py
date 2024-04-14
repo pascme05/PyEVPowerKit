@@ -55,8 +55,7 @@ setup['Exp']['name'] = 'Tesla3_Vmax'                                            
 setup['Dat']['name'] = 'data_Vmax_Tesla3'                                                                                # Name of the data file
 # setup['Dat']['name'] = 'data_Artemis_150_Cof'                                                                            # Name of the data file
 setup['Dat']['name'] = 'data_Artemis_150_Arr'                                                                            # Name of the data file
-#setup['Dat']['name'] = 'data_HTOE'                                                                            # Name of the data file
-#setup['Dat']['name'] = 'data_PTCE'                                                                            # Name of the data file
+setup['Dat']['name'] = 'data_PTCE'                                                                            # Name of the data file
 setup['Par']['name'] = 'setup_Tesla3'                                                                                    # Name of the setup file
 
 # ------------------------------------------
@@ -64,7 +63,7 @@ setup['Par']['name'] = 'setup_Tesla3'                                           
 # ------------------------------------------
 setup['Exp']['on'] = 8000                                                                                                # total driving time (hrs)
 setup['Exp']['km'] = 300000                                                                                              # total distance (km)
-setup['Exp']['life'] = 131400                                                                                            # total lifetime (hrs)
+setup['Exp']['life'] = 1000                                                                                            # total lifetime (hrs)
 
 # ------------------------------------------
 # Settings
@@ -92,7 +91,7 @@ setup['Exp']['save'] = 0                                                        
 # ==============================================================================
 # Data
 # ==============================================================================
-setup['Dat']['fs'] = 1                                                                                                  # Sampling frequency of the data (Hz)
+setup['Dat']['fs'] = 1/60                                                                                                  # Sampling frequency of the data (Hz)
 
 # ==============================================================================
 # Parameters
