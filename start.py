@@ -54,9 +54,9 @@ setup = initSetup()
 setup['Exp']['name'] = 'Tesla3_Vmax'                                                                                     # Name of the simulation
 setup['Dat']['name'] = 'data_Vmax_Tesla3'                                                                                # Name of the data file
 # setup['Dat']['name'] = 'data_Artemis_150_Cof'                                                                            # Name of the data file
-# setup['Dat']['name'] = 'data_Artemis_150_Arr'                                                                            # Name of the data file
-setup['Dat']['name'] = 'data_HTOE'                                                                            # Name of the data file
-setup['Dat']['name'] = 'data_PTCE'                                                                            # Name of the data file
+setup['Dat']['name'] = 'data_Artemis_150_Arr'                                                                            # Name of the data file
+#setup['Dat']['name'] = 'data_HTOE'                                                                            # Name of the data file
+#setup['Dat']['name'] = 'data_PTCE'                                                                            # Name of the data file
 setup['Par']['name'] = 'setup_Tesla3'                                                                                    # Name of the setup file
 
 # ------------------------------------------
@@ -64,7 +64,7 @@ setup['Par']['name'] = 'setup_Tesla3'                                           
 # ------------------------------------------
 setup['Exp']['on'] = 8000                                                                                                # total driving time (hrs)
 setup['Exp']['km'] = 300000                                                                                              # total distance (km)
-setup['Exp']['life'] = 1000                                                                                            # total lifetime (hrs)
+setup['Exp']['life'] = 131400                                                                                            # total lifetime (hrs)
 
 # ------------------------------------------
 # Settings
@@ -74,7 +74,7 @@ setup['Exp']['Vdc'] = 3                                                         
 setup['Exp']['Cool'] = 2                                                                                                 # 1) constant coolant temperature, 2) measured coolant temperature, 3) calculated coolant temperature
 setup['Exp']['Tc'] = 30                                                                                                  # Constant coolant temperature (degC)
 setup['Exp']['Ta'] = 20                                                                                                  # Constant ambient temperature (degC)
-setup['Exp']['lim'] = 1                                                                                                  # 0) component limits are not used (using Vdc=1000V), 1) component limits enforced, 2) enforce only voltage
+setup['Exp']['lim'] = 0                                                                                                  # 0) component limits are not used (using Vdc=1000V), 1) component limits enforced, 2) enforce only voltage
 
 # ------------------------------------------
 # Plotting
@@ -92,7 +92,7 @@ setup['Exp']['save'] = 0                                                        
 # ==============================================================================
 # Data
 # ==============================================================================
-setup['Dat']['fs'] = 1/60                                                                                                  # Sampling frequency of the data (Hz)
+setup['Dat']['fs'] = 1                                                                                                  # Sampling frequency of the data (Hz)
 
 # ==============================================================================
 # Parameters

@@ -33,6 +33,7 @@ Outputs:    none
 from os.path import dirname, join as pjoin
 import os
 import numpy as np
+import copy
 
 
 #######################################################################################################################
@@ -67,7 +68,7 @@ def getCycles(data, setup):
     dt = data['t'].values[1] - data['t'].values[0]
     T = data['t'].values[-1]
     s = data['s'].values[-1]
-    v = data['v'].values
+    v = copy.deepcopy(data['v'].values)
     v[v != 0] = 1
     T_drive = np.sum(v) * dt
 

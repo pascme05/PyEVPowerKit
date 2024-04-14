@@ -273,7 +273,7 @@ def main(setup, path):
     # Start
     # ------------------------------------------
     if setup['Exp']['save'] == 1:
-        save(dataTime, path, setup)
+        save(dataTime, dataLife, path, setup)
     else:
         print("INFO: Saving disabled")
 
@@ -291,7 +291,7 @@ def main(setup, path):
     # Start
     # ------------------------------------------
     if setup['Exp']['plot'] == 1:
-        plotting(data, dataTime, setup)
+        plotting(data, dataTime, dataLife, setup)
     else:
         print("INFO: Plotting disabled")
 
