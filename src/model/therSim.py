@@ -141,9 +141,13 @@ def therSim(iter, GBX, EMA, INV, HVS, VEH, data, dataTime, setup):
     # ==============================================================================
     # VEH
     # ==============================================================================
-    [Tc, dQ] = VEH.calc_cool(Pv_Hvs[iter - 1], Pv_Inv_F[iter - 1] + Pv_Inv_R[iter - 1],
-                             Pv_Ema_F[iter - 1] + Pv_Ema_R[iter - 1], Pv_Gbx_F[iter - 1] + Pv_Gbx_R[iter - 1],
-                             v, Vol, Ta, Tc, Ts)
+    if setup['Exp']['Cool'] == 3:
+        [Tc, dQ] = VEH.calc_cool(Pv_Hvs[iter - 1], Pv_Inv_F[iter - 1] + Pv_Inv_R[iter - 1],
+                                 Pv_Ema_F[iter - 1] + Pv_Ema_R[iter - 1], Pv_Gbx_F[iter - 1] + Pv_Gbx_R[iter - 1],
+                                 v, Vol, Ta, Tc, Ts)
+    else:
+        dQ = 0
+        Tc = dataTime['VEH']['Tc'][iter]
 
     ###################################################################################################################
     # Post-Processing
@@ -177,8 +181,7 @@ def therSim(iter, GBX, EMA, INV, HVS, VEH, data, dataTime, setup):
     # ==============================================================================
     # VEH
     # ==============================================================================
-    if setup['Exp']['Cool'] == 3:
-        dataTime['VEH']['Tc'][iter] = Tc
+    dataTime['VEH']['Tc'][iter] = Tc
     dataTime['VEH']['dQ'][iter] = dQ
 
     ###################################################################################################################

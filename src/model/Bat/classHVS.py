@@ -44,7 +44,7 @@ class classBat:
     # Constructor
     ###################################################################################################################
     def __init__(self, P_max, T_max, I_max, R_i, V_nom, V_max, V_min, E_a_temp, E_bat, C_th, R_th, h_th, A_th, Ea, k, n, L0,
-                 Nf0, F0, beta, CL, Bx):
+                 Nf0, T0, dT0, V0, F0, beta, CL, Bx):
         self.P_max = P_max
         self.T_max = T_max
         self.I_max = I_max
@@ -63,6 +63,9 @@ class classBat:
         self.n = n
         self.L0 = L0
         self.Nf0 = Nf0
+        self.T0 = T0
+        self.dT0 = dT0
+        self.V0 = V0
         self.F0 = F0
         self.beta = beta
         self.CL = CL

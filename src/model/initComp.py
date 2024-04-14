@@ -100,7 +100,8 @@ def initComp(setup):
                    setup['Par']['GBX']['c_b'], setup['Par']['GBX']['c_w'], setup['Par']['GBX']['C_th'],
                    setup['Par']['GBX']['R_th'], setup['Par']['GBX']['h_th'], setup['Par']['GBX']['A_th'],
                    setup['Par']['GBX']['Ea'], setup['Par']['GBX']['k'], setup['Par']['GBX']['n'],
-                   setup['Par']['GBX']['L0'], setup['Par']['GBX']['Nf0'], setup['Par']['GBX']['F0'],
+                   setup['Par']['GBX']['L0'], setup['Par']['GBX']['Nf0'], setup['Par']['GBX']['T0'],
+                   setup['Par']['GBX']['dT0'], setup['Par']['GBX']['V0'], setup['Par']['GBX']['F0'],
                    setup['Par']['GBX']['beta'], setup['Par']['GBX']['CL'], setup['Par']['GBX']['Bx'])
 
     # ==============================================================================
@@ -115,6 +116,7 @@ def initComp(setup):
                    setup['Par']['EMA']['C_th'], setup['Par']['EMA']['R_th'], setup['Par']['EMA']['h_th'],
                    setup['Par']['EMA']['A_th'], setup['Par']['EMA']['Ea'], setup['Par']['EMA']['k'],
                    setup['Par']['EMA']['n'], setup['Par']['EMA']['L0'], setup['Par']['EMA']['Nf0'],
+                   setup['Par']['EMA']['T0'], setup['Par']['EMA']['dT0'], setup['Par']['EMA']['V0'],
                    setup['Par']['EMA']['F0'], setup['Par']['EMA']['beta'], setup['Par']['EMA']['CL'],
                    setup['Par']['EMA']['Bx'])
 
@@ -131,7 +133,8 @@ def initComp(setup):
                   setup['Par']['INV']['R_ac'], setup['Par']['INV']['R_dc'], setup['Par']['INV']['C_th'],
                   setup['Par']['INV']['R_th'], setup['Par']['INV']['h_th'], setup['Par']['INV']['A_th'],
                   setup['Par']['INV']['Ea'], setup['Par']['INV']['k'], setup['Par']['INV']['n'],
-                  setup['Par']['INV']['L0'], setup['Par']['INV']['Nf0'], setup['Par']['INV']['F0'],
+                  setup['Par']['INV']['L0'], setup['Par']['INV']['Nf0'], setup['Par']['INV']['T0'],
+                  setup['Par']['INV']['dT0'], setup['Par']['INV']['V0'], setup['Par']['INV']['F0'],
                   setup['Par']['INV']['beta'], setup['Par']['INV']['CL'], setup['Par']['INV']['Bx'])
 
     # ==============================================================================
@@ -142,7 +145,8 @@ def initComp(setup):
                    setup['Par']['HVS']['E_a'], setup['Par']['HVS']['E_bat'], setup['Par']['HVS']['C_th'],
                    setup['Par']['HVS']['R_th'], setup['Par']['HVS']['h_th'], setup['Par']['HVS']['A_th'],
                    setup['Par']['HVS']['Ea'], setup['Par']['HVS']['k'], setup['Par']['HVS']['n'],
-                   setup['Par']['HVS']['L0'], setup['Par']['HVS']['Nf0'], setup['Par']['HVS']['F0'],
+                   setup['Par']['HVS']['L0'], setup['Par']['HVS']['Nf0'], setup['Par']['HVS']['T0'],
+                   setup['Par']['HVS']['dT0'], setup['Par']['HVS']['V0'], setup['Par']['HVS']['F0'],
                    setup['Par']['HVS']['beta'], setup['Par']['HVS']['CL'], setup['Par']['HVS']['Bx'])
 
     # ==============================================================================

@@ -44,7 +44,8 @@ class classB6:
     # Constructor
     ###################################################################################################################
     def __init__(self, fs, Sw, nSw, nCap, V_0, I_0, T_0, Tj_max, alpha, P_max, T_max, I_max, V_ce0, r_T, V_d0, r_D, E_on,
-                 E_off, E_rec, R_g, R_esr, C_dc, R_ac, R_dc, C_th, R_th, h_th, A_th, Ea, k, n, L0, Nf0, F0, beta, CL, Bx):
+                 E_off, E_rec, R_g, R_esr, C_dc, R_ac, R_dc, C_th, R_th, h_th, A_th, Ea, k, n, L0, Nf0, T0, dT0, V0, F0,
+                 beta, CL, Bx):
         self.fs = fs
         self.Sw = Sw
         self.nSw = nSw
@@ -78,6 +79,9 @@ class classB6:
         self.n = n
         self.L0 = L0
         self.Nf0 = Nf0
+        self.T0 = T0
+        self.dT0 = dT0
+        self.V0 = V0
         self.F0 = F0
         self.beta = beta
         self.CL = CL

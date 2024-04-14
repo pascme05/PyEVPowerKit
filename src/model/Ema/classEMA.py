@@ -47,7 +47,7 @@ class classPSM:
     # Constructor
     ###################################################################################################################
     def __init__(self, Type, Mag, p, n_0, J_rot, M_max, T_max, n_max, P_max, I_max, Psi, L_d, L_q, L_sig, R_s, c_b, c_w,
-                 K_h, K_f, C_th, R_th, h_th, A_th, Ea, k, n, L0, Nf0, F0, beta, CL, Bx):
+                 K_h, K_f, C_th, R_th, h_th, A_th, Ea, k, n, L0, Nf0, T0, dT0, V0, F0, beta, CL, Bx):
         self.Type = Type
         self.Mag = Mag
         self.p = p
@@ -76,6 +76,9 @@ class classPSM:
         self.n = n
         self.L0 = L0
         self.Nf0 = Nf0
+        self.T0 = T0
+        self.dT0 = dT0
+        self.V0 = V0
         self.F0 = F0
         self.beta = beta
         self.CL = CL

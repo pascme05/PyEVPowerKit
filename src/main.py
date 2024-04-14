@@ -44,6 +44,7 @@ from src.model.therSim import therSim
 from src.model.vehSim import vehSim
 from src.general.save import save
 from src.general.smallFnc import getCycles
+from src.model.reliaSim import reliaSim
 
 
 # ==============================================================================
@@ -256,6 +257,7 @@ def main(setup, path):
     # ------------------------------------------
     # Start
     # ------------------------------------------
+    dataLife = reliaSim(GBX, EMA, INV, HVS, dataTime, setup)
 
     # ==============================================================================
     # Saving

@@ -43,8 +43,8 @@ class classGBX:
     ###################################################################################################################
     # Constructor
     ###################################################################################################################
-    def __init__(self, i, J, M_max, T_max, n_max, P_max, c_m, c_b, c_w, C_th, R_th, h_th, A_th, Ea, k, n, L0, Nf0, F0,
-                 beta, CL, Bx):
+    def __init__(self, i, J, M_max, T_max, n_max, P_max, c_m, c_b, c_w, C_th, R_th, h_th, A_th, Ea, k, n, L0, Nf0, T0,
+                 dT0, V0, F0, beta, CL, Bx):
         self.i = i
         self.J = J
         self.M_max = M_max
@@ -63,6 +63,9 @@ class classGBX:
         self.n = n
         self.L0 = L0
         self.Nf0 = Nf0
+        self.T0 = T0
+        self.dT0 = dT0
+        self.V0 = V0
         self.F0 = F0
         self.beta = beta
         self.CL = CL
@@ -218,46 +221,6 @@ class classGBX:
 
         Output:
         1) dT:      Temperature change (K)
-        """
-
-        # ==============================================================================
-        # Initialisation
-        # ==============================================================================
-        tau = self.R_th * self.C_th
-        Rth = self.R_th
-
-        # ==============================================================================
-        # Calculation
-        # ==============================================================================
-        dT = (2 * tau - dt) / (2 * tau + dt) * T + (Rth * dt) / (2 * tau + dt) * (Pv1 + Pv2)
-
-        # ==============================================================================
-        # Return
-        # ==============================================================================
-        return dT
-
-    ###################################################################################################################
-    # Thermal
-    ###################################################################################################################
-    def calc_relia(self, dt, T, Pv1, Pv2):
-        # ==============================================================================
-        # Description
-        # ==============================================================================
-        """
-        This function calculates the reliability of the gearbox.
-
-        Input:
-        1) dt:      discrete time step between two samples (sec)
-        2) T:       Temperature of the previous time step (degC)
-        3) Pv1:     Losses of the previous time step (W)
-        4) Pv2:     Losses of the actual time step (W)
-
-        Output:
-        1) L:       Temperature change (K)
-        2) D:
-        3) F:
-        4) PDF:
-        5) CDF:
         """
 
         # ==============================================================================
