@@ -59,6 +59,30 @@ def initSetup():
 
 
 #######################################################################################################################
+# Init Setup files
+#######################################################################################################################
+def getCycles(data, setup):
+    print("INFO: Calculating number of cycles")
+
+    dt = data['t'].values[1] - data['t'].values[0]
+    T = data['t'].values[-1]
+    s = data['s'].values[-1]
+    v = data['v'].values
+    v[v != 0] = 1
+    T_drive = np.sum(v) * dt
+
+    N1 = setup['Exp']['on'] * 3600 / T_drive
+    N2 = setup['Exp']['km'] * 1000 / s
+    N3 = setup['Exp']['life'] * 3600 / T
+
+    setup['Exp']['cyc'] = int(min((N1, N2, N3)))
+
+    print("DONE: Number of cycles is equal to: ", setup['Exp']['cyc'])
+
+    return setup
+
+
+#######################################################################################################################
 # Init Output Variables
 #######################################################################################################################
 def initOutVar(N, Tinit):

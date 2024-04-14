@@ -43,6 +43,7 @@ from src.model.elecSim import elecSim
 from src.model.therSim import therSim
 from src.model.vehSim import vehSim
 from src.general.save import save
+from src.general.smallFnc import getCycles
 
 
 # ==============================================================================
@@ -120,6 +121,11 @@ def main(setup, path):
     # Resampling
     # ------------------------------------------
     data = sampleData(data, setup)
+
+    # ------------------------------------------
+    # Get Cycles
+    # ------------------------------------------
+    setup = getCycles(data, setup)
 
     # ==============================================================================
     # Parameter
