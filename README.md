@@ -59,7 +59,7 @@ lossless vehicle. Additionally $r_{dyn}$ is the dynamic wheel radius. Knowing th
 assuming a gearbox with a constant gear ratio $i_{g}$, each operation point can be described by a set of torque and rotational 
 speed values. The components can than be calculated according to the architecture presented below:
 
-![img.png](img.png)
+![img.png](docu/arch.png)
 
 # Results
 The results provided in this section have been obtained from a Tesla model 3 [1]. In detail, the acceleration to the 
@@ -84,8 +84,17 @@ parameters is provided below:
 | J_rot     | Inertia rotor                    | 0.12  | kgm2  |
 
 ## Maximum Acceleration
+In this operating mode the vehicle accelerates from standstill ($v=0$), to its maximum speed ($v=v_{max}$). 
+
+![acc.png](docu/acc.png)
+
+All other results can be obtained by running startAcceleration.py
 
 ## WLTP operation
+In this operating mode the vehicle is driving the WLTP cycle. The velocity, acceleration, and distance over time is
+illustrated in the figure below:
+
+![img_1.png](docu/wltp.png)
 
 # Development
 As failure and mistakes are inextricably linked to human nature, the toolkit is obviously not perfect, 
