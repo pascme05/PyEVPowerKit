@@ -121,7 +121,7 @@ class classVEH:
         # ------------------------------------------
         # Global Temperature Change
         # ------------------------------------------
-        Tc = ((Tc + dT) * Vol_m * dt + Tc * (self.c_Vol - Vol_m * dt)) / self.c_Vol
+        Tc = ((Tc + dT) * Vol_m + Tc * (self.c_Vol - Vol_m)) / self.c_Vol
 
         # ==============================================================================
         # Return

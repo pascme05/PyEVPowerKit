@@ -65,16 +65,16 @@ def therVeh(data, dataTime, setup):
     # Measured T_C
     # ==============================================================================
     if setup['Exp']['Cool'] == 2:
-        Tc = data['T_C'].to_numpy()
-        Ta = data['T_A'].to_numpy()
+        Tc = data['T_C'].to_numpy(float)
+        Ta = data['T_A'].to_numpy(float)
         print("INFO: Using measured coolant temperature")
 
     # ==============================================================================
     # Model based
     # ==============================================================================
     elif setup['Exp']['Cool'] == 3:
-        Tc = data['T_C'].to_numpy()
-        Ta = data['T_A'].to_numpy()
+        Tc = data['T_C'].to_numpy(float)
+        Ta = data['T_A'].to_numpy(float)
         print("INFO: Using model based coolant temperature")
 
     # ==============================================================================
