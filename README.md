@@ -31,16 +31,25 @@ The presented architecture includes a physical vehicle simulation considering al
 these forces including: air friction (Fa), rolling friction (Fr), climbing forces (Fc), and acceleration forces (Facc).
 The total force (Ft) is then calculated as the sum of these forces.
 
-$F_{t} = F_{a} + F_{r} + F_{c} + F_{acc}$     (1)
+$F_{t} = F_{a} + F_{r} + F_{c} + F_{acc}$                                       (1)
 
 In detail, each of these forces can be described using the laws of physics:
 
-$F_{a} = \frac{1}{2} \cdot \rho_{A} \dot A \cdot c_{w} \dot v^2$     (2)
-$F_{r} = c_{r} \cdot m \cdot g \cdot cos(\alpha)$     (3)
-$F_{c} = m \cdot g \cdot sin(\alpha)$     (4)
-$F_{acc} = (m + m_{acc}) \cdot \frac{dv}{dt}$     (5)
+$F_{a} = \frac{1}{2} \cdot \rho_{A} \dot A \cdot c_{w} \dot v^2$                (2)
+$F_{r} = c_{r} \cdot m \cdot g \cdot cos(\alpha)$                               (3)
+$F_{c} = m \cdot g \cdot sin(\alpha)$                                           (4)
+$F_{acc} = (m + m_{acc}) \cdot \frac{dv}{dt}$                                   (5)
 
-where 
+where $\rho_{A}$ is the density of air, $A$ is the vehicle frontal area, $c_{w}$ is the shape factor for the air resistance
+$v$ is the vehicle speed, $m$ is the vehicle mass, $m_{acc}$ is the equivalent acceleration mass (e.g. due to rotating 
+parts), and $\alpha$ is the slope of the road. Based on the above the required mechanical torque, power, and energy can 
+be determined for a lossless system.
+
+$M_{wheel} = \frac{1}{4} \cdot F_{t} \cdot r_{dyn}$                             (6)
+$P_{veh} = F_{t} \cdot v$                                                             (7)
+$E_{veh} = \int_{0}^{T_{end}} P_{veh} \cdot dt v$                                                             (7)
+
+
 # Results
 The results provided in this section have been obtained from a Tesla model 3 [1]. In detail, the acceleration to the 
 maximum vehicle speed and the WLTP operation are considered. The parameters and the results are listed below.
