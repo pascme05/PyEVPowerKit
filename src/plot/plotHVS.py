@@ -36,8 +36,8 @@ Outputs:    1)
 # ==============================================================================
 # External
 # ==============================================================================
-import plotly.graph_objects as go
-from plotly.subplots import make_subplots
+import matplotlib.pyplot as plt
+
 
 #######################################################################################################################
 # Additional Functions
@@ -48,90 +48,57 @@ from plotly.subplots import make_subplots
 # Main Function
 #######################################################################################################################
 def plotHVS(data, dataTime, setup):
-    ###################################################################################################################
-    # MSG IN
-    ###################################################################################################################
     print("INFO: Plotting HVS data")
 
-    ###################################################################################################################
-    # Initialisation
-    ###################################################################################################################
     time = data['t']
 
-    ###################################################################################################################
-    # Pre-Processing
-    ###################################################################################################################
-    fig = make_subplots(rows=2, cols=3, shared_xaxes=True, vertical_spacing=0.05)
+    fig, axs = plt.subplots(2, 3, sharex=True)
 
-    ###################################################################################################################
-    # Calculation
-    ###################################################################################################################
-    # ==============================================================================
-    # Plotting
-    # ==============================================================================
-    # ------------------------------------------
     # Electrical
-    # ------------------------------------------
-    fig.add_trace(go.Scatter(x=time, y=dataTime['HVS']['Vdc'], mode='lines', line=dict(color='#636EFA', dash='solid'), name='HVS Voltage'), row=1, col=1)
-    fig.add_trace(go.Scatter(x=time, y=dataTime['HVS']['Idc'], mode='lines', line=dict(color='#636EFA', dash='solid'), name='HVS Current'), row=2, col=1)
-
-    # ------------------------------------------
-    # Charge
-    # ------------------------------------------
-    fig.add_trace(go.Scatter(x=time, y=dataTime['HVS']['SOC'], mode='lines', line=dict(color='#EF553B', dash='solid'), name='HVS SOC'), row=1, col=2)
-    fig.add_trace(go.Scatter(x=time, y=dataTime['HVS']['dQ'], mode='lines', line=dict(color='#EF553B', dash='solid'), name='HVS Charge'), row=2, col=2)
-
-    # ------------------------------------------
-    # Thermal
-    # ------------------------------------------
-    fig.add_trace(go.Scatter(x=time, y=dataTime['HVS']['Pv'], mode='lines', line=dict(color='#00CC96', dash='solid'), name='Total Losses'), row=1, col=3)
-    fig.add_trace(go.Scatter(x=time, y=dataTime['HVS']['T'], mode='lines', line=dict(color='#00CC96', dash='solid'), name='Hotspot Temperature'), row=2, col=3)
-    fig.add_trace(go.Scatter(x=time, y=dataTime['VEH']['Tc'], mode='lines', line=dict(color='#00CC96', dash='dash'), name='Coolant Temperature'), row=2, col=3)
-
-    ###################################################################################################################
-    # Post-Processing
-    ###################################################################################################################
-    # ==============================================================================
-    # Axis
-    # ==============================================================================
-    # ------------------------------------------
-    # Set y-axis titles
-    # ------------------------------------------
-    # Electrical
-    fig.update_yaxes(title_text="Vdc (V)", row=1, col=1)
-    fig.update_yaxes(title_text="Idc RMS (A)", row=2, col=1)
+    axs[0, 0].plot(time, dataTime['HVS']['Vdc'], label='HVS Voltage')
+    axs[1, 0].plot(time, dataTime['HVS']['Idc'], label='HVS Current')
 
     # Charge
-    fig.update_yaxes(title_text="SOC (%)", row=1, col=2)
-    fig.update_yaxes(title_text="dQ (Ws)", row=2, col=2)
+    axs[0, 1].plot(time, dataTime['HVS']['SOC'], label='HVS SOC')
+    axs[1, 1].plot(time, dataTime['HVS']['dQ']/1000, label='HVS Charge')
 
     # Thermal
-    fig.update_yaxes(title_text="Pv (W)", row=1, col=3)
-    fig.update_yaxes(title_text="T (degC)", row=2, col=3)
+    axs[0, 2].plot(time, dataTime['HVS']['Pv'], label='Total Losses')
+    axs[1, 2].plot(time, dataTime['HVS']['T'], label='Hotspot Temperature')
+    axs[1, 2].plot(time, dataTime['VEH']['Tc'], label='Coolant Temperature')
+    axs[1, 2].legend()
 
-    # ------------------------------------------
-    # Set x-axis title for the last subplot
-    # ------------------------------------------
-    fig.update_xaxes(title_text="time (sec)", row=3, col=1)
-    fig.update_xaxes(title_text="time (sec)", row=3, col=2)
-    fig.update_xaxes(title_text="time (sec)", row=3, col=3)
+    # Grid activation
+    for ax_row in axs:
+        for ax in ax_row:
+            ax.grid(True)
 
-    # ==============================================================================
-    # Title
-    # ==============================================================================
-    txt = "HVS Electrical, Losses, and Thermal"
-    fig.update_layout(height=setup['Exp']['hFig'], width=setup['Exp']['wFig'], title_text=txt)
+    # Axis labels
+    axs[0, 0].set_ylabel('Vdc (V)')
+    axs[1, 0].set_ylabel('Idc RMS (A)')
 
-    # ==============================================================================
-    # Plot
-    # ==============================================================================
-    fig.show()
+    axs[0, 1].set_ylabel('SOC (%)')
+    axs[1, 1].set_ylabel('dQ (kJ)')
 
-    ###################################################################################################################
-    # Return
-    ###################################################################################################################
+    axs[0, 2].set_ylabel('Pv (W)')
+    axs[1, 2].set_ylabel('T (degC)')
+
+    axs[1, 0].set_xlabel('time (sec)')
+    axs[1, 1].set_xlabel('time (sec)')
+    axs[1, 2].set_xlabel('time (sec)')
+
+    # Titles
+    axs[0, 0].set_title('HVS Voltage')
+    axs[1, 0].set_title('HVS Current')
+
+    axs[0, 1].set_title('HVS SOC')
+    axs[1, 1].set_title('HVS Charge')
+
+    axs[0, 2].set_title('Total Losses')
+    axs[1, 2].set_title('Hotspot and Coolant Temperature')
+
+    # Layout adjustments
+    fig.suptitle("HVS Electrical, Charge, and Thermal", size=18)
+    plt.subplots_adjust(hspace=0.35, wspace=0.35, left=0.075, right=0.925, top=0.90, bottom=0.075)
+
     return []
-
-#######################################################################################################################
-# References
-#######################################################################################################################

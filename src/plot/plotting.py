@@ -86,7 +86,7 @@ def plotting(data, dataTime, dataLife, setup):
     # ------------------------------------------
     # Overall
     # ------------------------------------------
-    if setup['Exp']['plot'] == 1:
+    if setup['Exp']['plot'] == 1 or setup['Exp']['plot'] == 3:
         plotVeh(data, dataTime, setup)
 
     # ------------------------------------------
@@ -131,7 +131,8 @@ def plotting(data, dataTime, dataLife, setup):
     # ==============================================================================
     # Reliability
     # ==============================================================================
-    plotRelia(dataLife, setup)
+    if setup['Exp']['plot'] == 3:
+        plotRelia(dataLife, setup)
 
     ###################################################################################################################
     # MSG Out

@@ -2,7 +2,7 @@
 #######################################################################################################################
 # Title:        Python Electric Vehicle Power Toolkit (PyEVPowerKit)
 # Topic:        EV Modeling
-# File:         start
+# File:         startAcceleration
 # Date:         18.03.2024
 # Author:       Dr. Pascal A. Schirmer
 # Version:      V.0.1
@@ -53,8 +53,6 @@ setup = initSetup()
 # ------------------------------------------
 setup['Exp']['name'] = 'Tesla3_Vmax'                                                                                     # Name of the simulation
 setup['Dat']['name'] = 'data_Vmax_Tesla3'                                                                                # Name of the data file
-# setup['Dat']['name'] = 'data_Artemis_150_Cof'                                                                          # Name of the data file
-# setup['Dat']['name'] = 'data_Artemis_150_Arr'                                                                          # Name of the data file
 setup['Par']['name'] = 'setup_Tesla3'                                                                                    # Name of the setup file
 
 # ------------------------------------------

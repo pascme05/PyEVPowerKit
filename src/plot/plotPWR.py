@@ -36,13 +36,30 @@ Outputs:    1)
 # ==============================================================================
 # External
 # ==============================================================================
-import plotly.graph_objects as go
-from plotly.subplots import make_subplots
+import matplotlib.pyplot as plt
 import numpy as np
+
 
 #######################################################################################################################
 # Additional Functions
 #######################################################################################################################
+def grouped_bar_plot(ax, data, categories, bar_labels):
+    n_categories = len(categories)
+    n_bars = len(data)
+
+    index = np.arange(n_categories) * 1.5  # Adjust the multiplier for the distance between categories
+    bar_width = 0.35
+    opacity = 0.8
+    bar_offsets = np.linspace(-0.35, 0.35, n_bars)
+
+    for i in range(n_bars):
+        ax.bar(index + bar_offsets[i], data[i], bar_width,
+               alpha=opacity, label=bar_labels[i])
+
+    ax.set_xticks(index)
+    ax.set_xticklabels(categories)
+    ax.grid(True)
+    ax.legend()
 
 
 #######################################################################################################################
@@ -59,21 +76,13 @@ def plotPWR(data, dataTime, setup):
     ###################################################################################################################
     time = data['t']
     axis = setup['Exp']['plotAxis']
-    cat = ['HVS', 'INV', 'EMA', 'GBX', 'WHE']
+    cat = ['HVS', 'INV', 'EMA', 'GBX']
+    cat2 = ['HVS', 'INV', 'EMA', 'GBX', 'WHE']
     bar = ['Avg', 'Std', 'Max']
 
     ###################################################################################################################
     # Pre-Processing
     ###################################################################################################################
-    # ==============================================================================
-    # Differences
-    # ==============================================================================
-    Diff_HVS = dataTime['HVS']['Pv'] - (dataTime['HVS']['Pin'] - dataTime['HVS']['Pout'])
-    Diff_INV = dataTime['INV'][axis]['Pv'] - (dataTime['INV'][axis]['Pin'] - dataTime['INV'][axis]['Pout'])
-    Diff_EMA = dataTime['EMA'][axis]['Pv'] - (dataTime['EMA'][axis]['Pin'] - dataTime['EMA'][axis]['Pout'])
-    Diff_GBX = dataTime['GBX'][axis]['Pv'] - (dataTime['GBX'][axis]['Pin'] - dataTime['GBX'][axis]['Pout'])
-    Diff_WHE = (dataTime['WHE'][axis]['P'] - dataTime['WHE'][axis]['P'])
-
     # ==============================================================================
     # Statistical Values
     # ==============================================================================
@@ -174,50 +183,24 @@ def plotPWR(data, dataTime, setup):
     Eta_Max_WHE = 1
 
     # ------------------------------------------
-    # Error
-    # ------------------------------------------
-    '''
-    # Avg
-    Err_Avg_HVS = np.nanmean(dataTime['HVS']['eta'])
-    Err_Avg_INV = np.nanmean(dataTime['INV'][axis]['eta'])
-    Err_Avg_EMA = np.nanmean(dataTime['EMA'][axis]['eta'])
-    Err_Avg_GBX = np.nanmean(dataTime['GBX'][axis]['eta'])
-    Err_Avg_WHE = 0
-
-    # Std
-    Err_Std_HVS = np.nanstd(dataTime['HVS']['eta'])
-    Err_Std_INV = np.nanstd(dataTime['INV'][axis]['eta'])
-    Err_Std_EMA = np.nanstd(dataTime['EMA'][axis]['eta'])
-    Err_Std_GBX = np.nanstd(dataTime['GBX'][axis]['eta'])
-    Err_Std_WHE = 0
-
-    # Max
-    Err_Max_HVS = np.nanmax(dataTime['HVS']['Pv'])
-    Err_Max_INV = np.nanmax(dataTime['INV'][axis]['Pv'])
-    Err_Max_EMA = np.nanmax(dataTime['EMA'][axis]['Pv'])
-    Err_Max_GBX = np.nanmax(dataTime['GBX'][axis]['Pv'])
-    Err_Max_WHE = 0
-    '''
-
-    # ------------------------------------------
     # Matrix
     # ------------------------------------------
     # Pin
-    Pin_Avg = [Pin_Avg_HVS, Pin_Avg_INV, Pin_Avg_EMA, Pin_Avg_GBX, Pin_Avg_WHE]
-    Pin_Std = [Pin_Std_HVS, Pin_Std_INV, Pin_Std_EMA, Pin_Std_GBX, Pin_Std_WHE]
-    Pin_Max = [Pin_Max_HVS, Pin_Max_INV, Pin_Max_EMA, Pin_Max_GBX, Pin_Max_WHE]
+    Pin_Avg = [Pin_Avg_HVS / 1000, Pin_Avg_INV / 1000, Pin_Avg_EMA / 1000, Pin_Avg_GBX / 1000, Pin_Avg_WHE / 1000]
+    Pin_Std = [Pin_Std_HVS / 1000, Pin_Std_INV / 1000, Pin_Std_EMA / 1000, Pin_Std_GBX / 1000, Pin_Std_WHE / 1000]
+    Pin_Max = [Pin_Max_HVS / 1000, Pin_Max_INV / 1000, Pin_Max_EMA / 1000, Pin_Max_GBX / 1000, Pin_Max_WHE / 1000]
     Pin = [Pin_Avg, Pin_Std, Pin_Max]
 
     # Pout
-    Pout_Avg = [Pout_Avg_HVS, Pout_Avg_INV, Pout_Avg_EMA, Pout_Avg_GBX, Pout_Avg_WHE]
-    Pout_Std = [Pout_Std_HVS, Pout_Std_INV, Pout_Std_EMA, Pout_Std_GBX, Pout_Std_WHE]
-    Pout_Max = [Pout_Max_HVS, Pout_Max_INV, Pout_Max_EMA, Pout_Max_GBX, Pout_Max_WHE]
+    Pout_Avg = [Pout_Avg_HVS / 1000, Pout_Avg_INV / 1000, Pout_Avg_EMA / 1000, Pout_Avg_GBX / 1000, Pout_Avg_WHE / 1000]
+    Pout_Std = [Pout_Std_HVS / 1000, Pout_Std_INV / 1000, Pout_Std_EMA / 1000, Pout_Std_GBX / 1000, Pout_Std_WHE / 1000]
+    Pout_Max = [Pout_Max_HVS / 1000, Pout_Max_INV / 1000, Pout_Max_EMA / 1000, Pout_Max_GBX / 1000, Pout_Max_WHE / 1000]
     Pout = [Pout_Avg, Pout_Std, Pout_Max]
 
     # Pv
-    Pv_Avg = [Pv_Avg_HVS, Pv_Avg_INV, Pv_Avg_EMA, Pv_Avg_GBX, Pv_Avg_WHE]
-    Pv_Std = [Pv_Std_HVS, Pv_Std_INV, Pv_Std_EMA, Pv_Std_GBX, Pv_Std_WHE]
-    Pv_Max = [Pv_Max_HVS, Pv_Max_INV, Pv_Max_EMA, Pv_Max_GBX, Pv_Max_WHE]
+    Pv_Avg = [Pv_Avg_HVS / 1000, Pv_Avg_INV / 1000, Pv_Avg_EMA / 1000, Pv_Avg_GBX / 1000, Pv_Avg_WHE / 1000]
+    Pv_Std = [Pv_Std_HVS / 1000, Pv_Std_INV / 1000, Pv_Std_EMA / 1000, Pv_Std_GBX / 1000, Pv_Std_WHE / 1000]
+    Pv_Max = [Pv_Max_HVS / 1000, Pv_Max_INV / 1000, Pv_Max_EMA / 1000, Pv_Max_GBX / 1000, Pv_Max_WHE / 1000]
     Pv = [Pv_Avg, Pv_Std, Pv_Max]
 
     # Eta
@@ -226,180 +209,76 @@ def plotPWR(data, dataTime, setup):
     Eta_Max = [Eta_Max_HVS, Eta_Max_INV, Eta_Max_EMA, Eta_Max_GBX, Eta_Max_WHE]
     Eta = [Eta_Avg, Eta_Std, Eta_Max]
 
-    # ==============================================================================
-    # Figure
-    # ==============================================================================
-    fig = make_subplots(rows=4, cols=2, shared_xaxes=True, vertical_spacing=0.05)
+    ###################################################################################################################
+    # Figure Creation
+    ###################################################################################################################
+    fig, axs = plt.subplots(4, 2, sharex=False)
 
     ###################################################################################################################
     # Calculation
     ###################################################################################################################
-    # ==============================================================================
-    # Time Series
-    # ==============================================================================
-    # ------------------------------------------
-    # Power Input
-    # ------------------------------------------
-    fig.add_trace(go.Scatter(x=time, y=dataTime['HVS']['Pin'], mode='lines', name='HVS Input Power'), row=1, col=1)
-    fig.add_trace(go.Scatter(x=time, y=dataTime['INV'][axis]['Pin'], mode='lines', name='INV Input Power'), row=1, col=1)
-    fig.add_trace(go.Scatter(x=time, y=dataTime['EMA'][axis]['Pin'], mode='lines', name='EMA Input Power'), row=1, col=1)
-    fig.add_trace(go.Scatter(x=time, y=dataTime['GBX'][axis]['Pin'], mode='lines', name='GBX Input Power'), row=1, col=1)
-    fig.add_trace(go.Scatter(x=time, y=dataTime['WHE'][axis]['P'], mode='lines', name='WEH Input Power'), row=1, col=1)
+    # Add time series data for input power, output power, losses, and efficiency for each component
+    for i, comp in enumerate(cat):
+        if comp != 'HVS':
+            # Add time series data for input power
+            axs[0, 0].plot(time, dataTime[comp][axis]['Pin']/1000, label=f'{comp} Input Power')
+            axs[0, 0].grid(True)
+            # Add time series data for output power
+            axs[1, 0].plot(time, dataTime[comp][axis]['Pout']/1000, label=f'{comp} Output Power')
+            axs[1, 0].grid(True)
+            # Add time series data for losses
+            axs[2, 0].plot(time, dataTime[comp][axis]['Pv']/1000, label=f'{comp} Losses')
+            axs[2, 0].grid(True)
+            # Add time series data for efficiency
+            axs[3, 0].plot(time, dataTime[comp][axis]['eta'], label=f'{comp} Efficiency')
+            axs[3, 0].grid(True)
+        else:
+            # Add time series data for input power
+            axs[0, 0].plot(time, dataTime[comp]['Pin']/1000, label=f'{comp} Input Power')
+            axs[0, 0].grid(True)
+            # Add time series data for output power
+            axs[1, 0].plot(time, dataTime[comp]['Pout']/1000, label=f'{comp} Output Power')
+            axs[1, 0].grid(True)
+            # Add time series data for losses
+            axs[2, 0].plot(time, dataTime[comp]['Pv']/1000, label=f'{comp} Losses')
+            axs[2, 0].grid(True)
+            # Add time series data for efficiency
+            axs[3, 0].plot(time, dataTime[comp]['eta'], label=f'{comp} Efficiency')
+            axs[3, 0].grid(True)
 
-    # ------------------------------------------
-    # Power Output
-    # ------------------------------------------
-    fig.add_trace(go.Scatter(x=time, y=dataTime['HVS']['Pout'], mode='lines', name='HVS Output Power'), row=2, col=1)
-    fig.add_trace(go.Scatter(x=time, y=dataTime['INV'][axis]['Pout'], mode='lines', name='INV Output Power'), row=2, col=1)
-    fig.add_trace(go.Scatter(x=time, y=dataTime['EMA'][axis]['Pout'], mode='lines', name='EMA Output Power'), row=2, col=1)
-    fig.add_trace(go.Scatter(x=time, y=dataTime['GBX'][axis]['Pout'], mode='lines', name='GBX Output Power'), row=2, col=1)
-    fig.add_trace(go.Scatter(x=time, y=dataTime['WHE'][axis]['P'], mode='lines', name='WEH Output Power'), row=2, col=1)
-
-    # ------------------------------------------
-    # Losses
-    # ------------------------------------------
-    fig.add_trace(go.Scatter(x=time, y=dataTime['HVS']['Pv'], mode='lines', name='HVS Losses'), row=3, col=1)
-    fig.add_trace(go.Scatter(x=time, y=dataTime['INV'][axis]['Pv'], mode='lines', name='INV Losses'), row=3, col=1)
-    fig.add_trace(go.Scatter(x=time, y=dataTime['EMA'][axis]['Pv'], mode='lines', name='EMA Losses'), row=3, col=1)
-    fig.add_trace(go.Scatter(x=time, y=dataTime['GBX'][axis]['Pv'], mode='lines', name='GBX Losses'), row=3, col=1)
-    fig.add_trace(go.Scatter(x=time, y=dataTime['WHE'][axis]['P']*0, mode='lines', name='WEH Losses'), row=3, col=1)
-
-    # ------------------------------------------
-    # Eta
-    # ------------------------------------------
-    fig.add_trace(go.Scatter(x=time, y=dataTime['HVS']['eta'], mode='lines', name='HVS Eff'), row=4, col=1)
-    fig.add_trace(go.Scatter(x=time, y=dataTime['INV'][axis]['eta'], mode='lines', name='INV Eff'), row=4, col=1)
-    fig.add_trace(go.Scatter(x=time, y=dataTime['EMA'][axis]['eta'], mode='lines', name='EMA Eff'), row=4, col=1)
-    fig.add_trace(go.Scatter(x=time, y=dataTime['GBX'][axis]['eta'], mode='lines', name='GBX Eff'), row=4, col=1)
-    fig.add_trace(go.Scatter(x=time, y=dataTime['WHE'][axis]['P'] * 0 + 1, mode='lines', name='WEH Eff'), row=4, col=1)
-
-    # ------------------------------------------
-    # Error
-    # ------------------------------------------
-    '''
-    fig.add_trace(go.Scatter(x=time, y=Diff_HVS, mode='lines', name='HVS Error'), row=5, col=1)
-    fig.add_trace(go.Scatter(x=time, y=Diff_INV, mode='lines', name='INV Error'), row=5, col=1)
-    fig.add_trace(go.Scatter(x=time, y=Diff_EMA, mode='lines', name='EMA Error'), row=5, col=1)
-    fig.add_trace(go.Scatter(x=time, y=Diff_GBX, mode='lines', name='GBX Error'), row=5, col=1)
-    fig.add_trace(go.Scatter(x=time, y=Diff_WHE, mode='lines', name='WEH Error'), row=5, col=1)
-    '''
-
-    # ==============================================================================
+    ###################################################################################################################
     # Average Values
-    # ==============================================================================
-    # ------------------------------------------
-    # Pin
-    # ------------------------------------------
-    # Create Data
-    traces = []
-    for i, bar_name in enumerate(bar):
-        trace = go.Bar(
-            x=[category for category in cat],
-            y=[Pin[i][j] for j in range(len(cat))],
-            name=bar_name
-        )
-        traces.append(trace)
-
-    # Add Traces
-    for trace in traces:
-        fig.add_trace(trace, row=1, col=2)
-
-    # ------------------------------------------
-    # Pout
-    # ------------------------------------------
-    # Create Data
-    traces = []
-    for i, bar_name in enumerate(bar):
-        trace = go.Bar(
-            x=[category for category in cat],
-            y=[Pout[i][j] for j in range(len(cat))],
-            name=bar_name
-        )
-        traces.append(trace)
-
-    # Add Traces
-    for trace in traces:
-        fig.add_trace(trace, row=2, col=2)
-
-    # ------------------------------------------
-    # Pv
-    # ------------------------------------------
-    # Create Data
-    traces = []
-    for i, bar_name in enumerate(bar):
-        trace = go.Bar(
-            x=[category for category in cat],
-            y=[Pv[i][j] for j in range(len(cat))],
-            name=bar_name
-        )
-        traces.append(trace)
-
-    # Add Traces
-    for trace in traces:
-        fig.add_trace(trace, row=3, col=2)
-
-    # ------------------------------------------
-    # Eta
-    # ------------------------------------------
-    # Create Data
-    traces = []
-    for i, bar_name in enumerate(bar):
-        trace = go.Bar(
-            x=[category for category in cat],
-            y=[Eta[i][j] for j in range(len(cat))],
-            name=bar_name
-        )
-        traces.append(trace)
-
-    # Add Traces
-    for trace in traces:
-        fig.add_trace(trace, row=4, col=2)
+    ###################################################################################################################
+    # Add bar plots for average input power, output power, losses, and efficiency for each component
+    grouped_bar_plot(axs[0, 1], Pin, cat2, bar)
+    grouped_bar_plot(axs[1, 1], Pout, cat2, bar)
+    grouped_bar_plot(axs[2, 1], Pv, cat2, bar)
+    grouped_bar_plot(axs[3, 1], Eta, cat2, bar)
 
     ###################################################################################################################
     # Post-Processing
     ###################################################################################################################
-    # ==============================================================================
-    # Axis
-    # ==============================================================================
-    # ------------------------------------------
+    # Legend
+    axs[0, 0].legend()
+    axs[1, 0].legend()
+    axs[2, 0].legend()
+    axs[3, 0].legend()
+
     # Set y-axis titles
-    # ------------------------------------------
-    # Front
-    fig.update_yaxes(title_text="Pi (W)", row=1, col=1)
-    fig.update_yaxes(title_text="Po (W)", row=2, col=1)
-    fig.update_yaxes(title_text="Pv (W)", row=3, col=1)
-    fig.update_yaxes(title_text="Eta (%)", row=4, col=1)
-    # fig.update_yaxes(title_text="Er (W)", row=5, col=1)
+    axs[0, 0].set_ylabel('Power Inp (kW)')
+    axs[1, 0].set_ylabel('Power Out (kW)')
+    axs[2, 0].set_ylabel('Losses (kW)')
+    axs[3, 0].set_ylabel('Efficiency (%)')
 
-    # Rear
-    fig.update_yaxes(title_text="Pi (W)", row=1, col=2)
-    fig.update_yaxes(title_text="Po (W)", row=2, col=2)
-    fig.update_yaxes(title_text="Pv (W)", row=3, col=2)
-    fig.update_yaxes(title_text="Eta (%)", row=4, col=2)
-    # fig.update_yaxes(title_text="Er (W)", row=5, col=2)
+    # Set x-axis titles
+    axs[3, 0].set_xlabel('time (sec)')
+    axs[3, 1].set_xlabel('Category')
 
-    # ------------------------------------------
-    # Set x-axis title for the last subplot
-    # ------------------------------------------
-    fig.update_xaxes(title_text="time (sec)", row=4, col=1)
-    fig.update_xaxes(title_text="Category", row=4, col=2)
-
-    # ==============================================================================
-    # Title
-    # ==============================================================================
-    txt = "Comparing Input and Output Power"
-    fig.update_layout(height=setup['Exp']['hFig'], width=setup['Exp']['wFig'], title_text=txt)
-
-    # ==============================================================================
-    # Plot
-    # ==============================================================================
-    fig.show()
+    # Set overall title
+    plt.suptitle('Comparing Input and Output Power', size=18)
+    plt.subplots_adjust(hspace=0.35, wspace=0.35, left=0.075, right=0.925, top=0.90, bottom=0.075)
 
     ###################################################################################################################
     # Return
     ###################################################################################################################
     return []
-
-#######################################################################################################################
-# References
-#######################################################################################################################

@@ -36,8 +36,8 @@ Outputs:    1)
 # ==============================================================================
 # External
 # ==============================================================================
-import plotly.graph_objects as go
-from plotly.subplots import make_subplots
+import matplotlib.pyplot as plt
+
 
 #######################################################################################################################
 # Additional Functions
@@ -48,88 +48,60 @@ from plotly.subplots import make_subplots
 # Main Function
 #######################################################################################################################
 def plotINV(data, dataTime, setup):
-    ###################################################################################################################
-    # MSG IN
-    ###################################################################################################################
     print("INFO: Plotting INV data")
 
-    ###################################################################################################################
-    # Initialisation
-    ###################################################################################################################
     time = data['t']
     axis = setup['Exp']['plotAxis']
 
-    ###################################################################################################################
-    # Pre-Processing
-    ###################################################################################################################
-    fig = make_subplots(rows=3, cols=2, shared_xaxes=True, vertical_spacing=0.05)
+    fig, axs = plt.subplots(3, 2, sharex=True)
 
-    ###################################################################################################################
-    # Calculation
-    ###################################################################################################################
-    # ==============================================================================
-    # Plotting
-    # ==============================================================================
-    # ------------------------------------------
     # Electrical
-    # ------------------------------------------
-    fig.add_trace(go.Scatter(x=time, y=dataTime['INV'][axis]['Mi'], mode='lines', line=dict(color='#636EFA', dash='solid'), name='Modulation Index'), row=1, col=1)
-    fig.add_trace(go.Scatter(x=time, y=dataTime['INV'][axis]['Idc'], mode='lines', line=dict(color='#636EFA', dash='solid'), name='Input Current'), row=2, col=1)
-    fig.add_trace(go.Scatter(x=time, y=dataTime['INV'][axis]['Is'], mode='lines', line=dict(color='#636EFA', dash='solid'), name='Output Current'), row=3, col=1)
-
-    # ------------------------------------------
-    # Thermal
-    # ------------------------------------------
-    fig.add_trace(go.Scatter(x=time, y=dataTime['INV'][axis]['Pv'], mode='lines', line=dict(color='#EF553B', dash='solid'), name='Total Losses'), row=1, col=2)
-    fig.add_trace(go.Scatter(x=time, y=dataTime['INV'][axis]['Pv_sw'], mode='lines', line=dict(color='#EF553B', dash='dash'), name='Losses Power Module'), row=1, col=2)
-    fig.add_trace(go.Scatter(x=time, y=dataTime['INV'][axis]['Pv_cap'], mode='lines', line=dict(color='#EF553B', dash='dot'), name='Losses DC-Link Cap'), row=1, col=2)
-    fig.add_trace(go.Scatter(x=time, y=dataTime['INV'][axis]['Pv_ac'], mode='lines', line=dict(color='#EF553B', dash='dashdot'), name='Losses AC Busbars'), row=1, col=2)
-    fig.add_trace(go.Scatter(x=time, y=dataTime['INV'][axis]['Pv_dc'], mode='lines', line=dict(color='#EF553B', dash='longdash'), name='Losses DC Busbars'), row=1, col=2)
-    fig.add_trace(go.Scatter(x=time, y=dataTime['INV'][axis]['eta'], mode='lines', line=dict(color='#EF553B', dash='solid'), name='Total Efficiency'), row=2, col=2)
-    fig.add_trace(go.Scatter(x=time, y=dataTime['INV'][axis]['T'], mode='lines', line=dict(color='#EF553B', dash='solid'), name='Hotspot Temperature'), row=3, col=2)
-    fig.add_trace(go.Scatter(x=time, y=dataTime['VEH']['Tc'], mode='lines', line=dict(color='#EF553B', dash='dash'), name='Coolant Temperature'), row=3, col=2)
-
-    ###################################################################################################################
-    # Post-Processing
-    ###################################################################################################################
-    # ==============================================================================
-    # Axis
-    # ==============================================================================
-    # ------------------------------------------
-    # Set y-axis titles
-    # ------------------------------------------
-    # Mechanics
-    fig.update_yaxes(title_text="Mi (p.u.)", row=1, col=1)
-    fig.update_yaxes(title_text="Idc RMS (A)", row=2, col=1)
-    fig.update_yaxes(title_text="Iac RMS (A)", row=3, col=1)
+    axs[0, 0].plot(time, dataTime['INV'][axis]['Mi'], label='Modulation Index')
+    axs[1, 0].plot(time, dataTime['INV'][axis]['Idc'], label='Input Current')
+    axs[2, 0].plot(time, dataTime['INV'][axis]['Is'], label='Output Current')
 
     # Thermal
-    fig.update_yaxes(title_text="Pv (W)", row=1, col=2)
-    fig.update_yaxes(title_text="Eta (%)", row=2, col=2)
-    fig.update_yaxes(title_text="T (degC)", row=3, col=2)
+    axs[0, 1].plot(time, dataTime['INV'][axis]['Pv'], label='Total Losses')
+    axs[0, 1].plot(time, dataTime['INV'][axis]['Pv_sw'], label='Losses Power Module')
+    axs[0, 1].plot(time, dataTime['INV'][axis]['Pv_cap'], label='Losses DC-Link Cap')
+    axs[0, 1].plot(time, dataTime['INV'][axis]['Pv_ac'], label='Losses AC Busbars')
+    axs[0, 1].plot(time, dataTime['INV'][axis]['Pv_dc'], label='Losses DC Busbars')
+    axs[0, 1].legend()
 
-    # ------------------------------------------
-    # Set x-axis title for the last subplot
-    # ------------------------------------------
-    fig.update_xaxes(title_text="time (sec)", row=4, col=1)
-    fig.update_xaxes(title_text="time (sec)", row=4, col=2)
+    # Thermal
+    axs[1, 1].plot(time, dataTime['INV'][axis]['eta'], label='Total Efficiency')
+    axs[2, 1].plot(time, dataTime['INV'][axis]['T'], label='Hotspot Temperature')
+    axs[2, 1].plot(time, dataTime['VEH']['Tc'], label='Coolant Temperature')
+    axs[2, 1].legend()
 
-    # ==============================================================================
-    # Title
-    # ==============================================================================
-    txt = "Converter Electrical, Losses, and Thermal (" + axis + ")"
-    fig.update_layout(height=setup['Exp']['hFig'], width=setup['Exp']['wFig'], title_text=txt)
+    # Grid activation
+    for ax_row in axs:
+        for ax in ax_row:
+            ax.grid(True)
 
-    # ==============================================================================
-    # Plot
-    # ==============================================================================
-    fig.show()
+    # Axis labels
+    axs[0, 0].set_ylabel('Mi (p.u.)')
+    axs[1, 0].set_ylabel('Idc RMS (A)')
+    axs[2, 0].set_ylabel('Iac RMS (A)')
 
-    ###################################################################################################################
-    # Return
-    ###################################################################################################################
+    axs[0, 1].set_ylabel('Pv (W)')
+    axs[1, 1].set_ylabel('Eta (%)')
+    axs[2, 1].set_ylabel('T (degC)')
+
+    axs[2, 0].set_xlabel('time (sec)')
+    axs[2, 1].set_xlabel('time (sec)')
+
+    # Titles
+    axs[0, 0].set_title('Modulation Index')
+    axs[1, 0].set_title('Input Current')
+    axs[2, 0].set_title('Output Current')
+
+    axs[0, 1].set_title('Total Losses')
+    axs[1, 1].set_title('Total Efficiency')
+    axs[2, 1].set_title('Hotspot and Coolant Temperature')
+
+    # Layout adjustments
+    fig.suptitle("Converter Electrical, Losses, and Thermal (" + axis + ")", size=18)
+    plt.subplots_adjust(hspace=0.35, wspace=0.35, left=0.075, right=0.925, top=0.90, bottom=0.075)
+
     return []
-
-#######################################################################################################################
-# References
-#######################################################################################################################

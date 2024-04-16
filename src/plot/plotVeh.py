@@ -36,8 +36,7 @@ Outputs:    1)
 # ==============================================================================
 # External
 # ==============================================================================
-import plotly.graph_objects as go
-from plotly.subplots import make_subplots
+import matplotlib.pyplot as plt
 
 #######################################################################################################################
 # Additional Functions
@@ -48,89 +47,41 @@ from plotly.subplots import make_subplots
 # Main Function
 #######################################################################################################################
 def plotVeh(data, dataTime, setup):
-    ###################################################################################################################
-    # MSG IN
-    ###################################################################################################################
     print("INFO: Plotting vehicle data")
 
-    ###################################################################################################################
-    # Initialisation
-    ###################################################################################################################
-    # ==============================================================================
-    # Parameters
-    # ==============================================================================
     eff = setup['Par']['VEH']['eta'] * 100
-
-    # ==============================================================================
-    # Variables
-    # ==============================================================================
     time = data['t']
 
-    ###################################################################################################################
-    # Loading Data
-    ###################################################################################################################
-    
-    ###################################################################################################################
-    # Pre-Processing
-    ###################################################################################################################
-    fig = make_subplots(rows=4, cols=1, shared_xaxes=True, vertical_spacing=0.05)
+    fig, axs = plt.subplots(4, 1, sharex=True)
 
-    ###################################################################################################################
-    # Calculation
-    ###################################################################################################################
-    # ==============================================================================
-    # Init
-    # ==============================================================================
-    txt1 = "Vehicle Energy (" + str(eff) + "% Rec Efficiency)"
-    txt2 = "Vehicle Consumption (" + str(eff) + "% Rec Efficiency)"
+    axs[0].plot(time, dataTime['VEH']['F']['t'] / 1000)
+    axs[0].set_ylabel('F (kN)')
+    axs[0].set_title('Vehicle Forces')
+    axs[0].grid(True)
 
-    # ==============================================================================
-    # Plotting
-    # ==============================================================================
-    fig.add_trace(go.Scatter(x=time, y=dataTime['VEH']['F']['t'] / 1000, mode='lines', name='Vehicle Forces'), row=1, col=1)
-    fig.add_trace(go.Scatter(x=time, y=dataTime['VEH']['P']['t'] / 1000, mode='lines', name='Vehicle Power'), row=2, col=1)
-    fig.add_trace(go.Scatter(x=time, y=dataTime['VEH']['E']['t'] / 3.6e6, mode='lines', name='Vehicle Energy (100% Rec Efficiency)', line=dict(color='#00CC96', dash='dash')), row=3, col=1)
-    fig.add_trace(go.Scatter(x=time, y=dataTime['VEH']['E']['rec_on'] / 3.6e6, mode='lines', name=txt1, line=dict(color='#00CC96', dash='solid')), row=3, col=1)
-    fig.add_trace(go.Scatter(x=time, y=dataTime['VEH']['E']['rec_off'] / 3.6e6, mode='lines', name='Vehicle Energy (0% Rec Efficiency)', line=dict(color='#00CC96', dash='dot')), row=3, col=1)
-    fig.add_trace(go.Scatter(x=time, y=dataTime['VEH']['eta']['t'], mode='lines', name='Vehicle Consumption (100% Rec Efficiency)', line=dict(color='#AB63FA', dash='dash')), row=4, col=1)
-    fig.add_trace(go.Scatter(x=time, y=dataTime['VEH']['eta']['rec_on'], mode='lines', name=txt2, line=dict(color='#AB63FA', dash='solid')), row=4, col=1)
-    fig.add_trace(go.Scatter(x=time, y=dataTime['VEH']['eta']['rec_off'], mode='lines', name='Vehicle Consumption (0% Rec Efficiency)', line=dict(color='#AB63FA', dash='dot')), row=4, col=1)
+    axs[1].plot(time, dataTime['VEH']['P']['t'] / 1000)
+    axs[1].set_ylabel('P (kW)')
+    axs[1].set_title('Vehicle Power')
+    axs[1].grid(True)
 
-    ###################################################################################################################
-    # Post-Processing
-    ###################################################################################################################
-    # ==============================================================================
-    # Axis
-    # ==============================================================================
-    # ------------------------------------------
-    # Set y-axis titles
-    # ------------------------------------------
-    fig.update_yaxes(title_text="F (kN)", row=1, col=1)
-    fig.update_yaxes(title_text="P (kW)", row=2, col=1)
-    fig.update_yaxes(title_text="E (kWh)", row=3, col=1)
-    fig.update_yaxes(title_text="Eta (kWh/100 km)", row=4, col=1)
+    axs[2].plot(time, dataTime['VEH']['E']['t'] / 3.6e6, label='Vehicle Energy (100% Rec Efficiency)')
+    axs[2].plot(time, dataTime['VEH']['E']['rec_on'] / 3.6e6, label='Vehicle Energy (' + str(eff) + '% Rec Efficiency)')
+    axs[2].plot(time, dataTime['VEH']['E']['rec_off'] / 3.6e6, label='Vehicle Energy (0% Rec Efficiency)')
+    axs[2].set_ylabel('E (kWh)')
+    axs[2].set_title('Vehicle Energy')
+    axs[2].legend()
+    axs[2].grid(True)
 
-    # ------------------------------------------
-    # Set x-axis title for the last subplot
-    # ------------------------------------------
-    fig.update_xaxes(title_text="time (sec)", row=5, col=1)
+    axs[3].plot(time, dataTime['VEH']['eta']['t'], label='Vehicle Consumption (100% Rec Efficiency)')
+    axs[3].plot(time, dataTime['VEH']['eta']['rec_on'], label='Vehicle Consumption (' + str(eff) + '% Rec Efficiency)')
+    axs[3].plot(time, dataTime['VEH']['eta']['rec_off'], label='Vehicle Consumption (0% Rec Efficiency)')
+    axs[3].set_ylabel('Eta (kWh/100 km)')
+    axs[3].set_xlabel('time (sec)')
+    axs[3].set_title('Vehicle Consumption')
+    axs[3].legend()
+    axs[3].grid(True)
 
-    # ==============================================================================
-    # Title
-    # ==============================================================================
-    txt = "Vehicle Forces, Power, Energies, and Efficiencies: "
-    fig.update_layout(height=setup['Exp']['hFig'], width=setup['Exp']['wFig'], title_text=txt)
+    fig.suptitle("Vehicle Forces, Power, Energies, and Efficiencies", size=18)
+    plt.subplots_adjust(hspace=0.35, wspace=0.35, left=0.075, right=0.925, top=0.90, bottom=0.075)
 
-    # ==============================================================================
-    # Plot
-    # ==============================================================================
-    fig.show()
-
-    ###################################################################################################################
-    # Return
-    ###################################################################################################################
     return []
-
-#######################################################################################################################
-# References
-#######################################################################################################################

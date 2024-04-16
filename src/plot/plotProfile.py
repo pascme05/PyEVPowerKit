@@ -36,95 +36,54 @@ Outputs:    1)
 # ==============================================================================
 # External
 # ==============================================================================
-import plotly.graph_objects as go
-from plotly.subplots import make_subplots
-
-#######################################################################################################################
-# Additional Functions
-#######################################################################################################################
+import matplotlib.pyplot as plt
 
 
 #######################################################################################################################
-# Main Function
+# Plotting
 #######################################################################################################################
 def plotProfile(data, dataTime, setup):
-    ###################################################################################################################
-    # MSG IN
-    ###################################################################################################################
     print("INFO: Plotting mission profile")
 
-    ###################################################################################################################
-    # Initialisation
-    ###################################################################################################################
-    # ==============================================================================
-    # Parameters
-    # ==============================================================================
     Ts = 1 / setup['Dat']['fs']
     name = setup['Dat']['name']
-
-    # ==============================================================================
-    # Variables
-    # ==============================================================================
     time = data['t']
 
-    ###################################################################################################################
-    # Loading Data
-    ###################################################################################################################
-    
-    ###################################################################################################################
-    # Pre-Processing
-    ###################################################################################################################
-    fig = make_subplots(rows=5, cols=1, shared_xaxes=True, vertical_spacing=0.05)
+    fig, axs = plt.subplots(5, 1, sharex=True)
 
-    ###################################################################################################################
-    # Calculation
-    ###################################################################################################################
-    fig.add_trace(go.Scatter(x=time, y=data['v'], mode='lines', line=dict(color='#636EFA', dash='solid'), name='Vehicle Velocity (tar)'), row=1, col=1)
-    fig.add_trace(go.Scatter(x=time, y=dataTime['VEH']['v'], mode='lines', line=dict(color='#636EFA', dash='dash'), name='Vehicle Velocity (act)'), row=1, col=1)
-    fig.add_trace(go.Scatter(x=time, y=data['s'], mode='lines', line=dict(color='#EF553B', dash='solid'), name='Vehicle Distance (tar)'), row=2, col=1)
-    fig.add_trace(go.Scatter(x=time, y=dataTime['VEH']['s'], mode='lines', line=dict(color='#EF553B', dash='dash'), name='Vehicle Distance (act)'), row=2, col=1)
-    fig.add_trace(go.Scatter(x=time, y=data['a'], mode='lines', line=dict(color='#00CC96', dash='solid'), name='Vehicle Acceleration (tar)'), row=3, col=1)
-    fig.add_trace(go.Scatter(x=time, y=dataTime['VEH']['a'], mode='lines', line=dict(color='#00CC96', dash='dash'), name='Vehicle Acceleration (act)'), row=3, col=1)
-    fig.add_trace(go.Scatter(x=time, y=data['ang'], mode='lines', name='Surface Angle'), row=4, col=1)
-    fig.add_trace(go.Scatter(x=time, y=data['T_A'], mode='lines', name='Ambient Temperature'), row=5, col=1)
-    fig.add_trace(go.Scatter(x=time, y=dataTime['VEH']['Tc'], mode='lines', name='Coolant Temperature'), row=5, col=1)
+    axs[0].plot(time, data['v'], label='Vehicle Velocity (tar)')
+    axs[0].plot(time, dataTime['VEH']['v'], label='Vehicle Velocity (act)')
+    axs[0].set_ylabel('v (m/s)')
+    axs[0].set_title('Vehicle Velocity')
+    axs[0].legend()
 
-    ###################################################################################################################
-    # Post-Processing
-    ###################################################################################################################
-    # ==============================================================================
-    # Axis
-    # ==============================================================================
-    # ------------------------------------------
-    # Set y-axis titles
-    # ------------------------------------------
-    fig.update_yaxes(title_text="v (m/s)", row=1, col=1)
-    fig.update_yaxes(title_text="s (m)", row=2, col=1)
-    fig.update_yaxes(title_text="a (m/s2)", row=3, col=1)
-    fig.update_yaxes(title_text="ang (rad)", row=4, col=1)
-    fig.update_yaxes(title_text="T (degC)", row=5, col=1)
+    axs[1].plot(time, data['s'], label='Vehicle Distance (tar)')
+    axs[1].plot(time, dataTime['VEH']['s'], label='Vehicle Distance (act)')
+    axs[1].set_ylabel('s (m)')
+    axs[1].set_title('Vehicle Distance')
+    axs[1].legend()
 
-    # ------------------------------------------
-    # Set x-axis title for the last subplot
-    # ------------------------------------------
-    fig.update_xaxes(title_text="time (sec)", row=5, col=1)
+    axs[2].plot(time, data['a'], label='Vehicle Acceleration (tar)')
+    axs[2].plot(time, dataTime['VEH']['a'], label='Vehicle Acceleration (act)')
+    axs[2].set_ylabel('a (m/s2)')
+    axs[2].set_title('Vehicle Acceleration')
+    axs[2].legend()
 
-    # ==============================================================================
-    # Title
-    # ==============================================================================
-    txt = "Vehicle Mission Profile: " + str(name) + " with Sampling Rate: " + str(Ts) + " (sec)"
-    fig.update_layout(height=setup['Exp']['hFig'], width=setup['Exp']['wFig'], title_text=txt)
+    axs[3].plot(time, data['ang'])
+    axs[3].set_ylabel('ang (rad)')
+    axs[3].set_title('Surface Angle')
 
-    # ==============================================================================
-    # Plot
-    # ==============================================================================
-    fig.show()
+    axs[4].plot(time, data['T_A'], label='Ambient Temperature')
+    axs[4].plot(time, dataTime['VEH']['Tc'], label='Coolant Temperature')
+    axs[4].set_ylabel('T (degC)')
+    axs[4].set_xlabel('time (sec)')
+    axs[4].set_title('Temperatures')
+    axs[4].legend()
 
-    ###################################################################################################################
-    # Return
-    ###################################################################################################################
+    for ax in axs:
+        ax.grid(True)
+
+    fig.suptitle("Vehicle Mission Profile: " + str(name) + " with Sampling Rate: " + str(Ts) + " (sec)", size=18)
+    plt.subplots_adjust(hspace=0.35, wspace=0.35, left=0.075, right=0.925, top=0.90, bottom=0.075)
+
     return []
-
-#######################################################################################################################
-# References
-#######################################################################################################################

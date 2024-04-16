@@ -36,8 +36,7 @@ Outputs:    1)
 # ==============================================================================
 # External
 # ==============================================================================
-import plotly.graph_objects as go
-from plotly.subplots import make_subplots
+import matplotlib.pyplot as plt
 
 #######################################################################################################################
 # Additional Functions
@@ -48,87 +47,59 @@ from plotly.subplots import make_subplots
 # Main Function
 #######################################################################################################################
 def plotGBX(data, dataTime, setup):
-    ###################################################################################################################
-    # MSG IN
-    ###################################################################################################################
     print("INFO: Plotting GBX data")
 
-    ###################################################################################################################
-    # Initialisation
-    ###################################################################################################################
     time = data['t']
     axis = setup['Exp']['plotAxis']
 
-    ###################################################################################################################
-    # Pre-Processing
-    ###################################################################################################################
-    fig = make_subplots(rows=3, cols=2, shared_xaxes=True, vertical_spacing=0.05)
+    fig, axs = plt.subplots(3, 2, sharex=True)
 
-    ###################################################################################################################
-    # Calculation
-    ###################################################################################################################
-    # ==============================================================================
-    # Plotting
-    # ==============================================================================
-    # ------------------------------------------
     # Mechanical
-    # ------------------------------------------
-    fig.add_trace(go.Scatter(x=time, y=dataTime['GBX'][axis]['M'], mode='lines', line=dict(color='#636EFA', dash='solid'), name='GBX Torque'), row=1, col=1)
-    fig.add_trace(go.Scatter(x=time, y=dataTime['GBX'][axis]['n'], mode='lines', line=dict(color='#636EFA', dash='solid'), name='GBX Speed'), row=2, col=1)
-    fig.add_trace(go.Scatter(x=time, y=dataTime['GBX'][axis]['Pin'], mode='lines', line=dict(color='#636EFA', dash='solid'), name='GBX Power'), row=3, col=1)
+    axs[0, 0].plot(time, dataTime['GBX'][axis]['M'], label='GBX Torque')
+    axs[1, 0].plot(time, dataTime['GBX'][axis]['n'], label='GBX Speed')
+    axs[2, 0].plot(time, dataTime['GBX'][axis]['Pin']/1000, label='GBX Power')
 
-    # ------------------------------------------
-    # Thermal
-    # ------------------------------------------
-    fig.add_trace(go.Scatter(x=time, y=dataTime['GBX'][axis]['Pv'], mode='lines', line=dict(color='#EF553B', dash='solid'), name='Total Losses'), row=1, col=2)
-    fig.add_trace(go.Scatter(x=time, y=dataTime['GBX'][axis]['Pv_B'], mode='lines', line=dict(color='#EF553B', dash='dash'), name='Losses Bearing'), row=1, col=2)
-    fig.add_trace(go.Scatter(x=time, y=dataTime['GBX'][axis]['Pv_M'], mode='lines', line=dict(color='#EF553B', dash='dot'), name='Losses Meshing'), row=1, col=2)
-    fig.add_trace(go.Scatter(x=time, y=dataTime['GBX'][axis]['Pv_W'], mode='lines', line=dict(color='#EF553B', dash='dashdot'), name='Losses Windage'), row=1, col=2)
-    fig.add_trace(go.Scatter(x=time, y=dataTime['GBX'][axis]['eta'], mode='lines', line=dict(color='#EF553B', dash='solid'), name='Total Efficiency'), row=2, col=2)
-    fig.add_trace(go.Scatter(x=time, y=dataTime['GBX'][axis]['T'], mode='lines', line=dict(color='#EF553B', dash='solid'), name='Hotspot Temperature'), row=3, col=2)
-    fig.add_trace(go.Scatter(x=time, y=dataTime['VEH']['Tc'], mode='lines', line=dict(color='#EF553B', dash='dash'), name='Coolant Temperature'), row=3, col=2)
+    # Losses
+    axs[0, 1].plot(time, dataTime['GBX'][axis]['Pv'], label='Total Losses')
+    axs[0, 1].plot(time, dataTime['GBX'][axis]['Pv_B'], label='Losses Bearing')
+    axs[0, 1].plot(time, dataTime['GBX'][axis]['Pv_M'], label='Losses Meshing')
+    axs[0, 1].plot(time, dataTime['GBX'][axis]['Pv_W'], label='Losses Windage')
+    axs[0, 1].legend()
 
-    ###################################################################################################################
-    # Post-Processing
-    ###################################################################################################################
-    # ==============================================================================
-    # Axis
-    # ==============================================================================
-    # ------------------------------------------
-    # Set y-axis titles
-    # ------------------------------------------
-    # Mechanics
-    fig.update_yaxes(title_text="M (Nm)", row=1, col=1)
-    fig.update_yaxes(title_text="n (1/s)", row=2, col=1)
-    fig.update_yaxes(title_text="P (W)", row=3, col=1)
+    # Efficiency
+    axs[1, 1].plot(time, dataTime['GBX'][axis]['eta'], label='Total Efficiency')
+    axs[2, 1].plot(time, dataTime['GBX'][axis]['T'], label='Hotspot Temperature')
+    axs[2, 1].plot(time, dataTime['VEH']['Tc'], label='Coolant Temperature')
+    axs[2, 1].legend()
 
-    # Thermal
-    fig.update_yaxes(title_text="Pv (W)", row=1, col=2)
-    fig.update_yaxes(title_text="Eta (%)", row=2, col=2)
-    fig.update_yaxes(title_text="T (degC)", row=3, col=2)
+    # Grid activation
+    for ax_row in axs:
+        for ax in ax_row:
+            ax.grid(True)
 
-    # ------------------------------------------
-    # Set x-axis title for the last subplot
-    # ------------------------------------------
-    fig.update_xaxes(title_text="time (sec)", row=3, col=1)
-    fig.update_xaxes(title_text="time (sec)", row=3, col=2)
+    # Axis labels
+    axs[0, 0].set_ylabel('M (Nm)')
+    axs[1, 0].set_ylabel('n (1/s)')
+    axs[2, 0].set_ylabel('P (kW)')
 
-    # ==============================================================================
-    # Title
-    # ==============================================================================
-    txt = "Gearbox Mechanics, Losses, and Thermal (" + axis + ")"
-    fig.update_layout(height=setup['Exp']['hFig'], width=setup['Exp']['wFig'], title_text=txt)
+    axs[0, 1].set_ylabel('Pv (W)')
+    axs[1, 1].set_ylabel('Eta (%)')
+    axs[2, 1].set_ylabel('T (degC)')
 
-    # ==============================================================================
-    # Plot
-    # ==============================================================================
-    fig.show()
+    axs[2, 0].set_xlabel('time (sec)')
+    axs[2, 1].set_xlabel('time (sec)')
 
-    ###################################################################################################################
-    # Return
-    ###################################################################################################################
+    # Titles
+    axs[0, 0].set_title('GBX Torque')
+    axs[1, 0].set_title('GBX Speed')
+    axs[2, 0].set_title('GBX Power')
+
+    axs[0, 1].set_title('GBX Losses')
+    axs[1, 1].set_title('GBX Efficiency')
+    axs[2, 1].set_title('GBX Thermal')
+
+    # Layout adjustments
+    fig.suptitle("Gearbox Mechanics, Losses, and Thermal (" + axis + ")", size=18)
+    plt.subplots_adjust(hspace=0.35, wspace=0.35, left=0.075, right=0.925, top=0.90, bottom=0.075)
+
     return []
-
-#######################################################################################################################
-# References
-#######################################################################################################################

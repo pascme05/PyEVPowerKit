@@ -36,8 +36,8 @@ import numpy as np
 # ==============================================================================
 # External
 # ==============================================================================
-import plotly.graph_objects as go
-from plotly.subplots import make_subplots
+import matplotlib.pyplot as plt
+
 
 #######################################################################################################################
 # Additional Functions
@@ -48,108 +48,84 @@ from plotly.subplots import make_subplots
 # Main Function
 #######################################################################################################################
 def plotEMA(data, dataTime, setup):
-    ###################################################################################################################
-    # MSG IN
-    ###################################################################################################################
     print("INFO: Plotting EMA data")
 
-    ###################################################################################################################
-    # Initialisation
-    ###################################################################################################################
-    # ==============================================================================
-    # Variables
-    # ==============================================================================
     time = data['t']
     axis = setup['Exp']['plotAxis']
 
-    ###################################################################################################################
-    # Pre-Processing
-    ###################################################################################################################
-    fig = make_subplots(rows=3, cols=3, shared_xaxes=True, vertical_spacing=0.05)
+    fig, axs = plt.subplots(3, 3, sharex=True)
 
-    ###################################################################################################################
-    # Calculation
-    ###################################################################################################################
-    # ==============================================================================
-    # Plotting
-    # ==============================================================================
-    # ------------------------------------------
     # Mechanical
-    # ------------------------------------------
-    fig.add_trace(go.Scatter(x=time, y=dataTime['EMA'][axis]['M'], mode='lines', line=dict(color='#636EFA', dash='dash'), name='EMA Torque (tar)'), row=1, col=1)
-    fig.add_trace(go.Scatter(x=time, y=dataTime['EMA'][axis]['Min'], mode='lines', line=dict(color='#636EFA', dash='solid'), name='EMA Torque (act)'), row=1, col=1)
-    fig.add_trace(go.Scatter(x=time, y=dataTime['EMA'][axis]['n'], mode='lines', line=dict(color='#636EFA', dash='solid'), name='EMA Speed'), row=2, col=1)
-    fig.add_trace(go.Scatter(x=time, y=dataTime['EMA'][axis]['Pm'], mode='lines', line=dict(color='#636EFA', dash='solid'), name='EMA Power'), row=3, col=1)
+    axs[0, 0].plot(time, dataTime['EMA'][axis]['M'], label='EMA Torque (tar)')
+    axs[0, 0].plot(time, dataTime['EMA'][axis]['Min'], label='EMA Torque (act)')
+    axs[0, 0].legend()
 
-    # ------------------------------------------
-    # Losses
-    # ------------------------------------------
-    fig.add_trace(go.Scatter(x=time, y=dataTime['EMA'][axis]['Is'], mode='lines', line=dict(color='#EF553B', dash='solid'), name='EMA Currents (Is)'), row=1, col=2)
-    fig.add_trace(go.Scatter(x=time, y=dataTime['EMA'][axis]['Id'] / np.sqrt(2), mode='lines', line=dict(color='#EF553B', dash='dash'), name='EMA Currents (Id)'), row=1, col=2)
-    fig.add_trace(go.Scatter(x=time, y=dataTime['EMA'][axis]['Iq'] / np.sqrt(2), mode='lines', line=dict(color='#EF553B', dash='dot'), name='EMA Currents (Iq)'), row=1, col=2)
-    fig.add_trace(go.Scatter(x=time, y=dataTime['EMA'][axis]['Vs'], mode='lines', line=dict(color='#EF553B', dash='solid'), name='EMA Voltages (Vs)'), row=2, col=2)
-    fig.add_trace(go.Scatter(x=time, y=dataTime['EMA'][axis]['Vd'] / np.sqrt(2), mode='lines', line=dict(color='#EF553B', dash='dash'), name='EMA Voltages (Vd)'), row=2, col=2)
-    fig.add_trace(go.Scatter(x=time, y=dataTime['EMA'][axis]['Vq'] / np.sqrt(2), mode='lines', line=dict(color='#EF553B', dash='dot'), name='EMA Voltages (Vq)'), row=2, col=2)
-    fig.add_trace(go.Scatter(x=time, y=dataTime['EMA'][axis]['lam'], mode='lines', line=dict(color='#EF553B', dash='solid'), name='EMA Fluxes'), row=3, col=2)
-
-    # ------------------------------------------
-    # Thermal
-    # ------------------------------------------
-    fig.add_trace(go.Scatter(x=time, y=dataTime['EMA'][axis]['Pv'], mode='lines', line=dict(color='#00CC96', dash='solid'), name='Total Losses'), row=1, col=3)
-    fig.add_trace(go.Scatter(x=time, y=dataTime['EMA'][axis]['Pv_m'], mode='lines', line=dict(color='#00CC96', dash='dash'), name='Mech Losses'), row=1, col=3)
-    fig.add_trace(go.Scatter(x=time, y=dataTime['EMA'][axis]['Pv_s'], mode='lines', line=dict(color='#00CC96', dash='dot'), name='Stator Losses'), row=1, col=3)
-    fig.add_trace(go.Scatter(x=time, y=dataTime['EMA'][axis]['Pv_r'], mode='lines', line=dict(color='#00CC96', dash='dashdot'), name='Rotor Losses'), row=1, col=3)
-    fig.add_trace(go.Scatter(x=time, y=dataTime['EMA'][axis]['eta'], mode='lines', line=dict(color='#00CC96', dash='solid'), name='Total Efficiency'), row=2, col=3)
-    fig.add_trace(go.Scatter(x=time, y=dataTime['EMA'][axis]['T'], mode='lines', line=dict(color='#00CC96', dash='solid'), name='Hotspot Temperature'), row=3, col=3)
-    fig.add_trace(go.Scatter(x=time, y=dataTime['VEH']['Tc'], mode='lines', line=dict(color='#00CC96', dash='dash'), name='Coolant Temperature'), row=3, col=3)
-
-    ###################################################################################################################
-    # Post-Processing
-    ###################################################################################################################
-    # ==============================================================================
-    # Axis
-    # ==============================================================================
-    # ------------------------------------------
-    # Set y-axis titles
-    # ------------------------------------------
-    # Mechanics
-    fig.update_yaxes(title_text="M (Nm)", row=1, col=1)
-    fig.update_yaxes(title_text="n (1/s)", row=2, col=1)
-    fig.update_yaxes(title_text="P (W)", row=3, col=1)
+    axs[1, 0].plot(time, dataTime['EMA'][axis]['n'], label='EMA Speed')
+    axs[2, 0].plot(time, dataTime['EMA'][axis]['Pm']/1000, label='EMA Power')
 
     # Losses
-    fig.update_yaxes(title_text="Is RMS (A)", row=1, col=2)
-    fig.update_yaxes(title_text="Vs RMS (V)", row=2, col=2)
-    fig.update_yaxes(title_text="Lam (Vs)", row=3, col=2)
+    axs[0, 1].plot(time, dataTime['EMA'][axis]['Is'], label='EMA Currents (Is)')
+    axs[0, 1].plot(time, dataTime['EMA'][axis]['Id'] / np.sqrt(2), label='EMA Currents (Id)')
+    axs[0, 1].plot(time, dataTime['EMA'][axis]['Iq'] / np.sqrt(2), label='EMA Currents (Iq)')
+    axs[0, 1].legend()
+
+    axs[1, 1].plot(time, dataTime['EMA'][axis]['Vs'], label='EMA Voltages (Vs)')
+    axs[1, 1].plot(time, dataTime['EMA'][axis]['Vd'] / np.sqrt(2), label='EMA Voltages (Vd)')
+    axs[1, 1].plot(time, dataTime['EMA'][axis]['Vq'] / np.sqrt(2), label='EMA Voltages (Vq)')
+    axs[1, 1].legend()
+
+    axs[2, 1].plot(time, dataTime['EMA'][axis]['lam'], label='EMA Fluxes')
+
+    # Losses
+    axs[0, 2].plot(time, dataTime['EMA'][axis]['Pv'], label='Total Losses')
+    axs[0, 2].plot(time, dataTime['EMA'][axis]['Pv_m'], label='Mech Losses')
+    axs[0, 2].plot(time, dataTime['EMA'][axis]['Pv_s'], label='Stator Losses')
+    axs[0, 2].plot(time, dataTime['EMA'][axis]['Pv_r'], label='Rotor Losses')
+    axs[0, 2].legend()
 
     # Thermal
-    fig.update_yaxes(title_text="Pv (W)", row=1, col=3)
-    fig.update_yaxes(title_text="Eta (%)", row=2, col=3)
-    fig.update_yaxes(title_text="T (degC)", row=3, col=3)
+    axs[1, 2].plot(time, dataTime['EMA'][axis]['eta'], label='Total Efficiency')
+    axs[2, 2].plot(time, dataTime['EMA'][axis]['T'], label='Hotspot Temperature')
+    axs[2, 2].plot(time, dataTime['VEH']['Tc'], label='Coolant Temperature')
+    axs[2, 2].legend()
 
-    # ------------------------------------------
-    # Set x-axis title for the last subplot
-    # ------------------------------------------
-    fig.update_xaxes(title_text="time (sec)", row=4, col=1)
-    fig.update_xaxes(title_text="time (sec)", row=4, col=2)
-    fig.update_xaxes(title_text="time (sec)", row=4, col=3)
+    # Grid activation
+    for ax_row in axs:
+        for ax in ax_row:
+            ax.grid(True)
 
-    # ==============================================================================
-    # Title
-    # ==============================================================================
-    txt = "Machine Mechanics, Electrical, Losses, and Thermal (" + axis + ")"
-    fig.update_layout(height=setup['Exp']['hFig'], width=setup['Exp']['wFig'], title_text=txt)
+    # Axis labels
+    axs[0, 0].set_ylabel('M (Nm)')
+    axs[1, 0].set_ylabel('n (1/s)')
+    axs[2, 0].set_ylabel('P (kW)')
 
-    # ==============================================================================
-    # Plot
-    # ==============================================================================
-    fig.show()
+    axs[0, 1].set_ylabel('Is RMS (A)')
+    axs[1, 1].set_ylabel('Vs RMS (V)')
+    axs[2, 1].set_ylabel('Lam (Vs)')
 
-    ###################################################################################################################
-    # Return
-    ###################################################################################################################
+    axs[0, 2].set_ylabel('Pv (W)')
+    axs[1, 2].set_ylabel('Eta (%)')
+    axs[2, 2].set_ylabel('T (degC)')
+
+    axs[2, 0].set_xlabel('time (sec)')
+    axs[2, 1].set_xlabel('time (sec)')
+    axs[2, 2].set_xlabel('time (sec)')
+
+    # Titles
+    axs[0, 0].set_title('EMA Torque')
+    axs[1, 0].set_title('EMA Speed')
+    axs[2, 0].set_title('EMA Power')
+
+    axs[0, 1].set_title('EMA Currents and Voltages')
+    axs[1, 1].set_title('EMA Currents and Voltages')
+    axs[2, 1].set_title('EMA Fluxes')
+
+    axs[0, 2].set_title('EMA Losses')
+    axs[1, 2].set_title('EMA Efficiency')
+    axs[2, 2].set_title('EMA Thermal')
+
+    # Layout adjustments
+    fig.suptitle("Machine Mechanics, Electrical, Losses, and Thermal (" + axis + ")", size=18)
+    plt.subplots_adjust(hspace=0.35, wspace=0.35, left=0.075, right=0.925, top=0.90, bottom=0.075)
+
     return []
-
-#######################################################################################################################
-# References
-#######################################################################################################################

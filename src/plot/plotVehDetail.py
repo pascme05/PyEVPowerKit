@@ -36,8 +36,7 @@ Outputs:    1)
 # ==============================================================================
 # External
 # ==============================================================================
-import plotly.graph_objects as go
-from plotly.subplots import make_subplots
+import matplotlib.pyplot as plt
 
 #######################################################################################################################
 # Additional Functions
@@ -48,117 +47,82 @@ from plotly.subplots import make_subplots
 # Main Function
 #######################################################################################################################
 def plotVehDetail(data, dataTime, setup):
-    ###################################################################################################################
-    # MSG IN
-    ###################################################################################################################
     print("INFO: Plotting vehicle data (detail)")
 
-    ###################################################################################################################
-    # Initialisation
-    ###################################################################################################################
-    # ==============================================================================
-    # Parameters
-    # ==============================================================================
-    Ts = 1 / setup['Dat']['fs']
-    name = setup['Dat']['name']
-
-    # ==============================================================================
-    # Variables
-    # ==============================================================================
     time = data['t']
 
-    ###################################################################################################################
-    # Loading Data
-    ###################################################################################################################
-    
-    ###################################################################################################################
-    # Pre-Processing
-    ###################################################################################################################
-    fig = make_subplots(rows=5, cols=3, shared_xaxes=True, vertical_spacing=0.05)
+    fig, axs = plt.subplots(5, 3, sharex=True)
 
-    ###################################################################################################################
-    # Calculation
-    ###################################################################################################################
-    # ==============================================================================
     # Forces
-    # ==============================================================================
-    fig.add_trace(go.Scatter(x=time, y=dataTime['VEH']['F']['p'] / 1000, mode='lines', line=dict(color='#636EFA', dash='solid'), name='Vehicle Forces (Air)'), row=1, col=1)
-    fig.add_trace(go.Scatter(x=time, y=dataTime['VEH']['F']['r'] / 1000, mode='lines', line=dict(color='#EF553B', dash='solid'), name='Vehicle Forces (Rolling)'), row=2, col=1)
-    fig.add_trace(go.Scatter(x=time, y=dataTime['VEH']['F']['c'] / 1000, mode='lines', line=dict(color='#00CC96', dash='solid'), name='Vehicle Forces (Climbing)'), row=3, col=1)
-    fig.add_trace(go.Scatter(x=time, y=dataTime['VEH']['F']['a'] / 1000, mode='lines', line=dict(color='#AB63FA', dash='solid'), name='Vehicle Forces (Acceleration)'), row=4, col=1)
-    fig.add_trace(go.Scatter(x=time, y=dataTime['VEH']['F']['t'] / 1000, mode='lines', line=dict(color='#FFA15A', dash='solid'), name='Vehicle Forces (Total)'), row=5, col=1)
-
-    # ==============================================================================
-    # Power
-    # ==============================================================================
-    fig.add_trace(go.Scatter(x=time, y=dataTime['VEH']['P']['p'] / 1000, mode='lines', line=dict(color='#636EFA', dash='dash'), name='Vehicle Power (Air)'), row=1, col=2)
-    fig.add_trace(go.Scatter(x=time, y=dataTime['VEH']['P']['r'] / 1000, mode='lines', line=dict(color='#EF553B', dash='dash'), name='Vehicle Power (Rolling)'), row=2, col=2)
-    fig.add_trace(go.Scatter(x=time, y=dataTime['VEH']['P']['c'] / 1000, mode='lines', line=dict(color='#00CC96', dash='dash'), name='Vehicle Power (Climbing)'), row=3, col=2)
-    fig.add_trace(go.Scatter(x=time, y=dataTime['VEH']['P']['a'] / 1000, mode='lines', line=dict(color='#AB63FA', dash='dash'), name='Vehicle Power (Acceleration)'), row=4, col=2)
-    fig.add_trace(go.Scatter(x=time, y=dataTime['VEH']['P']['t'] / 1000, mode='lines', line=dict(color='#FFA15A', dash='dash'), name='Vehicle Power (Total)'), row=5, col=2)
-
-    # ==============================================================================
-    # Energy
-    # ==============================================================================
-    fig.add_trace(go.Scatter(x=time, y=dataTime['VEH']['E']['p'] / 3.6e6, mode='lines', line=dict(color='#636EFA', dash='dot'), name='Vehicle Energy (Air)'), row=1, col=3)
-    fig.add_trace(go.Scatter(x=time, y=dataTime['VEH']['E']['r'] / 3.6e6, mode='lines', line=dict(color='#EF553B', dash='dot'), name='Vehicle Energy (Rolling)'), row=2, col=3)
-    fig.add_trace(go.Scatter(x=time, y=dataTime['VEH']['E']['c'] / 3.6e6, mode='lines', line=dict(color='#00CC96', dash='dot'), name='Vehicle Energy (Climbing)'), row=3, col=3)
-    fig.add_trace(go.Scatter(x=time, y=dataTime['VEH']['E']['a'] / 3.6e6, mode='lines', line=dict(color='#AB63FA', dash='dot'), name='Vehicle Energy (Acceleration)'), row=4, col=3)
-    fig.add_trace(go.Scatter(x=time, y=dataTime['VEH']['E']['t'] / 3.6e6, mode='lines', line=dict(color='#FFA15A', dash='dot'), name='Vehicle Energy (Total)'), row=5, col=3)
-
-    ###################################################################################################################
-    # Post-Processing
-    ###################################################################################################################
-    # ==============================================================================
-    # Axis
-    # ==============================================================================
-    # ------------------------------------------
-    # Set y-axis titles
-    # ------------------------------------------
-    # Forces
-    fig.update_yaxes(title_text="F (kN)", row=1, col=1)
-    fig.update_yaxes(title_text="F (kN)", row=2, col=1)
-    fig.update_yaxes(title_text="F (kN)", row=3, col=1)
-    fig.update_yaxes(title_text="F (kN)", row=4, col=1)
-    fig.update_yaxes(title_text="F (kN)", row=5, col=1)
+    axs[0, 0].plot(time, dataTime['VEH']['F']['p'] / 1000, color='#636EFA', linestyle='solid')
+    axs[0, 1].plot(time, dataTime['VEH']['F']['r'] / 1000, color='#EF553B', linestyle='solid')
+    axs[0, 2].plot(time, dataTime['VEH']['F']['c'] / 1000, color='#00CC96', linestyle='solid')
+    axs[1, 0].plot(time, dataTime['VEH']['F']['a'] / 1000, color='#AB63FA', linestyle='solid')
+    axs[2, 0].plot(time, dataTime['VEH']['F']['t'] / 1000, color='#FFA15A', linestyle='solid')
 
     # Power
-    fig.update_yaxes(title_text="P (kW)", row=1, col=2)
-    fig.update_yaxes(title_text="P (kW)", row=2, col=2)
-    fig.update_yaxes(title_text="P (kW)", row=3, col=2)
-    fig.update_yaxes(title_text="P (kW)", row=4, col=2)
-    fig.update_yaxes(title_text="P (kW)", row=5, col=2)
+    axs[0, 0].plot(time, dataTime['VEH']['P']['p'] / 1000, color='#636EFA', linestyle='dashed')
+    axs[0, 1].plot(time, dataTime['VEH']['P']['r'] / 1000, color='#EF553B', linestyle='dashed')
+    axs[0, 2].plot(time, dataTime['VEH']['P']['c'] / 1000, color='#00CC96', linestyle='dashed')
+    axs[1, 0].plot(time, dataTime['VEH']['P']['a'] / 1000, color='#AB63FA', linestyle='dashed')
+    axs[2, 0].plot(time, dataTime['VEH']['P']['t'] / 1000, color='#FFA15A', linestyle='dashed')
 
     # Energy
-    fig.update_yaxes(title_text="E (kWh)", row=1, col=3)
-    fig.update_yaxes(title_text="E (kWh)", row=2, col=3)
-    fig.update_yaxes(title_text="E (kWh)", row=3, col=3)
-    fig.update_yaxes(title_text="E (kWh)", row=4, col=3)
-    fig.update_yaxes(title_text="E (kWh)", row=5, col=3)
+    axs[0, 0].plot(time, dataTime['VEH']['E']['p'] / 3.6e6, color='#636EFA', linestyle='dotted')
+    axs[0, 1].plot(time, dataTime['VEH']['E']['r'] / 3.6e6, color='#EF553B', linestyle='dotted')
+    axs[0, 2].plot(time, dataTime['VEH']['E']['c'] / 3.6e6, color='#00CC96', linestyle='dotted')
+    axs[1, 0].plot(time, dataTime['VEH']['E']['a'] / 3.6e6, color='#AB63FA', linestyle='dotted')
+    axs[2, 0].plot(time, dataTime['VEH']['E']['t'] / 3.6e6, color='#FFA15A', linestyle='dotted')
 
-    # ------------------------------------------
-    # Set x-axis title for the last subplot
-    # ------------------------------------------
-    fig.update_xaxes(title_text="time (sec)", row=5, col=1)
-    fig.update_xaxes(title_text="time (sec)", row=5, col=2)
-    fig.update_xaxes(title_text="time (sec)", row=5, col=3)
+    # Grid activation
+    for ax_row in axs:
+        for ax in ax_row:
+            ax.grid(True)
 
-    # ==============================================================================
-    # Title
-    # ==============================================================================
-    txt = "Vehicle Forces, Power, Energies, and Efficiencies (Detail): "
-    fig.update_layout(height=setup['Exp']['hFig'], width=setup['Exp']['wFig'], title_text=txt)
+    # Axis labels
+    axs[0, 0].set_ylabel('F (kN)')
+    axs[1, 0].set_ylabel('F (kN)')
+    axs[2, 0].set_ylabel('F (kN)')
+    axs[3, 0].set_ylabel('F (kN)')
+    axs[4, 0].set_ylabel('F (kN)')
 
-    # ==============================================================================
-    # Plot
-    # ==============================================================================
-    fig.show()
+    axs[0, 1].set_ylabel('P (kW)')
+    axs[1, 1].set_ylabel('P (kW)')
+    axs[2, 1].set_ylabel('P (kW)')
+    axs[3, 1].set_ylabel('P (kW)')
+    axs[4, 1].set_ylabel('P (kW)')
 
-    ###################################################################################################################
-    # Return
-    ###################################################################################################################
+    axs[0, 2].set_ylabel('E (kWh)')
+    axs[1, 2].set_ylabel('E (kWh)')
+    axs[2, 2].set_ylabel('E (kWh)')
+    axs[3, 2].set_ylabel('E (kWh)')
+    axs[4, 2].set_ylabel('E (kWh)')
+
+    axs[4, 0].set_xlabel('time (sec)')
+    axs[4, 1].set_xlabel('time (sec)')
+    axs[4, 2].set_xlabel('time (sec)')
+
+    # Titles
+    axs[0, 0].set_title('Vehicle Forces (Air)')
+    axs[0, 1].set_title('Vehicle Forces (Rolling)')
+    axs[0, 2].set_title('Vehicle Forces (Climbing)')
+    axs[1, 0].set_title('Vehicle Forces (Acceleration)')
+    axs[2, 0].set_title('Vehicle Forces (Total)')
+
+    axs[0, 0].set_title('Vehicle Power (Air)')
+    axs[0, 1].set_title('Vehicle Power (Rolling)')
+    axs[0, 2].set_title('Vehicle Power (Climbing)')
+    axs[1, 0].set_title('Vehicle Power (Acceleration)')
+    axs[2, 0].set_title('Vehicle Power (Total)')
+
+    axs[0, 0].set_title('Vehicle Energy (Air)')
+    axs[0, 1].set_title('Vehicle Energy (Rolling)')
+    axs[0, 2].set_title('Vehicle Energy (Climbing)')
+    axs[1, 0].set_title('Vehicle Energy (Acceleration)')
+    axs[2, 0].set_title('Vehicle Energy (Total)')
+
+    # Layout adjustments
+    fig.suptitle("Vehicle Forces, Power, Energies, and Efficiencies (Detail)", size=18)
+    plt.subplots_adjust(hspace=0.35, wspace=0.35, left=0.075, right=0.925, top=0.90, bottom=0.075)
+
     return []
-
-#######################################################################################################################
-# References
-#######################################################################################################################
