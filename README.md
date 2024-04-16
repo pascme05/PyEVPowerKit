@@ -36,8 +36,11 @@ $F_{t} = F_{a} + F_{r} + F_{c} + F_{acc}$                                       
 In detail, each of these forces can be described using the laws of physics:
 
 $F_{a} = \frac{1}{2} \cdot \rho_{A} \dot A \cdot c_{w} \dot v^2$                (2)
+
 $F_{r} = c_{r} \cdot m \cdot g \cdot cos(\alpha)$                               (3)
+
 $F_{c} = m \cdot g \cdot sin(\alpha)$                                           (4)
+
 $F_{acc} = (m + m_{acc}) \cdot \frac{dv}{dt}$                                   (5)
 
 where $\rho_{A}$ is the density of air, $A$ is the vehicle frontal area, $c_{w}$ is the shape factor for the air resistance
