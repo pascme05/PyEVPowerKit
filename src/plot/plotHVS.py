@@ -59,7 +59,7 @@ def plotHVS(data, dataTime, setup):
     axs[1, 0].plot(time, dataTime['HVS']['Idc'], label='HVS Current')
 
     # Charge
-    axs[0, 1].plot(time, dataTime['HVS']['SOC'], label='HVS SOC')
+    axs[0, 1].plot(time, dataTime['HVS']['SOC']*100, label='HVS SOC')
     axs[1, 1].plot(time, dataTime['HVS']['dQ']/1000, label='HVS Charge')
 
     # Thermal

@@ -159,7 +159,8 @@ def plotMax(data, dataTime, setup):
     axs[0, 0].set_ylabel('Torque (Nm)')
     axs[1, 0].set_ylabel('Power (kW)')
     axs[2, 0].set_ylabel('Current (A)')
-    axs[3, 0].set_ylabel('Temperature (degC)')
+    axs[3, 0].set_ylabel('Voltage (V)')
+    axs[4, 0].set_ylabel('Temperature (degC)')
 
     axs[4, 0].set_xlabel('Time (sec)')
     axs[4, 1].set_xlabel('Component')

@@ -204,9 +204,9 @@ def plotPWR(data, dataTime, setup):
     Pv = [Pv_Avg, Pv_Std, Pv_Max]
 
     # Eta
-    Eta_Avg = [Eta_Avg_HVS, Eta_Avg_INV, Eta_Avg_EMA, Eta_Avg_GBX, Eta_Avg_WHE]
-    Eta_Std = [Eta_Std_HVS, Eta_Std_INV, Eta_Std_EMA, Eta_Std_GBX, Eta_Std_WHE]
-    Eta_Max = [Eta_Max_HVS, Eta_Max_INV, Eta_Max_EMA, Eta_Max_GBX, Eta_Max_WHE]
+    Eta_Avg = [Eta_Avg_HVS * 100, Eta_Avg_INV * 100, Eta_Avg_EMA * 100, Eta_Avg_GBX * 100, Eta_Avg_WHE * 100]
+    Eta_Std = [Eta_Std_HVS * 100, Eta_Std_INV * 100, Eta_Std_EMA * 100, Eta_Std_GBX * 100, Eta_Std_WHE * 100]
+    Eta_Max = [Eta_Max_HVS * 100, Eta_Max_INV * 100, Eta_Max_EMA * 100, Eta_Max_GBX * 100, Eta_Max_WHE * 100]
     Eta = [Eta_Avg, Eta_Std, Eta_Max]
 
     ###################################################################################################################
@@ -230,7 +230,7 @@ def plotPWR(data, dataTime, setup):
             axs[2, 0].plot(time, dataTime[comp][axis]['Pv']/1000, label=f'{comp} Losses')
             axs[2, 0].grid(True)
             # Add time series data for efficiency
-            axs[3, 0].plot(time, dataTime[comp][axis]['eta'], label=f'{comp} Efficiency')
+            axs[3, 0].plot(time, dataTime[comp][axis]['eta']*100, label=f'{comp} Efficiency')
             axs[3, 0].grid(True)
         else:
             # Add time series data for input power
@@ -243,7 +243,7 @@ def plotPWR(data, dataTime, setup):
             axs[2, 0].plot(time, dataTime[comp]['Pv']/1000, label=f'{comp} Losses')
             axs[2, 0].grid(True)
             # Add time series data for efficiency
-            axs[3, 0].plot(time, dataTime[comp]['eta'], label=f'{comp} Efficiency')
+            axs[3, 0].plot(time, dataTime[comp]['eta']*100, label=f'{comp} Efficiency')
             axs[3, 0].grid(True)
 
     ###################################################################################################################

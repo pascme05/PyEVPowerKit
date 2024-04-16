@@ -67,7 +67,7 @@ def plotGBX(data, dataTime, setup):
     axs[0, 1].legend()
 
     # Efficiency
-    axs[1, 1].plot(time, dataTime['GBX'][axis]['eta'], label='Total Efficiency')
+    axs[1, 1].plot(time, dataTime['GBX'][axis]['eta']*100, label='Total Efficiency')
     axs[2, 1].plot(time, dataTime['GBX'][axis]['T'], label='Hotspot Temperature')
     axs[2, 1].plot(time, dataTime['VEH']['Tc'], label='Coolant Temperature')
     axs[2, 1].legend()

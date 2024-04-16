@@ -290,7 +290,7 @@ def main(setup, path):
     # ------------------------------------------
     # Start
     # ------------------------------------------
-    if setup['Exp']['plot'] == 1:
+    if setup['Exp']['plot'] != 0:
         plotting(data, dataTime, dataLife, setup)
     else:
         print("INFO: Plotting disabled")

@@ -84,7 +84,7 @@ def plotEMA(data, dataTime, setup):
     axs[0, 2].legend()
 
     # Thermal
-    axs[1, 2].plot(time, dataTime['EMA'][axis]['eta'], label='Total Efficiency')
+    axs[1, 2].plot(time, dataTime['EMA'][axis]['eta']*100, label='Total Efficiency')
     axs[2, 2].plot(time, dataTime['EMA'][axis]['T'], label='Hotspot Temperature')
     axs[2, 2].plot(time, dataTime['VEH']['Tc'], label='Coolant Temperature')
     axs[2, 2].legend()
