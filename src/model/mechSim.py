@@ -146,12 +146,21 @@ def mechSim(iter, GBX, EMA, dataTime, setup):
     # ------------------------------------------
     # Total
     # ------------------------------------------
+    # Efficiency and Speed
+    if setup['Par']['xwd'] == 'FWD':
+        dataTime['GBX']['T']['eta'][iter] = eta_Gbx_F
+        dataTime['GBX']['T']['n'][iter] = n_Gbx_F
+    elif setup['Par']['xwd'] == 'RWD':
+        dataTime['GBX']['T']['eta'][iter] = eta_Gbx_R
+        dataTime['GBX']['T']['n'][iter] = n_Gbx_R
+    else:
+        dataTime['GBX']['T']['eta'][iter] = (eta_Gbx_F + eta_Gbx_R) / 2
+        dataTime['GBX']['T']['n'][iter] = (n_Gbx_F + n_Gbx_R) / 2
+
     # Mechanical
     dataTime['GBX']['T']['M'][iter] = M_Gbx_F + M_Gbx_R
-    dataTime['GBX']['T']['n'][iter] = (n_Gbx_F + n_Gbx_R) / 2
     dataTime['GBX']['T']['Pin'][iter] = P_Gbx_F + P_Gbx_R
     dataTime['GBX']['T']['Pout'][iter] = P_Out_F + P_Out_R
-    dataTime['GBX']['T']['eta'][iter] = (eta_Gbx_F + eta_Gbx_R) / 2
 
     # Losses
     dataTime['GBX']['T']['Pv'][iter] = Pv_Gbx_F + Pv_Gbx_R

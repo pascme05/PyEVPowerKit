@@ -184,13 +184,21 @@ def elecSim(iter, EMA, INV, HVS, dataTime, setup):
     # ------------------------------------------
     # Total
     # ------------------------------------------
+    # Efficiency
+    if setup['Par']['xwd'] == 'FWD':
+        dataTime['EMA']['T']['eta'][iter] = eta_F
+    elif setup['Par']['xwd'] == 'RWD':
+        dataTime['EMA']['T']['eta'][iter] = eta_R
+    else:
+        dataTime['EMA']['T']['eta'][iter] = (eta_F + eta_R) / 2
+
+    # Other
     dataTime['EMA']['T']['Pin'][iter] = Pin_F + Pin_R
     dataTime['EMA']['T']['Pout'][iter] = Pout_F + Pout_R
     dataTime['EMA']['T']['Pv'][iter] = Pv_F + Pv_R
     dataTime['EMA']['T']['Pv_m'][iter] = Pv_m_F + Pv_m_R
     dataTime['EMA']['T']['Pv_s'][iter] = Pv_s_F + Pv_s_R
     dataTime['EMA']['T']['Pv_r'][iter] = Pv_r_F + Pv_r_R
-    dataTime['EMA']['T']['eta'][iter] = (eta_F + eta_R) / 2
     dataTime['EMA']['T']['PF'][iter] = (PF_F + PF_R) / 2
     dataTime['EMA']['T']['Id'][iter] = id_F + id_R
     dataTime['EMA']['T']['Iq'][iter] = iq_F + iq_R
@@ -240,6 +248,15 @@ def elecSim(iter, EMA, INV, HVS, dataTime, setup):
     # ------------------------------------------
     # Total
     # ------------------------------------------
+    # Efficiency
+    if setup['Par']['xwd'] == 'FWD':
+        dataTime['INV']['T']['eta'][iter] = eta_INV_F
+    elif setup['Par']['xwd'] == 'RWD':
+        dataTime['INV']['T']['eta'][iter] = eta_INV_R
+    else:
+        dataTime['INV']['T']['eta'][iter] = (eta_INV_F + eta_INV_R) / 2
+
+    # Other
     dataTime['INV']['T']['Pin'][iter] = Pin_INV_R + Pin_INV_F
     dataTime['INV']['T']['Pout'][iter] = Pout_INV_R + Pout_INV_F
     dataTime['INV']['T']['Pv'][iter] = Pv_INV_R + Pv_INV_F
@@ -247,7 +264,6 @@ def elecSim(iter, EMA, INV, HVS, dataTime, setup):
     dataTime['INV']['T']['Pv_cap'][iter] = p_l_cap_R + p_l_cap_F
     dataTime['INV']['T']['Pv_ac'][iter] = p_l_ac_R + p_l_ac_F
     dataTime['INV']['T']['Pv_dc'][iter] = p_l_dc_R + p_l_dc_F
-    dataTime['INV']['T']['eta'][iter] = (eta_INV_R + eta_INV_F) / 2
     dataTime['INV']['T']['Idc'][iter] = Idc_R + Idc_F
     dataTime['INV']['T']['Ic'][iter] = Ic_R + Ic_F
     dataTime['INV']['T']['Is'][iter] = Is_R + Is_F
