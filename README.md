@@ -35,7 +35,7 @@ $F_{t} = F_{a} + F_{r} + F_{c} + F_{acc}$
 
 In detail, each of these forces can be described using the laws of physics:
 
-$F_{a} = \frac{1}{2} \cdot \rho_{A} \dot A \cdot c_{w} \cdot v^2$                
+$F_{a} = \frac{1}{2} \cdot \rho_{A} \cdot A \cdot c_{w} \cdot v^2$                
 
 $F_{r} = c_{r} \cdot m \cdot g \cdot cos(\alpha)$                             
 
@@ -52,8 +52,14 @@ $M_{wheel} = \frac{1}{4} \cdot F_{t} \cdot r_{dyn}$
 
 $P_{veh} = F_{t} \cdot v$  
 
-$E_{veh} = \int_{0}^{T_{end}} P_{veh} \cdot dt v$                                                             
+$E_{veh} = \int_{0}^{T_{end}} P_{veh} \cdot dt$                                                             
 
+where $M_{wheel}$ is the torque per wheel, $P_{veh}$ the mechanical power, and $E_{veh}$ the mechanical energy of the 
+lossless vehicle. Additionally $r_{dyn}$ is the dynamic wheel radius. Knowing the required torque per wheel and further
+assuming a gearbox with a constant gear ratio $i_{g}$, each operation point can be described by a set of torque and rotational 
+speed values. The components can than be calculated according to the architecture presented below:
+
+![img.png](img.png)
 
 # Results
 The results provided in this section have been obtained from a Tesla model 3 [1]. In detail, the acceleration to the 
