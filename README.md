@@ -96,6 +96,8 @@ illustrated in the figure below:
 
 ![img_1.png](docu/wltp.png)
 
+All other results can be obtained by running startWLTP.py
+
 # Development
 As failure and mistakes are inextricably linked to human nature, the toolkit is obviously not perfect, 
 thus suggestions and constructive feedback are always welcome. If you want to contribute to the PyDTS
