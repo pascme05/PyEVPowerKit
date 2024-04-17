@@ -48,7 +48,7 @@ $v$ is the vehicle speed, $m$ is the vehicle mass, $m_{acc}$ is the equivalent a
 parts), and $\alpha$ is the slope of the road. Based on the above the required mechanical torque, power, and energy can 
 be determined for a lossless system.
 
-$M_{wheel} = \frac{1}{4} \cdot F_{t} \cdot r_{dyn}$     
+$M_{wheel} = \frac{1}{2} \cdot F_{t} \cdot r_{dyn}$     
 
 $P_{veh} = F_{t} \cdot v$  
 
