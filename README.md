@@ -113,6 +113,7 @@ The software framework is provided under the MIT License.
 
 # References
 [1] https://motorxp.com/wp-content/uploads/mxp_analysis_TeslaModel3.pdf
+
 [2] Schlüter, Michael, Marius Gentejohann, and Sibylle Dieckerhoff. "Driving Cycle Power Loss Analysis of SiC-MOSFET 
 and Si-IGBT Traction Inverters for Electric Vehicles." 2023 25th European Conference on Power Electronics and
 Applications (EPE'23 ECCE Europe). IEEE, 2023.
