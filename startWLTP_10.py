@@ -2,7 +2,7 @@
 #######################################################################################################################
 # Title:        Python Electric Vehicle Power Toolkit (PyEVPowerKit)
 # Topic:        EV Modeling
-# File:         startWLTP
+# File:         startWLTP10
 # Date:         18.03.2024
 # Author:       Dr. Pascal A. Schirmer
 # Version:      V.0.1
@@ -52,7 +52,7 @@ setup = initSetup()
 # Files
 # ------------------------------------------
 setup['Exp']['name'] = 'Tesla3_Vmax'                                                                                     # Name of the simulation
-setup['Dat']['name'] = 'data_WLTP'                                                                                       # Name of the data file
+setup['Dat']['name'] = 'data_WLTP_10'                                                                                    # Name of the data file
 setup['Par']['name'] = 'setup_Tesla3'                                                                                    # Name of the setup file
 
 # ------------------------------------------
@@ -66,7 +66,7 @@ setup['Exp']['life'] = 131400                                                   
 # Settings
 # ------------------------------------------
 setup['Exp']['SOC'] = 1                                                                                                  # Starting SOC value of the HVS (p.u.)
-setup['Exp']['Vdc'] = 3                                                                                                  # 1) constant nominal voltage, 2) measured voltage, 3) SOC based
+setup['Exp']['Vdc'] = 1                                                                                                  # 1) constant nominal voltage, 2) measured voltage, 3) SOC based
 setup['Exp']['Cool'] = 3                                                                                                 # 1) constant coolant temperature, 2) measured coolant temperature, 3) calculated coolant temperature
 setup['Exp']['Tc'] = 30                                                                                                  # Constant coolant temperature (degC)
 setup['Exp']['Ta'] = 20                                                                                                  # Constant ambient temperature (degC)
@@ -86,7 +86,7 @@ setup['Exp']['save'] = 0                                                        
 # ==============================================================================
 # Data
 # ==============================================================================
-setup['Dat']['fs'] = 1                                                                                                   # Sampling frequency of the data (Hz)
+setup['Dat']['fs'] = 0.1                                                                                                 # Sampling frequency of the data (Hz)
 
 # ==============================================================================
 # Parameters

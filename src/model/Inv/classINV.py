@@ -166,7 +166,7 @@ class classB6:
         # Efficiency
         # ------------------------------------------
         # Init
-        eta = Pout / Pin
+        eta = abs(Pout / Pin)
         eta = np.nan_to_num(eta, nan=1)
 
         # Recuperation
