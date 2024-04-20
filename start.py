@@ -107,7 +107,7 @@ setup['Par']['v_w'] = 0                                                         
 # ------------------------------------------
 # Numeric
 # ------------------------------------------
-setup['Par']['sol'] = 2                                                                                                  # 1) numeric (tbi for IMPSM), 2) symbolic
+setup['Par']['sol'] = 1                                                                                                  # 1) numeric (tbi for IMPSM), 2) symbolic
 setup['Par']['eps'] = 1e-12                                                                                              # Small numerical value
 setup['Par']['err'] = 1e-6                                                                                               # Numerical error
 setup['Par']['iterMax'] = 100                                                                                            # Maximum number of iterations

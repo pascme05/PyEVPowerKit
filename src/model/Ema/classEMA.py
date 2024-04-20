@@ -37,6 +37,7 @@ Fnc:
 import numpy as np
 import math as mt
 import sympy as sy
+from scipy.optimize import minimize, LinearConstraint, NonlinearConstraint
 
 
 #######################################################################################################################
@@ -370,6 +371,127 @@ class classPSM:
     ###################################################################################################################
     # Function
     ###################################################################################################################
+    def calcEMA_MTPA_num(self, n_Ema, M_Ema, Vdc, T):
+        # ==============================================================================
+        # Description
+        # ==============================================================================
+        """
+        This function numerically calculates the currents and voltages for a PSM.
+
+        Input:
+        1) M_Ema:   Torque of the machine (Nm)
+        2) n_Ema:   Rotational speed of the machine (1/s)
+        3) Vdc:     DC-link voltage (Vdc)
+        4) T:       Hotspot temperature of the machine (degC)
+
+        Output:
+        1) id:      Current d-axis (A)
+        2) iq:      Current q-axis (A)
+        3) Is:      Peak stator current (A)
+        4) vd:      Voltage d-axis (V)
+        5) vq:      Voltage q-axis (V)
+        6) Vs:      Peak stator voltage (V)
+        """
+
+        # ==============================================================================
+        # Functions
+        # ==============================================================================
+        # ------------------------------------------
+        # Cost Function
+        # ------------------------------------------
+        def cost_fnc(x):
+            return np.sqrt(x[0] ** 2 + x[1] ** 2)
+
+        # ------------------------------------------
+        # Constraint I (Torque)
+        # ------------------------------------------
+        def con_fnc1(x):
+            T_fnc1 = 3 / 2 * self.p * x[0] * (self.Psi + (self.L_d - self.L_q) * x[1])
+            return T_fnc1
+
+        # ------------------------------------------
+        # Constraint II (Voltage)
+        # ------------------------------------------
+        def con_fnc2(x, w):
+            vd1 = Rs * x[1] - w * self.L_q * x[0]
+            vq1 = Rs * x[0] + w * self.L_d * x[1] + w * self.Psi
+            return np.sqrt(vd1 ** 2 + vq1 ** 2)
+
+        # ------------------------------------------
+        # Constraint III (Current)
+        # ------------------------------------------
+        def con_fnc3(x):
+            return np.sqrt(x[0] ** 2 + x[1] ** 2)
+
+        # ==============================================================================
+        # Init
+        # ==============================================================================
+        Rs = self.R_s * (1 + 0.00393 * (T - 20))
+        v_max = Vdc / np.sqrt(3) - Rs * self.I_max
+        w_m = 2 * np.pi * n_Ema
+        w_e = 2 * np.pi * n_Ema * self.p
+        R_Fe = 1 / (self.K_f + self.K_h / (w_e + 1) + 1e-9)
+
+        # ==============================================================================
+        # Pre-processing
+        # ==============================================================================
+        # ------------------------------------------
+        # Init
+        # ------------------------------------------
+        iq_init = M_Ema / (3 / 2 * self.p * self.Psi)
+        init = [iq_init, 0]
+
+        # ------------------------------------------
+        # Bounds
+        # ------------------------------------------
+        bounds = ((0, self.I_max), (-self.I_max, 0))
+
+        # ------------------------------------------
+        # Define the constraints
+        # ------------------------------------------
+        constraint1 = NonlinearConstraint(con_fnc1, lb=M_Ema, ub=M_Ema)
+        constraint2 = NonlinearConstraint(lambda x: con_fnc2(x, w_e), lb=0, ub=v_max)
+        constraint3 = NonlinearConstraint(con_fnc3, lb=0, ub=self.I_max)
+        constraints = [constraint1, constraint2, constraint3]
+
+        # ==============================================================================
+        # Calculation
+        # ==============================================================================
+        result = minimize(cost_fnc, init, bounds=bounds, constraints=constraints)
+
+        # ==============================================================================
+        # Post-processing
+        # ==============================================================================
+        # ------------------------------------------
+        # Currents
+        # ------------------------------------------
+        # Init
+        id0 = result.x[1]
+        iq0 = result.x[0]
+
+        # Iron Current
+        vd0 = - w_e * self.L_q * iq0
+        vq0 = w_e * self.L_d * id0 + w_e * self.Psi
+        id_fe = vd0 / R_Fe
+        iq_fe = vq0 / R_Fe
+        id = id0 + id_fe
+        iq = iq0 + iq_fe
+
+        # Stator Quantities
+        Is = np.sqrt(id ** 2 + iq ** 2)
+
+        # ------------------------------------------
+        # Voltages
+        # ------------------------------------------
+        vd = Rs * id - w_e * self.L_q * iq + w_e ** 2 / R_Fe * (self.L_q * self.L_d * id + self.L_q * self.Psi)
+        vq = Rs * iq + w_e * self.L_d * id + w_e ** 2 / R_Fe * (self.L_q * self.L_d * iq) + w_e * self.Psi
+        Vs = np.sqrt(vd ** 2 + vq ** 2)
+
+        return [id, iq, Is, vd, vq, Vs]
+
+    ###################################################################################################################
+    # Function
+    ###################################################################################################################
     def calcEMA_MTPA(self, T, n, Theta, Vdc, verbose=False):
         # ==============================================================================
         # Description
@@ -679,10 +801,13 @@ class classPSM:
         # ------------------------------------------
         # Numeric Solver
         if setup['Par']['sol'] == 1:
+            [id, iq, _, vd, vq, _] = self.calcEMA_MTPA_num(n_Ema, M_Ema, Vdc, T)
+            '''
             if magType == 2:
                 [id, iq, _, vd, vq, _] = self.calc_elec_IM(n_Ema, M_in, Vdc, T)
             else:
                 [id, iq, _, vd, vq, _] = self.calc_elec_SM(n_Ema, M_in, Vdc, T)
+                '''
 
         # Symbolic Solver
         else:
