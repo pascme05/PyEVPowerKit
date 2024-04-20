@@ -66,7 +66,7 @@ setup['Exp']['life'] = 131400                                                   
 # Settings
 # ------------------------------------------
 setup['Exp']['SOC'] = 1                                                                                                  # Starting SOC value of the HVS (p.u.)
-setup['Exp']['Vdc'] = 1                                                                                                  # 1) constant nominal voltage, 2) measured voltage, 3) SOC based
+setup['Exp']['Vdc'] = 3                                                                                                  # 1) constant nominal voltage, 2) measured voltage, 3) SOC based
 setup['Exp']['Cool'] = 3                                                                                                 # 1) constant coolant temperature, 2) measured coolant temperature, 3) calculated coolant temperature
 setup['Exp']['Tc'] = 30                                                                                                  # Constant coolant temperature (degC)
 setup['Exp']['Ta'] = 20                                                                                                  # Constant ambient temperature (degC)
@@ -86,7 +86,7 @@ setup['Exp']['save'] = 0                                                        
 # ==============================================================================
 # Data
 # ==============================================================================
-setup['Dat']['fs'] = 0.1                                                                                                 # Sampling frequency of the data (Hz)
+setup['Dat']['fs'] = 1                                                                                                   # Sampling frequency of the data (Hz)
 
 # ==============================================================================
 # Parameters
@@ -105,7 +105,7 @@ setup['Par']['v_w'] = 0                                                         
 # ------------------------------------------
 # Numeric
 # ------------------------------------------
-setup['Par']['sol'] = 2                                                                                                  # 1) numeric (tbi for IMPSM), 2) symbolic
+setup['Par']['sol'] = 1                                                                                                  # 1) numeric, 2) symbolic
 setup['Par']['eps'] = 1e-12                                                                                              # Small numerical value
 setup['Par']['err'] = 1e-6                                                                                               # Numerical error
 setup['Par']['iterMax'] = 100                                                                                            # Maximum number of iterations

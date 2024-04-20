@@ -52,7 +52,7 @@ setup = initSetup()
 # Files
 # ------------------------------------------
 setup['Exp']['name'] = 'Tesla3_Vmax'                                                                                     # Name of the simulation
-setup['Dat']['name'] = 'data_Vmax_Tesla3'                                                                                # Name of the data file
+setup['Dat']['name'] = 'data_Vmin_Tesla3'                                                                                # Name of the data file
 # setup['Dat']['name'] = 'data_Artemis_150_Cof'                                                                          # Name of the data file
 # setup['Dat']['name'] = 'data_Artemis_150_Arr'                                                                          # Name of the data file
 setup['Par']['name'] = 'setup_Tesla3'                                                                                    # Name of the setup file
@@ -107,7 +107,7 @@ setup['Par']['v_w'] = 0                                                         
 # ------------------------------------------
 # Numeric
 # ------------------------------------------
-setup['Par']['sol'] = 1                                                                                                  # 1) numeric (tbi for IMPSM), 2) symbolic
+setup['Par']['sol'] = 1                                                                                                  # 1) numeric, 2) symbolic
 setup['Par']['eps'] = 1e-12                                                                                              # Small numerical value
 setup['Par']['err'] = 1e-6                                                                                               # Numerical error
 setup['Par']['iterMax'] = 100                                                                                            # Maximum number of iterations

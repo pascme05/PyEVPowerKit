@@ -37,7 +37,7 @@ Fnc:
 import numpy as np
 import math as mt
 import sympy as sy
-from scipy.optimize import minimize, LinearConstraint, NonlinearConstraint
+from scipy.optimize import minimize, NonlinearConstraint
 
 
 #######################################################################################################################
@@ -157,6 +157,7 @@ class classPSM:
         # ==============================================================================
         return [M_Ema, n_Ema, P_Ema, Pv, eta]
 
+    '''
     ###################################################################################################################
     # Elec Surface Magnets
     ###################################################################################################################
@@ -280,12 +281,6 @@ class classPSM:
         """
 
         # ==============================================================================
-        # Init
-        # ==============================================================================
-        def sat(x, theta):
-            return min(theta, max(-theta, x))
-
-        # ==============================================================================
         # Pre-processing
         # ==============================================================================
         Rs = self.R_s * (1 + 0.00393 * (T - 20))
@@ -367,6 +362,7 @@ class classPSM:
         # Return
         # ==============================================================================
         return [id, iq, Is, vd, vq, Vs]
+    '''
 
     ###################################################################################################################
     # Function
@@ -428,7 +424,6 @@ class classPSM:
         # ==============================================================================
         Rs = self.R_s * (1 + 0.00393 * (T - 20))
         v_max = Vdc / np.sqrt(3) - Rs * self.I_max
-        w_m = 2 * np.pi * n_Ema
         w_e = 2 * np.pi * n_Ema * self.p
         R_Fe = 1 / (self.K_f + self.K_h / (w_e + 1) + 1e-9)
 
@@ -444,7 +439,10 @@ class classPSM:
         # ------------------------------------------
         # Bounds
         # ------------------------------------------
-        bounds = ((0, self.I_max), (-self.I_max, 0))
+        if M_Ema > 0:
+            bounds = ((0, self.I_max), (-self.I_max, 0))
+        else:
+            bounds = ((-self.I_max, 0), (-self.I_max, 0))
 
         # ------------------------------------------
         # Define the constraints
@@ -756,7 +754,6 @@ class classPSM:
         # Parameters
         # ------------------------------------------
         fs = setup['Par']['INV']['fs']
-        magType = setup['Par']['EMA']['Mag']
         iter = 0
         iter_max = setup['Par']['iterMax']
 
@@ -802,12 +799,6 @@ class classPSM:
         # Numeric Solver
         if setup['Par']['sol'] == 1:
             [id, iq, _, vd, vq, _] = self.calcEMA_MTPA_num(n_Ema, M_Ema, Vdc, T)
-            '''
-            if magType == 2:
-                [id, iq, _, vd, vq, _] = self.calc_elec_IM(n_Ema, M_in, Vdc, T)
-            else:
-                [id, iq, _, vd, vq, _] = self.calc_elec_SM(n_Ema, M_in, Vdc, T)
-                '''
 
         # Symbolic Solver
         else:
@@ -824,7 +815,7 @@ class classPSM:
                         M_in = M_in * 0.99
                         iter = iter + 1
                 except:
-                    [id, iq, _, vd, vq, _] = self.calc_elec_SM(n_Ema, M_in, Vdc, T)
+                    [id, iq, _, vd, vq, _] = self.calcEMA_MTPA_num(n_Ema, M_Ema, Vdc, T)
                     break
 
         # Stator Quantities

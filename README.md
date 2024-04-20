@@ -23,8 +23,8 @@ The symbolic MTPA/MPTV solver has been abstracted from [2].
 # Limitations
 Since the toolkit is still under development there are several things that need to be improved, are not yet implemented 
 or lack verification. In the following a list of known issues and limitations is provided:
-- The numerical MTPA and MTPV solver for the IMPSM is corrupted
 - SSM and ASM machine types are not yet implemented
+- The model is only defined for positive velocities, i.e. v>0
 
 # Architecture
 The presented architecture includes a physical vehicle simulation considering all forces acting on the vehicle. In detail,
