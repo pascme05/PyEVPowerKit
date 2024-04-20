@@ -65,7 +65,7 @@ setup['Exp']['life'] = 131400                                                   
 # ------------------------------------------
 # Settings
 # ------------------------------------------
-setup['Exp']['SOC'] = 1                                                                                                  # Starting SOC value of the HVS (p.u.)
+setup['Exp']['SOC'] = 0.8                                                                                                # Starting SOC value of the HVS (p.u.)
 setup['Exp']['Vdc'] = 3                                                                                                  # 1) constant nominal voltage, 2) measured voltage, 3) SOC based
 setup['Exp']['Cool'] = 3                                                                                                 # 1) constant coolant temperature, 2) measured coolant temperature, 3) calculated coolant temperature
 setup['Exp']['Tc'] = 30                                                                                                  # Constant coolant temperature (degC)

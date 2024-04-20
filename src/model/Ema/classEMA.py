@@ -798,7 +798,17 @@ class classPSM:
         # ------------------------------------------
         # Numeric Solver
         if setup['Par']['sol'] == 1:
-            [id, iq, _, vd, vq, _] = self.calcEMA_MTPA_num(n_Ema, M_Ema, Vdc, T)
+            [id, iq, _, vd, vq, _] = self.calcEMA_MTPA_num(n_Ema, M_in, Vdc, T)
+
+            while iter < iter_max:
+                [id, iq, _, vd, vq, _] = self.calcEMA_MTPA_num(n_Ema, M_in, Vdc, T)
+                Mout = 3 / 2 * self.p * (iq * (self.L_d * id + self.Psi) - id * self.L_q * iq)
+                Merr = abs(Mout - M_in)
+                if Merr > 5:
+                    M_in = M_in * 0.99
+                    iter = iter + 1
+                else:
+                    break
 
         # Symbolic Solver
         else:
@@ -815,7 +825,7 @@ class classPSM:
                         M_in = M_in * 0.99
                         iter = iter + 1
                 except:
-                    [id, iq, _, vd, vq, _] = self.calcEMA_MTPA_num(n_Ema, M_Ema, Vdc, T)
+                    [id, iq, _, vd, vq, _] = self.calcEMA_MTPA_num(n_Ema, M_in, Vdc, T)
                     break
 
         # Stator Quantities
