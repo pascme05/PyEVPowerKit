@@ -110,6 +110,7 @@ The software framework is provided under the MIT License.
 
 # Version History
 1) v.0.1: (16.04.2024) Initial version of PyEVPowerKit
+2) v.0.2: (21.04.2024) Optimising MTPA and MPTV solver
 
 # References
 [1] https://motorxp.com/wp-content/uploads/mxp_analysis_TeslaModel3.pdf
